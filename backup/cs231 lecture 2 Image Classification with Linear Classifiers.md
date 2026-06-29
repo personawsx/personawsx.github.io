@@ -1,5 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>wsx的博客</title><link>https://personawsx.github.io</link><description>我是wsx，北邮在读学生一枚</description><copyright>wsx的博客</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://pic1.zhimg.com/v2-74b717b67bc16a35401be75a7dbc9c00_1440w.jpg</url><title>avatar</title><link>https://personawsx.github.io</link></image><lastBuildDate>Mon, 29 Jun 2026 14:54:10 +0000</lastBuildDate><managingEditor>wsx的博客</managingEditor><ttl>60</ttl><webMaster>wsx的博客</webMaster><item><title>cs231 lecture 2 Image Classification with Linear Classifiers</title><link>https://personawsx.github.io/post/cs231%20lecture%202%20Image%20Classification%20with%20Linear%20Classifiers.html</link><description># 1、Data-driven Approaches
+# 1、Data-driven Approaches
 Problems：Semantic Gap 语义鸿沟（计算机和人之间沟通的脱节）
 Challenges：
 （1）Viewpoint Variation
@@ -60,13 +59,13 @@ class NearestNeighbor:
         pass
 
     def train(self, X, y):
-        ''' X is N x D where each row is an example. Y is 1-dimension of size N '''
+        """ X is N x D where each row is an example. Y is 1-dimension of size N """
         # the nearest neighbor classifier simply remembers all the training data
         self.Xtr = X
         self.ytr = y
 
     def predict(self, X):
-        ''' X is N x D where each row is an example we wish to predict label for '''
+        """ X is N x D where each row is an example we wish to predict label for """
         num_test = X.shape[0]
         # lets make sure that the output type matches the input type
         Ypred = np.zeros(num_test, dtype = self.ytr.dtype)
@@ -82,4 +81,3 @@ class NearestNeighbor:
         return Ypred
 ```
 
-。</description><guid isPermaLink="true">https://personawsx.github.io/post/cs231%20lecture%202%20Image%20Classification%20with%20Linear%20Classifiers.html</guid><pubDate>Mon, 29 Jun 2026 14:53:44 +0000</pubDate></item><item><title>你好</title><link>https://personawsx.github.io/post/ni-hao.html</link><guid isPermaLink="true">https://personawsx.github.io/post/ni-hao.html</guid><pubDate>Mon, 29 Jun 2026 06:27:13 +0000</pubDate></item></channel></rss>
