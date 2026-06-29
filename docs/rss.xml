@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>wsx的博客</title><link>https://personawsx.github.io</link><description>我是wsx，北邮在读学生一枚</description><copyright>wsx的博客</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://pic1.zhimg.com/v2-74b717b67bc16a35401be75a7dbc9c00_1440w.jpg</url><title>avatar</title><link>https://personawsx.github.io</link></image><lastBuildDate>Mon, 29 Jun 2026 14:54:10 +0000</lastBuildDate><managingEditor>wsx的博客</managingEditor><ttl>60</ttl><webMaster>wsx的博客</webMaster><item><title>cs231 lecture 2 Image Classification with Linear Classifiers</title><link>https://personawsx.github.io/post/cs231%20lecture%202%20Image%20Classification%20with%20Linear%20Classifiers.html</link><description># 1、Data-driven Approaches
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>wsx的博客</title><link>https://personawsx.github.io</link><description>我是wsx，北邮在读学生一枚</description><copyright>wsx的博客</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://pic1.zhimg.com/v2-74b717b67bc16a35401be75a7dbc9c00_1440w.jpg</url><title>avatar</title><link>https://personawsx.github.io</link></image><lastBuildDate>Mon, 29 Jun 2026 18:04:46 +0000</lastBuildDate><managingEditor>wsx的博客</managingEditor><ttl>60</ttl><webMaster>wsx的博客</webMaster><item><title>cs231 lecture 2 Image Classification with Linear Classifiers</title><link>https://personawsx.github.io/post/cs231%20lecture%202%20Image%20Classification%20with%20Linear%20Classifiers.html</link><description># 1、Data-driven Approaches
 Problems：Semantic Gap 语义鸿沟（计算机和人之间沟通的脱节）
 Challenges：
 （1）Viewpoint Variation
@@ -82,4 +82,44 @@ class NearestNeighbor:
         return Ypred
 ```
 
-。</description><guid isPermaLink="true">https://personawsx.github.io/post/cs231%20lecture%202%20Image%20Classification%20with%20Linear%20Classifiers.html</guid><pubDate>Mon, 29 Jun 2026 14:53:44 +0000</pubDate></item><item><title>你好</title><link>https://personawsx.github.io/post/ni-hao.html</link><guid isPermaLink="true">https://personawsx.github.io/post/ni-hao.html</guid><pubDate>Mon, 29 Jun 2026 06:27:13 +0000</pubDate></item></channel></rss>
+。</description><guid isPermaLink="true">https://personawsx.github.io/post/cs231%20lecture%202%20Image%20Classification%20with%20Linear%20Classifiers.html</guid><pubDate>Mon, 29 Jun 2026 14:53:44 +0000</pubDate></item><item><title>cs231 lecture 1 Introduction</title><link>https://personawsx.github.io/post/cs231%20lecture%201%20Introduction.html</link><description># 1、Deep Learning Basic
+core task in CV：Image Classification
+## （1）Linear Classifier（Data need to be separable）
+&lt;img width='405' height='377' alt='Image' src='https://github.com/user-attachments/assets/2c5e97de-f656-4c8d-a1a8-a09bdb1e2311' /&gt;
+
+The task of linear classifier is to find the linear function to distinguish different objects.
+## （2）Complex patterns‘ challenges：overfitting&amp;underfitting（过拟合&amp;欠拟合）
+Regulation&amp;Optimization（正则化&amp;优化）
+## （3）Neural Networks：to model non-linear functions
+
+# 2、Perceiving and Understanding the Visual World
+## （1）Tasks Beyond Image Classification
+### a:
+Classification：CAT
+&lt;img width='612' height='532' alt='Image' src='https://github.com/user-attachments/assets/38d5e04a-e2be-4c1e-abe4-3b0ee050a6eb' /&gt;
+
+Semantic Segmentation（第一语义分割）：GRASS,CAT,TREE,SKY
+&lt;img width='620' height='532' alt='Image' src='https://github.com/user-attachments/assets/5aad7125-6d95-4680-af05-574e8629b208' /&gt;
+
+Object Detection：Pinpoint the location，bounding boxes
+&lt;img width='607' height='517' alt='Image' src='https://github.com/user-attachments/assets/93feabe5-c133-4917-a89f-d875777a493b' /&gt;
+
+Instance Segmentation:the most granular(最精细)
+&lt;img width='620' height='530' alt='Image' src='https://github.com/user-attachments/assets/15902884-c590-4acf-acdd-fb0f7420e688' /&gt;
+
+### b：
+video classification
+Multimodal Video Understanding（多模态视频理解，结合声音等其他因素）
+
+### c：
+Large scale distributed training 大规模分布式训练
+Data Parallelism or Model Parallelism
+
+# 3、Generative and Interactive Visual Intelligence
+2D：
+（1）Self-supervised Learning（Machine learning）：models learn to understand and represent data
+（2）Generative Modeling
+（3）Vision Language Models（connect text and images）
+# 4、Human-Centered Applications and Implications
+
+。</description><guid isPermaLink="true">https://personawsx.github.io/post/cs231%20lecture%201%20Introduction.html</guid><pubDate>Mon, 29 Jun 2026 10:42:41 +0000</pubDate></item><item><title>你好</title><link>https://personawsx.github.io/post/ni-hao.html</link><guid isPermaLink="true">https://personawsx.github.io/post/ni-hao.html</guid><pubDate>Mon, 29 Jun 2026 06:27:13 +0000</pubDate></item></channel></rss>
