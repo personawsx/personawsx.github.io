@@ -92,8 +92,7 @@ class NearestNeighbor:
 
         return Ypred
 ```
-
-。">
+上述最近邻算法其实是取k-近邻中k=1时的特殊情况，为了增强鲁棒性，有时会取k≥2，但此时会增加算法的复杂程度。">
 <meta property="og:title" content="cs231 lecture 2 Image Classification with Linear Classifiers">
 <meta property="og:description" content="# 1、Data-driven Approaches
 Problems：Semantic Gap 语义鸿沟（计算机和人之间沟通的脱节）
@@ -177,8 +176,7 @@ class NearestNeighbor:
 
         return Ypred
 ```
-
-。">
+上述最近邻算法其实是取k-近邻中k=1时的特殊情况，为了增强鲁棒性，有时会取k≥2，但此时会增加算法的复杂程度。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://personawsx.github.io/post/cs231%20lecture%202%20Image%20Classification%20with%20Linear%20Classifiers.html">
 <meta property="og:image" content="https://pic1.zhimg.com/v2-74b717b67bc16a35401be75a7dbc9c00_1440w.jpg">
@@ -394,7 +392,96 @@ python代码实现：</p>
             <span class="pl-s1">min_index</span> <span class="pl-c1">=</span> <span class="pl-s1">np</span>.<span class="pl-c1">argmin</span>(<span class="pl-s1">distances</span>) <span class="pl-c"># get the index with smallest distance</span>
             <span class="pl-v">Ypred</span>[<span class="pl-s1">i</span>] <span class="pl-c1">=</span> <span class="pl-s1">self</span>.<span class="pl-c1">ytr</span>[<span class="pl-s1">min_index</span>] <span class="pl-c"># predict the label of the nearest example</span>
 
-        <span class="pl-k">return</span> <span class="pl-v">Ypred</span></pre></div></div>
+        <span class="pl-k">return</span> <span class="pl-v">Ypred</span></pre></div>
+<p>上述最近邻算法其实是取k-近邻中k=1时的特殊情况，为了增强鲁棒性，有时会取k≥2，但此时会增加算法的复杂程度。</p>
+<h1>3、Setting Hyperparameters</h1>
+<h2>（1）k的选取：</h2>
+<p>一般来说，k越小，模型越简单，推理越快，能保留局部细节适合对小样本的分析；<br>
+k越大，抗干扰能力越强，但计算会变慢，局部细节被抹平。</p>
+<h2>（2）L1、L2距离的选取：</h2>
+<h4>L1 (Manhattan) distance/曼哈顿距离：</h4>
+<p>$$d_1(I_1, I_2) = \sum_{p} \left| I_1^p - I_2^p \right|$$</p>
+<h4>L2 (Euclidean) distance/欧几里得距离：</h4>
+<p>$$d_2(I_1, I_2) = \sqrt{\sum_{p} \left( I_1^p - I_2^p \right)^2}$$<br>
+##（3）数据集的处理：<br>
+a:Choose hyperparameters that works best on the training data. BAD:k=1 always works perfectly.<br>
+b:Choose hyperparameters that works best on the test data. BAD:No idea how algorithm will perform on new data.<br>
+c:Split data into train,validation(验证集);choose hyperparameters on validation and evaluate on test.<br>
+d: Cross-Validation:Split data into folds,try each fold as validation and average the result.</p>
+<h1>4、Linear Classifier</h1>
+<p>假设输入图片为 32×32×3 像素数组，展平后得到一维向量 x，长度：<br>
+32 × 32 × 3 = 3072</p>
+<p>线性预测函数：<br>
+f(x, W) = Wx+b</p>
+<p>维度匹配：<br>
+权重矩阵 W：10×3072<br>
+图像向量 x：3072×1<br>
+输出类别得分向量 f(x, W)：10×1<br>
+偏置项b:10×1，与输入无关</p>
+<p>输出结果为 10 个数值，对应各类别的预测得分（class scores），其中 W 是模型可学习权重参数（parameters / weights）。</p>
+<h3>How to choose W？</h3>
+<p>1、Define a loss function that quantifies our unhappiness with the scores across the training data.<br>
+2、Come up with a way of efficiently finding the parameters that minimize the loss function. (optimization)<br>
+$$<br>
+L = \frac{1}{N}\sum_{i} L_i\big(f(x_i, W),,y_i\big)<br>
+$$</p>
+<ul>
+<li>
+$L$：整个训练数据集的平均损失，模型的优化目标，需要最小化该值</li>
+<li>
+$N$：训练集样本的总数量</li>
+<li>
+$i$：样本索引，代表第$i$个图像样本</li>
+<li>
+$L_i$：第$i$个样本的单样本损失函数，计算单张图片的预测误差</li>
+<li>
+$f(x_i,W)$：线性分类函数，输出第$i$张图像的类别得分向量</li>
+<li>
+$x_i$：第$i$张图片展平之后的一维特征向量</li>
+<li>
+$W$：模型的权重矩阵，为待学习的参数</li>
+<li>
+$y_i$：第$i$张图像的真实标签，是一个整数，用来标记正确类别</li>
+</ul>
+<h3>1. 线性得分输出</h3>
+<p>$$s = f(x_i;W)$$</p>
+<ul>
+<li>
+$x_i$：第$i$张输入图像向量</li>
+<li>
+$W$：权重矩阵（待学习参数）</li>
+<li>
+$s$：原始类别得分，也叫logits（未归一化的对数概率）</li>
+</ul>
+<h3>2. Softmax函数，将得分转为概率</h3>
+<p>$$P(Y=k|X=x_i)=\frac{e^{s_k}}{\sum_{j}e^{s_j}}$$</p>
+<ol>
+<li>
+$e^{s_k}$：对得分做指数运算，保证数值大于0</li>
+<li>
+$\sum_{j}e^{s_j}$：全部类别指数求和，实现归一化，让所有类别概率之和等于1</li>
+</ol>
+<h3>3. 单样本交叉熵损失</h3>
+<p>$$L_i = -\log P(Y=y_i|X=x_i)$$</p>
+<ul>
+<li>
+$y_i$：第$i$张图片的真实标签</li>
+<li>
+$P(Y=y_i|X=x_i)$：模型分配给真实类别的预测概率</li>
+<li>负对数：真实类别预测概率越高，损失值越小</li>
+</ul>
+<h3>4. 交叉熵信息论解释</h3>
+<p>$$H(P,Q)=H(P)+D_{KL}(P||Q)$$</p>
+<ul>
+<li>
+$P$：真实标签的独热分布</li>
+<li>
+$Q$：模型预测的概率分布</li>
+<li>
+$H(P)$：真实分布熵（常量）</li>
+<li>
+$D_{KL}(P||Q)$：KL散度，衡量预测分布与真实分布之间的差距，优化本质就是最小化KL散度</li>
+</ul></div>
 <div style="font-size:small;margin-top:8px;float:right;"></div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
@@ -559,6 +646,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 </script>
-
+<script>MathJax = {tex: {inlineMath: [["$", "$"]]}};</script><script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
 </html>
