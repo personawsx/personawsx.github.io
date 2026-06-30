@@ -28,7 +28,7 @@ def predict(model,test_images):
   return test_labels
 ```
 
-### L1 distance：$$d_1(I_1,I_2) = \sum_{p} \left| I_1^p - I_2^p \right|$$
+### L1 distance： $$d_1(I_1,I_2) = \sum_{p} \left| I_1^p - I_2^p \right|$$
 
 ### test image
 | 56 | 32 | 10  | 18  |
@@ -91,7 +91,7 @@ $$d_1(I_1, I_2) = \sum_{p} \left| I_1^p - I_2^p \right|$$
 
 #### L2 (Euclidean) distance/欧几里得距离：
 $$d_2(I_1, I_2) = \sqrt{\sum_{p} \left( I_1^p - I_2^p \right)^2}$$
-##（3）数据集的处理：
+## （3）数据集的处理：
 a:Choose hyperparameters that works best on the training data. BAD:k=1 always works perfectly.
 b:Choose hyperparameters that works best on the test data. BAD:No idea how algorithm will perform on new data.
 c:Split data into train,validation(验证集);choose hyperparameters on validation and evaluate on test.
@@ -115,39 +115,41 @@ f(x, W) = Wx+b
 ### How to choose W？
 1、Define a loss function that quantifies our unhappiness with the scores across the training data.
 2、Come up with a way of efficiently finding the parameters that minimize the loss function. (optimization)
+
 $$
-L = \frac{1}{N}\sum_{i} L_i\big(f(x_i, W),\,y_i\big)
+L = \frac{1}{N}\sum_{i} L_i\big(f(x_i, W),y_i\big)
 $$
 
 - $L$：整个训练数据集的平均损失，模型的优化目标，需要最小化该值
 - $N$：训练集样本的总数量
-- $i$：样本索引，代表第$i$个图像样本
-- $L_i$：第$i$个样本的单样本损失函数，计算单张图片的预测误差
-- $f(x_i,W)$：线性分类函数，输出第$i$张图像的类别得分向量
-- $x_i$：第$i$张图片展平之后的一维特征向量
+- $i$：样本索引，代表第i个图像样本
+- $L_{i}$：第i个样本的单样本损失函数，计算单张图片的预测误差
+- $f(x_{i},W)$：线性分类函数，输出第i张图像的类别得分向量
+- $x_{i}$：第i张图片展平之后的一维特征向量
 - $W$：模型的权重矩阵，为待学习的参数
-- $y_i$：第$i$张图像的真实标签，是一个整数，用来标记正确类别
+- $y_{i}$：第i张图像的真实标签，是一个整数，用来标记正确类别
 
+# 4、如何求解 $L_i$？（Softmax‑交叉熵损失方式）
 ### 1. 线性得分输出
-$$s = f(x_i;W)$$
-- $x_i$：第$i$张输入图像向量
-- $W$：权重矩阵（待学习参数）
-- $s$：原始类别得分，也叫logits（未归一化的对数概率）
+ $$s = f(x_i;W)$$
+- $x_i$：第i张输入图像展平后得到的一维向量（示例为猫咪图像）
+- W：权重矩阵，是模型待学习的参数
+- s：模型输出的原始类别得分，也叫logits（未归一化的对数概率）
+本例得分结果： $s_{\text{cat}}=3.2, s_{\text{car}}=5.1, s_{\text{frog}}=-1.7$
 
-### 2. Softmax函数，将得分转为概率
-$$P(Y=k|X=x_i)=\frac{e^{s_k}}{\sum_{j}e^{s_j}}$$
-1. $e^{s_k}$：对得分做指数运算，保证数值大于0
-2. $\sum_{j}e^{s_j}$：全部类别指数求和，实现归一化，让所有类别概率之和等于1
+### 2. Softmax函数：将原始得分转化为预测概率
+ $$P(Y=k|X=x_i)=\frac{e^{s_k}}{\sum_{j}e^{s_j}}$$
+- k：代表某一类别索引； $s_k$为对应类别的原始得分。对 $s_k$进行自然指数运算 $e^{s_k}$，把所有得分强制转换为非负数
+   $e^{3.2}\approx24.5,\;e^{5.1}\approx164.0,\;e^{-1.7}\approx0.18$
+- $\sum_{j}e^{s_j}$：遍历全部类别，将所有类别的指数结果相加，完成归一化，保证所有类别概率相加总和为1
+  总和： $24.5+164.0+0.18=188.68$
 
-### 3. 单样本交叉熵损失
-$$L_i = -\log P(Y=y_i|X=x_i)$$
-- $y_i$：第$i$张图片的真实标签
+将索引k替换为真实标签yi，计算真实类别的预测概率 $P(Y=y_i|X=x_i)$。
+该样本真实标签$y_i$为cat： $$P(Y=\text{cat}|X=x_i)=\frac{24.5}{188.68}\approx0.13$$
+
+### 3. 单样本交叉熵损失（ $L_i$的具体实现形式）
+ $$L_i = -\log P(Y=y_i|X=x_i)$$
+- $y_i$：第i张图片的真实标签
 - $P(Y=y_i|X=x_i)$：模型分配给真实类别的预测概率
-- 负对数：真实类别预测概率越高，损失值越小
-
-### 4. 交叉熵信息论解释
-$$H(P,Q)=H(P)+D_{KL}(P||Q)$$
-- $P$：真实标签的独热分布
-- $Q$：模型预测的概率分布
-- $H(P)$：真实分布熵（常量）
-- $D_{KL}(P||Q)$：KL散度，衡量预测分布与真实分布之间的差距，优化本质就是最小化KL散度
+- 负对数运算规则：真实类别预测概率越接近1，损失值越小；概率越低，损失越大
+本例单样本损失： $$L_i=-\log(0.13)$$
