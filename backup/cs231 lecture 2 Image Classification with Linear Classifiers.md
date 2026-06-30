@@ -95,7 +95,7 @@ $$d_2(I_1, I_2) = \sqrt{\sum_{p} \left( I_1^p - I_2^p \right)^2}$$
 a:Choose hyperparameters that works best on the training data. BAD:k=1 always works perfectly.
 b:Choose hyperparameters that works best on the test data. BAD:No idea how algorithm will perform on new data.
 c:Split data into train,validation(验证集);choose hyperparameters on validation and evaluate on test.
-d: Cross-Validation:Split data into folds,try each fold as validation and average the result.
+d:Cross-Validation:Split data into folds,try each fold as validation and average the result.
 # 4、Linear Classifier
 
 假设输入图片为 32×32×3 像素数组，展平后得到一维向量 x，长度：
