@@ -469,7 +469,7 @@ $\sum_{j}e^{s_j}$：遍历全部类别，将所有类别的指数结果相加，
 <p>将索引k替换为真实标签yi，计算真实类别的预测概率 $P(Y=y_i|X=x_i)$。<br>
 该样本真实标签$y_i$为cat： $$P(Y=\text{cat}|X=x_i)=\frac{24.5}{188.68}\approx0.13$$</p>
 <h3>3. 单样本交叉熵损失（ $L_i$的具体实现形式）</h3>
-<p>$$L_i = -\log P(Y=y_i|X=x_i)=-\logfrac{e^{y_i}}{\sum_{j}e^{s_j}}$$</p>
+<p>$$L_i = -\log P(Y=y_i|X=x_i)=-log\frac{e^{y_i}}{\sum_{j}e^{s_j}}$$</p>
 <ul>
 <li>
 $y_i$：第i张图片的真实标签</li>
