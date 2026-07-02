@@ -141,8 +141,8 @@ when Computational graphs are too complex，solution：Backpropagation
 损失 L 始终是标量；
 $$\frac{\partial L}{\partial X} \text{ 的形状} = \text{原变量 } X \text{ 的形状}$$。
 （2）梯度定义
-上游梯度 Upstream gradient：∂L/∂z，输出z传回的梯度；
-下游梯度 Downstream gradient：∂L/∂x、∂L/∂y，输入的梯度。
+上游梯度 Upstream gradient：∂L/∂z，输出z传回的梯度，与输出有相同形状；
+下游梯度 Downstream gradient：∂L/∂x、∂L/∂y，输入的梯度，与输入有相同形状。
 （3）多维链式法则
    $$\frac{\partial L}{\partial x} = \frac{\partial z}{\partial x} \frac{\partial L}{\partial z}$$
 
