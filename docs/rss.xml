@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>wsx的博客</title><link>https://personawsx.github.io</link><description>我是wsx，北邮研究生</description><copyright>wsx的博客</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://avatars.githubusercontent.com/u/171470826?v=4&amp;size=64</url><title>avatar</title><link>https://personawsx.github.io</link></image><lastBuildDate>Thu, 02 Jul 2026 17:55:14 +0000</lastBuildDate><managingEditor>wsx的博客</managingEditor><ttl>60</ttl><webMaster>wsx的博客</webMaster><item><title>cs231n lecture 6 Training CNNs and CNN Architectures</title><link>https://personawsx.github.io/post/cs231n%20lecture%206%20Training%20CNNs%20and%20CNN%20Architectures.html</link><description># Lecture Overview – Two Broad Sets of Topics
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>wsx的博客</title><link>https://personawsx.github.io</link><description>我是wsx，北邮研究生</description><copyright>wsx的博客</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://avatars.githubusercontent.com/u/171470826?v=4&amp;size=64</url><title>avatar</title><link>https://personawsx.github.io</link></image><lastBuildDate>Thu, 02 Jul 2026 18:02:50 +0000</lastBuildDate><managingEditor>wsx的博客</managingEditor><ttl>60</ttl><webMaster>wsx的博客</webMaster><item><title>cs231n lecture 6 Training CNNs and CNN Architectures</title><link>https://personawsx.github.io/post/cs231n%20lecture%206%20Training%20CNNs%20and%20CNN%20Architectures.html</link><description># Lecture Overview – Two Broad Sets of Topics
 # 课程总览：两大核心主题模块
 
 # 一、How to build CNNs? 如何搭建卷积神经网络
@@ -165,7 +165,7 @@ class NearestNeighbor:
         return Ypred
 ```
 上述最近邻算法其实是取k-近邻中k=1时的特殊情况，为了增强鲁棒性，有时会取k≥2，但此时会增加算法的复杂程度。</description><guid isPermaLink="true">https://personawsx.github.io/post/cs231%20lecture%202%20Image%20Classification%20with%20Linear%20Classifiers.html</guid><pubDate>Mon, 29 Jun 2026 14:53:44 +0000</pubDate></item><item><title>cs231 lecture 1 Introduction</title><link>https://personawsx.github.io/post/cs231%20lecture%201%20Introduction.html</link><description># 1、Deep Learning Basic
-core task in CV：Image Classification
+### core task in CV：Image Classification
 ## （1）Linear Classifier（Data need to be separable）
 &lt;img width='405' height='377' alt='Image' src='https://github.com/user-attachments/assets/2c5e97de-f656-4c8d-a1a8-a09bdb1e2311' /&gt;
 

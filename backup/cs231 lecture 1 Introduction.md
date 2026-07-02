@@ -1,5 +1,5 @@
 # 1、Deep Learning Basic
-core task in CV：Image Classification
+### core task in CV：Image Classification
 ## （1）Linear Classifier（Data need to be separable）
 <img width="405" height="377" alt="Image" src="https://github.com/user-attachments/assets/2c5e97de-f656-4c8d-a1a8-a09bdb1e2311" />
 
