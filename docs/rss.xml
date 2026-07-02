@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>wsx的博客</title><link>https://personawsx.github.io</link><description>我是wsx，北邮在读学生一枚</description><copyright>wsx的博客</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://pic1.zhimg.com/v2-74b717b67bc16a35401be75a7dbc9c00_1440w.jpg</url><title>avatar</title><link>https://personawsx.github.io</link></image><lastBuildDate>Wed, 01 Jul 2026 16:18:29 +0000</lastBuildDate><managingEditor>wsx的博客</managingEditor><ttl>60</ttl><webMaster>wsx的博客</webMaster><item><title>Regularization and Optimization</title><link>https://personawsx.github.io/post/Regularization%20and%20Optimization.html</link><description># 1、Regularization 正则化（Prevent the model from doing too well on training data）
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>wsx的博客</title><link>https://personawsx.github.io</link><description>我是wsx，北邮在读学生一枚</description><copyright>wsx的博客</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://pic1.zhimg.com/v2-74b717b67bc16a35401be75a7dbc9c00_1440w.jpg</url><title>avatar</title><link>https://personawsx.github.io</link></image><lastBuildDate>Thu, 02 Jul 2026 03:23:40 +0000</lastBuildDate><managingEditor>wsx的博客</managingEditor><ttl>60</ttl><webMaster>wsx的博客</webMaster><item><title>cs231n lecture 3 Regularization and Optimization</title><link>https://personawsx.github.io/post/cs231n%20lecture%203%20Regularization%20and%20Optimization.html</link><description># 1、Regularization 正则化（Prevent the model from doing too well on training data）
 ### （1）损失函数公式
 $$
 L(W) = \frac{1}{N}\sum_{i=1}^N L_i \big( f(x_i, W), y_i \big) + \lambda R(W)
@@ -23,7 +23,7 @@ $$
 R(W) = \sum_k \sum_l | W_{k,l} |
 $$
 
-其中  $W_{k,l}$是在对输入的值做运算时用到的矩阵 $W_{k,l}$。</description><guid isPermaLink="true">https://personawsx.github.io/post/Regularization%20and%20Optimization.html</guid><pubDate>Wed, 01 Jul 2026 16:18:03 +0000</pubDate></item><item><title>cs231 lecture 2 Image Classification with Linear Classifiers</title><link>https://personawsx.github.io/post/cs231%20lecture%202%20Image%20Classification%20with%20Linear%20Classifiers.html</link><description># 1、Data-driven Approaches
+其中  $W_{k,l}$是在对输入的值做运算时用到的矩阵 $W_{k,l}$。</description><guid isPermaLink="true">https://personawsx.github.io/post/cs231n%20lecture%203%20Regularization%20and%20Optimization.html</guid><pubDate>Wed, 01 Jul 2026 16:18:03 +0000</pubDate></item><item><title>cs231 lecture 2 Image Classification with Linear Classifiers</title><link>https://personawsx.github.io/post/cs231%20lecture%202%20Image%20Classification%20with%20Linear%20Classifiers.html</link><description># 1、Data-driven Approaches
 Problems：Semantic Gap 语义鸿沟（计算机和人之间沟通的脱节）
 Challenges：
 （1）Viewpoint Variation
