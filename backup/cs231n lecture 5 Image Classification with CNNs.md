@@ -136,4 +136,4 @@ $$
 \text{Conv}(\text{Translate}(X)) = \text{Translate}(\text{Conv}(X))
 $$
 
-含义：**先平移图像再卷积 = 先卷积再平移特征图**
+含义：**先平移图像再卷积 = 先卷积再平移特征图**。
