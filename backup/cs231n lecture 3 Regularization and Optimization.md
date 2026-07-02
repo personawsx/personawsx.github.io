@@ -41,7 +41,7 @@ $$
 L = \frac{1}{N}\sum_{i=1}^N L_i + \lambda R(W) \quad \text{Full loss}
 $$
 
-# 2、Optimization （How to find the best W）
+# 2、Optimization （How to find the best W？）
 ## 损失曲面 / 损失景观（Loss Landscape）直观解释
 ## （1） 坐标轴对应关系
 **X 轴、Y 轴**：模型的权重参数 $W$
@@ -50,3 +50,65 @@ $$
 
 **Z 轴（高度）**：总损失 $L(W)$ 的数值；
   高度越高 = 损失越大，模型效果越差；高度越低 = 损失越小，模型拟合效果越好。
+
+## How to find the best W？
+（1）Random research
+（2）Follow the slope：
+In 1-dimension, the derivative（导数） of a function:
+
+$$
+\frac{df(x)}{dx} = \lim_{h \to 0} \frac{f(x + h) - f(x)}{h}
+$$
+
+In multiple dimensions：gradient（梯度）
+In summary:
+Numerical gradient（h版本）: approximate, slow, easy to write
+Analytic gradient（损失函数可导）: exact, fast, error-prone
+
+# 3、Gradient descent
+### When to stop？
+（1）固定迭代次数；
+（2）损失不再明显变化。
+
+### Stochastic Gradient Descent (SGD) 随机梯度下降
+将数据分为若干 mini-Batch，遍历所有 Batch 称为一个 Epoch
+
+## Problem：
+① 学习率过大会冲出山谷
+② 学习率不大时，抖动
+③ Saddle points in high dimension（极小值点）/梯度为0 时，不会继续下降
+④ 对数据集进行子采样 → 存在噪声
+
+### 解决方法：
+## （1） SGD + Momentum（动量）
+解决问题：③ ④
+可以利用动量冲出鞍部，并能抵消一部分噪声
+
+SGD：
+$$w_{t+1} = w_t - \alpha \nabla f(w_t)$$
+
+SGD + Momentum：
+$$v_{t+1} = \rho v_t + \nabla f(w_t)$$
+$$w_{t+1} = w_t - \alpha v_{t+1}$$
+
+```python
+vx = 0
+while True:
+    dx = compute_gradient(x)
+    vx = rho * vx + dx
+    x -= learning_rate * vx
+```
+
+## （2）RMSProp
+
+```python
+grad_squared = 0
+while True:
+    dx = compute_gradient(x)
+    grad_squared = decay_rate * grad_squared + (1 - decay_rate) * dx * dx
+    x -= learning_rate * dx / (np.sqrt(grad_squared) + 1e-7)
+```
+平坦区域步长更大，陡峭区域步长更短
+
+## （3）Adam (almost)
+Momentum + RMSProp
