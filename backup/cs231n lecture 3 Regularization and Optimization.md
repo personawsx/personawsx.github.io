@@ -112,3 +112,50 @@ while True:
 
 ## （3）Adam (almost)
 Momentum + RMSProp
+```python
+first_moment = 0
+second_moment = 0
+while True:
+    dx = compute_gradient(x)
+    first_moment = beta1 * first_moment + (1 - beta1) * dx
+    second_moment = beta2 * second_moment + (1 - beta2) * dx * dx
+    x -= learning_rate * first_moment / (np.sqrt(second_moment) + 1e-7)
+```
+一般beta2取接近1的值，上述代码中会导致second_moment趋于0，导致开始的步长x极大
+优化版本：
+```python
+first_moment = 0
+second_moment = 0
+for t in range(1, num_iterations):
+    dx = compute_gradient(x)
+    first_moment = beta1 * first_moment + (1 - beta1) * dx
+    second_moment = beta2 * second_moment + (1 - beta2) * dx * dx
+    first_unbias = first_moment / (1 - beta1 ** t)
+    second_unbias = second_moment / (1 - beta2 ** t)
+    x -= learning_rate * first_unbias / (np.sqrt(second_unbias) + 1e-7)
+```
+### （4）AdamW（防止正则项干扰梯度下降）
+普通Adam在进行梯度下降时包含了正则项部分，但一般希望动量只依赖损失函数，所以在AdamW中，选择将正则项排除在梯度下降的环节，梯度下降完成后，再加上正则项部分。
+
+# 4、Learning Rate Decay
+### （1）学习率衰减调度策略
+### Step（分段阶梯衰减）
+在固定轮次降低学习率。
+例：ResNet 标准配置，在第30、60、90轮后，将学习率乘以0.1。
+
+### Cosine（余弦退火衰减）
+$$\alpha_t = \frac{1}{2}\alpha_0 \big(1 + \cos(\frac{t\pi}{T})\big)$$
+
+### Linear（线性衰减）
+$$\alpha_t = \alpha_0 \big(1 - \frac{t}{T}\big)$$
+
+### Inverse sqrt（平方根倒数衰减）
+$$\alpha_t = \frac{\alpha_0}{\sqrt{t}}$$
+
+### 参数说明
+- $\alpha_0$：初始学习率
+- $\alpha_t$：第 $t$ 轮的学习率
+- $T$：总训练轮数（epochs）
+
+### （2）Linear warmup
+High initial learning rates can make loss explode; linearly increasing learning rate from 0 over the first ~5,000 iterations can prevent this.
