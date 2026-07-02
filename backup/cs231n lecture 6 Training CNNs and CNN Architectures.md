@@ -252,8 +252,8 @@ $p(z)$：随机变量 $z$ 的概率分布
 遍历多组学习率，快速迭代1~5轮，筛选出损失稳定下降的学习率区间；
 学习率过大：损失震荡、不下降；学习率过小：下降极慢，收敛耗时过长。
 
-### Step 4: Coarse grid of hyperparams, train for ~1-5 epochs 粗粒度网格搜索
-搭建大范围超参网格（学习率、权重衰减、dropout概率、batch size等），每组仅训练1~5个epoch快速筛除无效组合，缩小候选区间。
+### Step 4: Coarse grid of hyperparams, train for ~1-5 epochs 
+搭建大范围超参网格（学习率、权重衰减、dropout概率、batch size等），每组仅训练1~5个epoch快速缩小候选区间。
 
 ### Step 5: Refine grid, train longer 细粒度网格搜索
 基于粗筛结果，缩小超参取值范围，使用更密集的参数间隔，完整训练多轮，选出最优超参组合。
@@ -262,10 +262,14 @@ $p(z)$：随机变量 $z$ 的概率分布
 训练完成后通过精度曲线判断模型状态（欠拟合/正常/过拟合），针对性调整模型、正则化、数据量。
 
 <img width="585" height="348" alt="Image" src="https://github.com/user-attachments/assets/67c896db-0b6d-4ed6-83e1-7d2683d05efb" />
+
 训练、验证曲线无明显gap，两者同步缓慢上涨，未出现平台；模型还未收敛，训练轮次不足；增加训练epoch，延长训练时间。
 
 <img width="665" height="352" alt="Image" src="https://github.com/user-attachments/assets/7e469d1c-409f-4616-9dd0-084aee585be3" />
+
 训练与验证精度差距持续拉大，验证集精度后期下滑；模型泛化能力差； 增强正则化或者 扩充训练数据集规模。
+
 <img width="645" height="343" alt="Image" src="https://github.com/user-attachments/assets/079cbee1-458e-4a92-a3e5-5860dc781569" />
+
 训练、验证精度都偏低，两条曲线几乎无间隙；模型容量不足，无法捕捉数据特征；
  延长训练轮次， 增大模型规模（加深网络、增加通道数）或者适当调大学习率，减少正则化强度。
