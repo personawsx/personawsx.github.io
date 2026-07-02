@@ -1,5 +1,39 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>wsx的博客</title><link>https://personawsx.github.io</link><description>我是wsx，北邮研究生</description><copyright>wsx的博客</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://pic1.zhimg.com/v2-74b717b67bc16a35401be75a7dbc9c00_1440w.jpg</url><title>avatar</title><link>https://personawsx.github.io</link></image><lastBuildDate>Thu, 02 Jul 2026 15:02:30 +0000</lastBuildDate><managingEditor>wsx的博客</managingEditor><ttl>60</ttl><webMaster>wsx的博客</webMaster><item><title>cs231n lecture 5 Image Classification with CNNs</title><link>https://personawsx.github.io/post/cs231n%20lecture%205%20Image%20Classification%20with%20CNNs.html</link><description># 1、Last Time: Neural Networks
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>wsx的博客</title><link>https://personawsx.github.io</link><description>我是wsx，北邮研究生</description><copyright>wsx的博客</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://pic1.zhimg.com/v2-74b717b67bc16a35401be75a7dbc9c00_1440w.jpg</url><title>avatar</title><link>https://personawsx.github.io</link></image><lastBuildDate>Thu, 02 Jul 2026 17:53:16 +0000</lastBuildDate><managingEditor>wsx的博客</managingEditor><ttl>60</ttl><webMaster>wsx的博客</webMaster><item><title>cs231n lecture 6 Training CNNs and CNN Architectures</title><link>https://personawsx.github.io/post/cs231n%20lecture%206%20Training%20CNNs%20and%20CNN%20Architectures.html</link><description># Lecture Overview – Two Broad Sets of Topics
+# 课程总览：两大核心主题模块
+
+# 一、How to build CNNs? 如何搭建卷积神经网络
+（1）Layers in CNNs：卷积网络各类层（卷积层、池化层、全连接层等）
+（2）Activation Functions：激活函数（ReLU等非线性变换）
+（3）CNN Architectures：经典CNN网络结构（LeNet、AlexNet、VGG等）
+（4） Weight Initialization：权重初始化方法
+
+# 二、How to train CNNs? 如何训练卷积神经网络
+（1）Data Preprocessing：数据预处理
+（2）Data augmentation：数据增强
+（3）Transfer Learning：迁移学习
+（4）Hyperparameter Selection：超参数选择
+
+# 1、Normalization
+
+&lt;img width='798' height='245' alt='Image' src='https://github.com/user-attachments/assets/d775b293-8d2c-4df4-a49c-d5d72116c7b2' /&gt;
+
+#### 维度字母释义
+$N$：Batch 批量样本数
+$C$：Channel 通道数
+$H$：Height 特征图高度
+$W$：Width 特征图宽度
+
+#### 四种归一化统计区间
+（1）BatchNorm：同一通道，跨全部样本 N,H,W
+（2）LayerNorm：单样本，跨全部通道 C,H,W
+（3）InstanceNorm：单样本单通道，仅 H,W
+（4）GroupNorm：单样本分通道组，每组内 H,W
+
+# 2、Regularization：Dropout
+### （1）训练阶段原理
+In each forward pass, randomly set some neurons to zero
+每一轮前向传播时，随机将一部分神经元输出置0，使其失效。</description><guid isPermaLink="true">https://personawsx.github.io/post/cs231n%20lecture%206%20Training%20CNNs%20and%20CNN%20Architectures.html</guid><pubDate>Thu, 02 Jul 2026 17:52:47 +0000</pubDate></item><item><title>cs231n lecture 5 Image Classification with CNNs</title><link>https://personawsx.github.io/post/cs231n%20lecture%205%20Image%20Classification%20with%20CNNs.html</link><description># 1、Last Time: Neural Networks
 ### （1）Linear score function（单层线性分类器）
 $$f = Wx$$
 
