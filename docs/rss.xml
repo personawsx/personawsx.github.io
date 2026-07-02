@@ -1,5 +1,19 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>wsx的博客</title><link>https://personawsx.github.io</link><description>我是wsx，北邮在读学生一枚</description><copyright>wsx的博客</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://pic1.zhimg.com/v2-74b717b67bc16a35401be75a7dbc9c00_1440w.jpg</url><title>avatar</title><link>https://personawsx.github.io</link></image><lastBuildDate>Thu, 02 Jul 2026 03:23:40 +0000</lastBuildDate><managingEditor>wsx的博客</managingEditor><ttl>60</ttl><webMaster>wsx的博客</webMaster><item><title>cs231n lecture 3 Regularization and Optimization</title><link>https://personawsx.github.io/post/cs231n%20lecture%203%20Regularization%20and%20Optimization.html</link><description># 1、Regularization 正则化（Prevent the model from doing too well on training data）
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>wsx的博客</title><link>https://personawsx.github.io</link><description>我是wsx，北邮在读学生一枚</description><copyright>wsx的博客</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://pic1.zhimg.com/v2-74b717b67bc16a35401be75a7dbc9c00_1440w.jpg</url><title>avatar</title><link>https://personawsx.github.io</link></image><lastBuildDate>Thu, 02 Jul 2026 09:53:20 +0000</lastBuildDate><managingEditor>wsx的博客</managingEditor><ttl>60</ttl><webMaster>wsx的博客</webMaster><item><title>cs231n lecture 4 Neural Networks and Backpropagation</title><link>https://personawsx.github.io/post/cs231n%20lecture%204%20Neural%20Networks%20and%20Backpropagation.html</link><description># 1、Neural networks
+###  （1）the original linear classifier
+Linear score function:
+$$f = Wx$$
+$$x \in \mathbb{R}^D,\ W \in \mathbb{R}^{C \times D}$$
+D为输入数据的维度，C为输出数据的维度
+### （2）2 layers
+
+2-layer Neural Network
+$$f = W_2 \max(0, W_1 x)$$
+
+$$x \in \mathbb{R}^D,\ W_1 \in \mathbb{R}^{H \times D},\ W_2 \in \mathbb{R}^{C \times H}$$
+### 注：
+max( )是用来建立 $W_1$和 $W_2$之间的非线性关系，此类网络又叫作全连接网络，
+max( )又叫作 activation function（激活函数），activation function通常在中间层进行操作。</description><guid isPermaLink="true">https://personawsx.github.io/post/cs231n%20lecture%204%20Neural%20Networks%20and%20Backpropagation.html</guid><pubDate>Thu, 02 Jul 2026 08:18:35 +0000</pubDate></item><item><title>cs231n lecture 3 Regularization and Optimization</title><link>https://personawsx.github.io/post/cs231n%20lecture%203%20Regularization%20and%20Optimization.html</link><description># 1、Regularization 正则化（Prevent the model from doing too well on training data）
 ### （1）损失函数公式
 $$
 L(W) = \frac{1}{N}\sum_{i=1}^N L_i \big( f(x_i, W), y_i \big) + \lambda R(W)
