@@ -76,6 +76,54 @@ $$
 - $y_t$：当前时刻模型输出
 - $W_{hy}$：隐藏层 → 输出层独立权重矩阵
 
+### （4）Vanilla(-ish) RNN: Concrete Example
+#### 任务说明：
+Manually creating a recurrent network for detecting repeated 1s
+手动构建循环网络，检测序列中连续出现的两个1
+
+### 核心公式（本案例使用ReLU激活）
+
+$$
+h_t = \text{ReLU}(W_{hh}h_{t-1} + W_{xh}x_t)
+$$
+
+$$
+y_t = \text{ReLU}(W_{hy}h_t)
+$$
+
+隐藏向量结构：
+
+$$
+h_t = \begin{pmatrix}
+\text{Current} \\
+\text{Previous} \\
+1
+\end{pmatrix}
+$$
+
+含义：第1维存当前输入、第2维存上一步输入、第3维为常数偏置1
+
+权重矩阵定义代码
+```python
+# 输入x -> 隐藏层权重
+w_xh = np.array([[1], [0], [0]])
+
+# 隐藏层自循环权重（传递历史状态）
+w_hh = np.array([
+    [0, 0, 0],
+    [1, 0, 0],
+    [0, 0, 1]
+])
+
+# 隐藏层 -> 输出层权重（红框标注）
+w_yh = np.array([1, 1, -1])
+# 内部计算等价：Max(Current + Previous - 1, 0)
+
+# 待处理0/1输入序列
+x_seq = [0, 1, 0, 1, 1, 1, 0, 1, 1]
+
+# 初始隐藏状态 h_{t-1}
+h_t_prev = np.array([[0], [0], [1]])
 
 
 
