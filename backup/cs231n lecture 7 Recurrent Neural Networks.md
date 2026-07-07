@@ -124,53 +124,90 @@ x_seq = [0, 1, 0, 1, 1, 1, 0, 1, 1]
 
 # 初始隐藏状态 h_{t-1}
 h_t_prev = np.array([[0], [0], [1]])
+```
+# 2、怎么计算梯度？
+a：多对多
 
-## 时序推演示例：连续输入 `[1, 1]` 两步完整计算
-### 已知固定参数
+<img width="1002" height="521" alt="Image" src="https://github.com/user-attachments/assets/374778d0-c516-46a4-9e6c-517a745f4fc9" />
+
+b：多对一（有时使用最终隐藏状态，有时使用每个时间步的隐藏状态）
+
+<img width="990" height="500" alt="Image" src="https://github.com/user-attachments/assets/bcc992e1-61bb-4f14-87a5-ea765308a9a7" />
+
+c：一对多 （后续每个时间步的输入 = 上一步输出 $$y_{t-1}$$，有时可以设为定值）
+
+<img width="910" height="498" alt="Image" src="https://github.com/user-attachments/assets/45d68ea0-1cee-4e19-aab1-d1790f23519c" />
+
+### Problem：
+当序列过长时，会导致GPU内存不足。
+
+### Solution：Truncated Backpropagation through time（截断时序反向传播 Truncated BPTT）
+前向：整条序列从头到尾全部计算，前面时序的隐藏状态持续向后传递，不丢弃上下文；
+反向：梯度仅在当前窗口内向左传播，窗口左侧更早时间步不参与本轮权重更新。
+#### （1）多对一（单输出，仅全局末尾 1 个 Loss）
+Loss 仅存在整条序列最后一步；
+梯度从末尾唯一 Loss 向左回传，最多传窗口长度步数；
+只有最后一段窗口提供梯度更新权重，前面时序无梯度贡献。
+#### （2）多对多（逐时刻输出，每步独立 Loss）
+窗口内每个时间步都有独立 Loss，最终多个叠加；
+梯度仅在当前窗口内部反向计算，窗口左侧时序梯度截断丢弃。
+
+# 3、RNN tradeoffs
+## RNN Advantages:
+- Can process any length of the input (no context length)
+- Computation for step $t$ can (in theory) use information from many steps back
+- Model size does not increase for longer input
+- The same weights are applied on every timestep, so there is symmetry in how inputs are processed.
+
+## RNN Disadvantages:
+- Recurrent computation is slow
+- In practice, difficult to access information from many steps back
+
+# 4、RNN Variants: Long Short Term Memory (LSTM)
+## 1. Vanilla RNN
+
 $$
-w_{xh} = \begin{bmatrix}1\\0\\0\end{bmatrix},\quad
-w_{hh} = \begin{bmatrix}0&0&0\\1&0&0\\0&0&1\end{bmatrix},\quad
-w_{yh} = \begin{bmatrix}1 & 1 & -1\end{bmatrix}
-$$
-初始隐藏状态：
-$$
-h_{t\_prev} = \begin{bmatrix}0\\0\\1\end{bmatrix}
+h_t = \tanh\left( W \begin{pmatrix} h_{t-1} \\ x_t \end{pmatrix} \right)
 $$
 
----
-### 第一步：输入 $x=1$
-1. 输入映射：$w_{xh} @ x = \begin{bmatrix}1\\0\\0\end{bmatrix} \times 1 = \begin{bmatrix}1\\0\\0\end{bmatrix}$，将当前输入1存入Current维度；
-2. 历史状态传递：$w_{hh} @ h_{t\_prev} = \begin{bmatrix}0\\0\\1\end{bmatrix}$，上一步无历史输入，Previous保持0；
-3. 融合并经过ReLU得到隐藏状态：
-$$
-h_t = \mathrm{ReLU}\left( w_{hh}h_{t\_prev} + w_{xh}x \right)
-= \mathrm{ReLU}\left( \begin{bmatrix}0\\0\\1\end{bmatrix}+\begin{bmatrix}1\\0\\0\end{bmatrix} \right)
-= \begin{bmatrix}1\\0\\1\end{bmatrix}
-$$
-4. 输出计算：
-$$
-y_t = \mathrm{ReLU}\big(w_{yh} @ h_t\big)
-= \mathrm{ReLU}\big(1\times1 + 1\times0 + (-1)\times1\big)
-= \mathrm{ReLU}(0) = 0
-$$
-仅单个1，无连续1，输出为0，符合预期。
+## 2. LSTM 
+### 四元门控向量计算
 
----
-### 第二步：输入 $x=1$（此时 $h_{t\_prev}=\begin{bmatrix}1\\0\\1\end{bmatrix}$）
-1. 输入映射：$w_{xh} @ x = \begin{bmatrix}1\\0\\0\end{bmatrix}$，更新Current为当前输入1；
-2. 历史状态传递：$w_{hh} @ h_{t\_prev} = \begin{bmatrix}0\\1\\1\end{bmatrix}$，上一步的Current=1自动移位到Previous维度；
-3. 融合并经过ReLU得到隐藏状态：
 $$
-h_t = \mathrm{ReLU}\left( \begin{bmatrix}0\\1\\1\end{bmatrix}+\begin{bmatrix}1\\0\\0\end{bmatrix} \right)
-= \begin{bmatrix}1\\1\\1\end{bmatrix}
+\begin{pmatrix}
+i \\ f \\ o \\ g
+\end{pmatrix}
+=
+\begin{pmatrix}
+\sigma \\
+\sigma \\
+\sigma \\
+\tanh
+\end{pmatrix}
+W
+\begin{pmatrix}
+h_{t-1} \\ x_t
+\end{pmatrix}
 $$
-4. 输出计算：
-$$
-y_t = \mathrm{ReLU}\big(w_{yh} @ h_t\big)
-= \mathrm{ReLU}\big(1\times1 + 1\times1 + (-1)\times1\big)
-= \mathrm{ReLU}(1) = 1
-$$
-当前与前一位均为1，识别到连续1，输出为1。
 
+### 细胞状态更新（记忆传送带）
+$$
+c_t = f \odot c_{t-1} + i \odot g
+$$
 
+### 当前时刻隐藏状态输出
+$$
+h_t = o \odot \tanh(c_t)
+$$
 
+### 符号说明
+- $i$：输入门（Input gate）
+- $f$：遗忘门（Forget gate）
+- $o$：输出门（Output gate）
+- $g$：候选细胞状态（候选记忆）
+- $\sigma$：Sigmoid激活函数，输出0~1权重控制信息流通
+- $\odot$：逐元素哈达玛积（向量对应位置相乘）
+- $c_t$：LSTM细胞状态（长期记忆通道）
+- $h_t$：当前时刻隐藏输出（短期记忆）
+- $h_{t-1}$：上一时刻隐藏状态
+- $x_t$：当前时刻输入

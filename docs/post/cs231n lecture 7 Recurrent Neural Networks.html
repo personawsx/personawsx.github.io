@@ -216,56 +216,92 @@ $$</p>
 <span class="pl-s1">x_seq</span> <span class="pl-c1">=</span> [<span class="pl-c1">0</span>, <span class="pl-c1">1</span>, <span class="pl-c1">0</span>, <span class="pl-c1">1</span>, <span class="pl-c1">1</span>, <span class="pl-c1">1</span>, <span class="pl-c1">0</span>, <span class="pl-c1">1</span>, <span class="pl-c1">1</span>]
 
 <span class="pl-c"># 初始隐藏状态 h_{t-1}</span>
-<span class="pl-s1">h_t_prev</span> <span class="pl-c1">=</span> <span class="pl-s1">np</span>.<span class="pl-c1">array</span>([[<span class="pl-c1">0</span>], [<span class="pl-c1">0</span>], [<span class="pl-c1">1</span>]])
-
-<span class="pl-c">## 时序推演示例：连续输入 `[1, 1]` 两步完整计算</span>
-<span class="pl-c">### 已知固定参数</span>
-$$
-<span class="pl-s1">w_</span>{<span class="pl-s1">xh</span>} <span class="pl-c1">=</span> \<span class="pl-s1">begin</span>{<span class="pl-s1">bmatrix</span>}<span class="pl-c1">1</span><span class="pl-cce">\\</span><span class="pl-c1">0</span><span class="pl-cce">\\</span><span class="pl-c1">0</span>\<span class="pl-s1">end</span>{<span class="pl-s1">bmatrix</span>},\<span class="pl-s1">quad</span>
-<span class="pl-s1">w_</span>{<span class="pl-s1">hh</span>} <span class="pl-c1">=</span> \<span class="pl-s1">begin</span>{<span class="pl-s1">bmatrix</span>}<span class="pl-c1">0</span><span class="pl-c1">&amp;</span><span class="pl-c1">0</span><span class="pl-c1">&amp;</span><span class="pl-c1">0</span><span class="pl-cce">\\</span><span class="pl-c1">1</span><span class="pl-c1">&amp;</span><span class="pl-c1">0</span><span class="pl-c1">&amp;</span><span class="pl-c1">0</span><span class="pl-cce">\\</span><span class="pl-c1">0</span><span class="pl-c1">&amp;</span><span class="pl-c1">0</span><span class="pl-c1">&amp;</span><span class="pl-c1">1</span>\<span class="pl-s1">end</span>{<span class="pl-s1">bmatrix</span>},\<span class="pl-s1">quad</span>
-<span class="pl-s1">w_</span>{<span class="pl-s1">yh</span>} <span class="pl-c1">=</span> \<span class="pl-s1">begin</span>{<span class="pl-s1">bmatrix</span>}<span class="pl-c1">1</span> <span class="pl-c1">&amp;</span> <span class="pl-c1">1</span> <span class="pl-c1">&amp;</span> <span class="pl-c1">-</span><span class="pl-c1">1</span>\<span class="pl-s1">end</span>{<span class="pl-s1">bmatrix</span>}
-$$
-<span class="pl-s1">初始隐藏状态</span>：
-$$
-<span class="pl-s1">h_</span>{<span class="pl-s1">t</span>\<span class="pl-s1">_prev</span>} <span class="pl-c1">=</span> \<span class="pl-s1">begin</span>{<span class="pl-s1">bmatrix</span>}<span class="pl-c1">0</span><span class="pl-cce">\\</span><span class="pl-c1">0</span><span class="pl-cce">\\</span><span class="pl-c1">1</span>\<span class="pl-s1">end</span>{<span class="pl-s1">bmatrix</span>}
-$$
-
-<span class="pl-c1">-</span><span class="pl-c1">-</span><span class="pl-c1">-</span>
-<span class="pl-c">### 第一步：输入 $x=1$</span>
-<span class="pl-c1">1.</span> <span class="pl-s1">输入映射</span>：$<span class="pl-s1">w_</span>{<span class="pl-s1">xh</span>} @ <span class="pl-s1">x</span> <span class="pl-c1">=</span> \<span class="pl-s1">begin</span>{<span class="pl-s1">bmatrix</span>}<span class="pl-c1">1</span><span class="pl-cce">\\</span><span class="pl-c1">0</span><span class="pl-cce">\\</span><span class="pl-c1">0</span>\<span class="pl-s1">end</span>{<span class="pl-s1">bmatrix</span>} \<span class="pl-s1">times</span> <span class="pl-c1">1</span> <span class="pl-c1">=</span> \<span class="pl-s1">begin</span>{<span class="pl-s1">bmatrix</span>}<span class="pl-c1">1</span><span class="pl-cce">\\</span><span class="pl-c1">0</span><span class="pl-cce">\\</span><span class="pl-c1">0</span>\<span class="pl-s1">end</span>{<span class="pl-s1">bmatrix</span>}$，<span class="pl-s1">将当前输入1存入Current维度</span>；
-<span class="pl-c1">2.</span> <span class="pl-s1">历史状态传递</span>：$<span class="pl-s1">w_</span>{<span class="pl-s1">hh</span>} @ <span class="pl-s1">h_</span>{<span class="pl-s1">t</span>\<span class="pl-s1">_prev</span>} <span class="pl-c1">=</span> \<span class="pl-s1">begin</span>{<span class="pl-s1">bmatrix</span>}<span class="pl-c1">0</span><span class="pl-cce">\\</span><span class="pl-c1">0</span><span class="pl-cce">\\</span><span class="pl-c1">1</span>\<span class="pl-s1">end</span>{<span class="pl-s1">bmatrix</span>}$，<span class="pl-s1">上一步无历史输入</span>，<span class="pl-v">Previous保持0</span>；
-<span class="pl-c1">3.</span> <span class="pl-s1">融合并经过ReLU得到隐藏状态</span>：
-$$
-<span class="pl-s1">h_t</span> <span class="pl-c1">=</span> \<span class="pl-s1">mathrm</span>{<span class="pl-v">ReLU</span>}\<span class="pl-en">left</span>( <span class="pl-s1">w_</span>{<span class="pl-s1">hh</span>}<span class="pl-s1">h_</span>{<span class="pl-s1">t</span>\<span class="pl-s1">_prev</span>} <span class="pl-c1">+</span> <span class="pl-s1">w_</span>{<span class="pl-s1">xh</span>}<span class="pl-s1">x</span> \<span class="pl-s1">right</span>)
-<span class="pl-c1">=</span> \<span class="pl-s1">mathrm</span>{<span class="pl-v">ReLU</span>}\<span class="pl-en">left</span>( \<span class="pl-s1">begin</span>{<span class="pl-s1">bmatrix</span>}<span class="pl-c1">0</span><span class="pl-cce">\\</span><span class="pl-c1">0</span><span class="pl-cce">\\</span><span class="pl-c1">1</span>\<span class="pl-s1">end</span>{<span class="pl-s1">bmatrix</span>}<span class="pl-c1">+</span><span class="pl-cce">\b</span><span class="pl-s1">egin</span>{<span class="pl-s1">bmatrix</span>}<span class="pl-c1">1</span><span class="pl-cce">\\</span><span class="pl-c1">0</span><span class="pl-cce">\\</span><span class="pl-c1">0</span>\<span class="pl-s1">end</span>{<span class="pl-s1">bmatrix</span>} \<span class="pl-s1">right</span>)
-<span class="pl-c1">=</span> \<span class="pl-s1">begin</span>{<span class="pl-s1">bmatrix</span>}<span class="pl-c1">1</span><span class="pl-cce">\\</span><span class="pl-c1">0</span><span class="pl-cce">\\</span><span class="pl-c1">1</span>\<span class="pl-s1">end</span>{<span class="pl-s1">bmatrix</span>}
-$$
-<span class="pl-c1">4.</span> <span class="pl-s1">输出计算</span>：
-$$
-<span class="pl-s1">y_t</span> <span class="pl-c1">=</span> \<span class="pl-s1">mathrm</span>{<span class="pl-v">ReLU</span>}<span class="pl-cce">\b</span><span class="pl-en">ig</span>(<span class="pl-s1">w_</span>{<span class="pl-s1">yh</span>} @ <span class="pl-s1">h_t</span><span class="pl-cce">\b</span><span class="pl-s1">ig</span>)
-<span class="pl-c1">=</span> \<span class="pl-s1">mathrm</span>{<span class="pl-v">ReLU</span>}<span class="pl-cce">\b</span><span class="pl-en">ig</span>(<span class="pl-c1">1</span><span class="pl-cce">\t</span><span class="pl-s1">imes1</span> <span class="pl-c1">+</span> <span class="pl-c1">1</span><span class="pl-cce">\t</span><span class="pl-s1">imes0</span> <span class="pl-c1">+</span> (<span class="pl-c1">-</span><span class="pl-c1">1</span>)<span class="pl-cce">\t</span><span class="pl-s1">imes1</span><span class="pl-cce">\b</span><span class="pl-s1">ig</span>)
-<span class="pl-c1">=</span> \<span class="pl-s1">mathrm</span>{<span class="pl-v">ReLU</span>}(<span class="pl-c1">0</span>) <span class="pl-c1">=</span> <span class="pl-c1">0</span>
-$$
-<span class="pl-s1">仅单个1</span>，<span class="pl-s1">无连续1</span>，<span class="pl-s1">输出为0</span>，<span class="pl-s1">符合预期</span>。
-
-<span class="pl-c1">-</span><span class="pl-c1">-</span><span class="pl-c1">-</span>
-<span class="pl-c">### 第二步：输入 $x=1$（此时 $h_{t\_prev}=\begin{bmatrix}1\\0\\1\end{bmatrix}$）</span>
-<span class="pl-c1">1.</span> <span class="pl-s1">输入映射</span>：$<span class="pl-s1">w_</span>{<span class="pl-s1">xh</span>} @ <span class="pl-s1">x</span> <span class="pl-c1">=</span> \<span class="pl-s1">begin</span>{<span class="pl-s1">bmatrix</span>}<span class="pl-c1">1</span><span class="pl-cce">\\</span><span class="pl-c1">0</span><span class="pl-cce">\\</span><span class="pl-c1">0</span>\<span class="pl-s1">end</span>{<span class="pl-s1">bmatrix</span>}$，<span class="pl-s1">更新Current为当前输入1</span>；
-<span class="pl-c1">2.</span> <span class="pl-s1">历史状态传递</span>：$<span class="pl-s1">w_</span>{<span class="pl-s1">hh</span>} @ <span class="pl-s1">h_</span>{<span class="pl-s1">t</span>\<span class="pl-s1">_prev</span>} <span class="pl-c1">=</span> \<span class="pl-s1">begin</span>{<span class="pl-s1">bmatrix</span>}<span class="pl-c1">0</span><span class="pl-cce">\\</span><span class="pl-c1">1</span><span class="pl-cce">\\</span><span class="pl-c1">1</span>\<span class="pl-s1">end</span>{<span class="pl-s1">bmatrix</span>}$，<span class="pl-s1">上一步的Current</span><span class="pl-c1">=</span><span class="pl-c1">1</span><span class="pl-s1">自动移位到Previous维度</span>；
-<span class="pl-c1">3.</span> <span class="pl-s1">融合并经过ReLU得到隐藏状态</span>：
-$$
-<span class="pl-s1">h_t</span> <span class="pl-c1">=</span> \<span class="pl-s1">mathrm</span>{<span class="pl-v">ReLU</span>}\<span class="pl-en">left</span>( \<span class="pl-s1">begin</span>{<span class="pl-s1">bmatrix</span>}<span class="pl-c1">0</span><span class="pl-cce">\\</span><span class="pl-c1">1</span><span class="pl-cce">\\</span><span class="pl-c1">1</span>\<span class="pl-s1">end</span>{<span class="pl-s1">bmatrix</span>}<span class="pl-c1">+</span><span class="pl-cce">\b</span><span class="pl-s1">egin</span>{<span class="pl-s1">bmatrix</span>}<span class="pl-c1">1</span><span class="pl-cce">\\</span><span class="pl-c1">0</span><span class="pl-cce">\\</span><span class="pl-c1">0</span>\<span class="pl-s1">end</span>{<span class="pl-s1">bmatrix</span>} \<span class="pl-s1">right</span>)
-<span class="pl-c1">=</span> \<span class="pl-s1">begin</span>{<span class="pl-s1">bmatrix</span>}<span class="pl-c1">1</span><span class="pl-cce">\\</span><span class="pl-c1">1</span><span class="pl-cce">\\</span><span class="pl-c1">1</span>\<span class="pl-s1">end</span>{<span class="pl-s1">bmatrix</span>}
-$$
-<span class="pl-c1">4.</span> <span class="pl-s1">输出计算</span>：
-$$
-<span class="pl-s1">y_t</span> <span class="pl-c1">=</span> \<span class="pl-s1">mathrm</span>{<span class="pl-v">ReLU</span>}<span class="pl-cce">\b</span><span class="pl-en">ig</span>(<span class="pl-s1">w_</span>{<span class="pl-s1">yh</span>} @ <span class="pl-s1">h_t</span><span class="pl-cce">\b</span><span class="pl-s1">ig</span>)
-<span class="pl-c1">=</span> \<span class="pl-s1">mathrm</span>{<span class="pl-v">ReLU</span>}<span class="pl-cce">\b</span><span class="pl-en">ig</span>(<span class="pl-c1">1</span><span class="pl-cce">\t</span><span class="pl-s1">imes1</span> <span class="pl-c1">+</span> <span class="pl-c1">1</span><span class="pl-cce">\t</span><span class="pl-s1">imes1</span> <span class="pl-c1">+</span> (<span class="pl-c1">-</span><span class="pl-c1">1</span>)<span class="pl-cce">\t</span><span class="pl-s1">imes1</span><span class="pl-cce">\b</span><span class="pl-s1">ig</span>)
-<span class="pl-c1">=</span> \<span class="pl-s1">mathrm</span>{<span class="pl-v">ReLU</span>}(<span class="pl-c1">1</span>) <span class="pl-c1">=</span> <span class="pl-c1">1</span>
-$$
-<span class="pl-s1">当前与前一位均为1</span>，<span class="pl-s1">识别到连续1</span>，<span class="pl-s1">输出为1</span>。
-
-</pre></div></div>
+<span class="pl-s1">h_t_prev</span> <span class="pl-c1">=</span> <span class="pl-s1">np</span>.<span class="pl-c1">array</span>([[<span class="pl-c1">0</span>], [<span class="pl-c1">0</span>], [<span class="pl-c1">1</span>]])</pre></div>
+<h1>2、怎么计算梯度？</h1>
+<p>a：多对多</p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/374778d0-c516-46a4-9e6c-517a745f4fc9"><img width="1002" height="521" alt="Image" src="https://github.com/user-attachments/assets/374778d0-c516-46a4-9e6c-517a745f4fc9" style="max-width: 100%; height: auto; max-height: 521px;; aspect-ratio: 1002 / 521; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>b：多对一（有时使用最终隐藏状态，有时使用每个时间步的隐藏状态）</p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/bcc992e1-61bb-4f14-87a5-ea765308a9a7"><img width="990" height="500" alt="Image" src="https://github.com/user-attachments/assets/bcc992e1-61bb-4f14-87a5-ea765308a9a7" style="max-width: 100%; height: auto; max-height: 500px;; aspect-ratio: 990 / 500; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>c：一对多 （后续每个时间步的输入 = 上一步输出 $$y_{t-1}$$，有时可以设为定值）</p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/45d68ea0-1cee-4e19-aab1-d1790f23519c"><img width="910" height="498" alt="Image" src="https://github.com/user-attachments/assets/45d68ea0-1cee-4e19-aab1-d1790f23519c" style="max-width: 100%; height: auto; max-height: 498px;; aspect-ratio: 910 / 498; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<h3>Problem：</h3>
+<p>当序列过长时，会导致GPU内存不足。</p>
+<h3>Solution：Truncated Backpropagation through time（截断时序反向传播 Truncated BPTT）</h3>
+<p>前向：整条序列从头到尾全部计算，前面时序的隐藏状态持续向后传递，不丢弃上下文；<br>
+反向：梯度仅在当前窗口内向左传播，窗口左侧更早时间步不参与本轮权重更新。</p>
+<h4>（1）多对一（单输出，仅全局末尾 1 个 Loss）</h4>
+<p>Loss 仅存在整条序列最后一步；<br>
+梯度从末尾唯一 Loss 向左回传，最多传窗口长度步数；<br>
+只有最后一段窗口提供梯度更新权重，前面时序无梯度贡献。</p>
+<h4>（2）多对多（逐时刻输出，每步独立 Loss）</h4>
+<p>窗口内每个时间步都有独立 Loss，最终多个叠加；<br>
+梯度仅在当前窗口内部反向计算，窗口左侧时序梯度截断丢弃。</p>
+<h1>3、RNN tradeoffs</h1>
+<h2>RNN Advantages:</h2>
+<ul>
+<li>Can process any length of the input (no context length)</li>
+<li>Computation for step $t$ can (in theory) use information from many steps back</li>
+<li>Model size does not increase for longer input</li>
+<li>The same weights are applied on every timestep, so there is symmetry in how inputs are processed.</li>
+</ul>
+<h2>RNN Disadvantages:</h2>
+<ul>
+<li>Recurrent computation is slow</li>
+<li>In practice, difficult to access information from many steps back</li>
+</ul>
+<h1>4、RNN Variants: Long Short Term Memory (LSTM)</h1>
+<h2>1. Vanilla RNN</h2>
+<p>$$
+h_t = \tanh\left( W \begin{pmatrix} h_{t-1} \ x_t \end{pmatrix} \right)
+$$</p>
+<h2>2. LSTM</h2>
+<h3>四元门控向量计算</h3>
+<h1>$$<br>
+\begin{pmatrix}<br>
+i \ f \ o \ g<br>
+\end{pmatrix}</h1>
+<p>\begin{pmatrix}<br>
+\sigma \<br>
+\sigma \<br>
+\sigma \<br>
+\tanh<br>
+\end{pmatrix}<br>
+W<br>
+\begin{pmatrix}<br>
+h_{t-1} \ x_t<br>
+\end{pmatrix}<br>
+$$</p>
+<h3>细胞状态更新（记忆传送带）</h3>
+<p>$$
+c_t = f \odot c_{t-1} + i \odot g
+$$</p>
+<h3>当前时刻隐藏状态输出</h3>
+<p>$$
+h_t = o \odot \tanh(c_t)
+$$</p>
+<h3>符号说明</h3>
+<ul>
+<li>
+$i$：输入门（Input gate）</li>
+<li>
+$f$：遗忘门（Forget gate）</li>
+<li>
+$o$：输出门（Output gate）</li>
+<li>
+$g$：候选细胞状态（候选记忆）</li>
+<li>
+$\sigma$：Sigmoid激活函数，输出0~1权重控制信息流通</li>
+<li>
+$\odot$：逐元素哈达玛积（向量对应位置相乘）</li>
+<li>
+$c_t$：LSTM细胞状态（长期记忆通道）</li>
+<li>
+$h_t$：当前时刻隐藏输出（短期记忆）</li>
+<li>
+$h_{t-1}$：上一时刻隐藏状态</li>
+<li>
+$x_t$：当前时刻输入</li>
+</ul></div>
 <div style="font-size:small;margin-top:8px;float:right;"></div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
