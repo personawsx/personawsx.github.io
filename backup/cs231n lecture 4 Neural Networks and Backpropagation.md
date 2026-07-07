@@ -109,6 +109,7 @@ when Computational graphs are too complex，solution：Backpropagation
 <img width="1132" height="411" alt="Image" src="https://github.com/user-attachments/assets/58ef2920-ba35-42ae-b3d2-30b10108a680" />
 也可以引入sigmoid函数简化化简：
 <img width="1422" height="677" alt="Image" src="https://github.com/user-attachments/assets/2927a5a6-bf13-4a29-ab20-5202b5b877c9" />
+
 ### Patterns in gradient flow：
 
 <img width="1867" height="1052" alt="Image" src="https://github.com/user-attachments/assets/516f1a67-9f47-4184-a27a-d98df51f4d13" />
@@ -139,7 +140,7 @@ when Computational graphs are too complex，solution：Backpropagation
 
 （1）基础前提
 损失 L 始终是标量；
-$$\frac{\partial L}{\partial X} \text{ 的形状} = \text{原变量 } X \text{ 的形状}$$。
+$$\frac{\partial L}{\partial X} \text{ 的形状} = \text{原变量 } X \text{ 的形状}$$
 （2）梯度定义
 上游梯度 Upstream gradient：∂L/∂z，输出z传回的梯度，与输出有相同形状；
 下游梯度 Downstream gradient：∂L/∂x、∂L/∂y，输入的梯度，与输入有相同形状。

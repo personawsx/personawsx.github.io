@@ -199,7 +199,7 @@ $$</p>
 <p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/58ef2920-ba35-42ae-b3d2-30b10108a680"><img width="1132" height="411" alt="Image" src="https://github.com/user-attachments/assets/58ef2920-ba35-42ae-b3d2-30b10108a680" style="max-width: 100%; height: auto; max-height: 411px;; aspect-ratio: 1132 / 411; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
 也可以引入sigmoid函数简化化简：
 <p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/2927a5a6-bf13-4a29-ab20-5202b5b877c9"><img width="1422" height="677" alt="Image" src="https://github.com/user-attachments/assets/2927a5a6-bf13-4a29-ab20-5202b5b877c9" style="max-width: 100%; height: auto; max-height: 677px;; aspect-ratio: 1422 / 677; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
-### Patterns in gradient flow：
+<h3>Patterns in gradient flow：</h3>
 <p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/516f1a67-9f47-4184-a27a-d98df51f4d13"><img width="1867" height="1052" alt="Image" src="https://github.com/user-attachments/assets/516f1a67-9f47-4184-a27a-d98df51f4d13" style="max-width: 100%; height: auto; max-height: 1052px;; aspect-ratio: 1867 / 1052; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
 <h3>计算图四大基础门反向梯度规则</h3>
 <h3>（1）add gate 加法门（梯度分发器）</h3>
@@ -229,7 +229,7 @@ $$</p>
 <h3>矩阵/张量反向传播核心要点：</h3>
 <p>（1）基础前提<br>
 损失 L 始终是标量；<br>
-$$\frac{\partial L}{\partial X} \text{ 的形状} = \text{原变量 } X \text{ 的形状}$$。<br>
+$$\frac{\partial L}{\partial X} \text{ 的形状} = \text{原变量 } X \text{ 的形状}$$<br>
 （2）梯度定义<br>
 上游梯度 Upstream gradient：∂L/∂z，输出z传回的梯度，与输出有相同形状；<br>
 下游梯度 Downstream gradient：∂L/∂x、∂L/∂y，输入的梯度，与输入有相同形状。<br>
