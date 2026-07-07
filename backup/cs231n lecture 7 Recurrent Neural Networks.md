@@ -125,6 +125,52 @@ x_seq = [0, 1, 0, 1, 1, 1, 0, 1, 1]
 # 初始隐藏状态 h_{t-1}
 h_t_prev = np.array([[0], [0], [1]])
 
+## 时序推演示例：连续输入 `[1, 1]` 两步完整计算
+### 已知固定参数
+$$
+w_{xh} = \begin{bmatrix}1\\0\\0\end{bmatrix},\quad
+w_{hh} = \begin{bmatrix}0&0&0\\1&0&0\\0&0&1\end{bmatrix},\quad
+w_{yh} = \begin{bmatrix}1 & 1 & -1\end{bmatrix}
+$$
+初始隐藏状态：
+$$
+h_{t\_prev} = \begin{bmatrix}0\\0\\1\end{bmatrix}
+$$
+
+---
+### 第一步：输入 $x=1$
+1. 输入映射：$w_{xh} @ x = \begin{bmatrix}1\\0\\0\end{bmatrix} \times 1 = \begin{bmatrix}1\\0\\0\end{bmatrix}$，将当前输入1存入Current维度；
+2. 历史状态传递：$w_{hh} @ h_{t\_prev} = \begin{bmatrix}0\\0\\1\end{bmatrix}$，上一步无历史输入，Previous保持0；
+3. 融合并经过ReLU得到隐藏状态：
+$$
+h_t = \mathrm{ReLU}\left( w_{hh}h_{t\_prev} + w_{xh}x \right)
+= \mathrm{ReLU}\left( \begin{bmatrix}0\\0\\1\end{bmatrix}+\begin{bmatrix}1\\0\\0\end{bmatrix} \right)
+= \begin{bmatrix}1\\0\\1\end{bmatrix}
+$$
+4. 输出计算：
+$$
+y_t = \mathrm{ReLU}\big(w_{yh} @ h_t\big)
+= \mathrm{ReLU}\big(1\times1 + 1\times0 + (-1)\times1\big)
+= \mathrm{ReLU}(0) = 0
+$$
+仅单个1，无连续1，输出为0，符合预期。
+
+---
+### 第二步：输入 $x=1$（此时 $h_{t\_prev}=\begin{bmatrix}1\\0\\1\end{bmatrix}$）
+1. 输入映射：$w_{xh} @ x = \begin{bmatrix}1\\0\\0\end{bmatrix}$，更新Current为当前输入1；
+2. 历史状态传递：$w_{hh} @ h_{t\_prev} = \begin{bmatrix}0\\1\\1\end{bmatrix}$，上一步的Current=1自动移位到Previous维度；
+3. 融合并经过ReLU得到隐藏状态：
+$$
+h_t = \mathrm{ReLU}\left( \begin{bmatrix}0\\1\\1\end{bmatrix}+\begin{bmatrix}1\\0\\0\end{bmatrix} \right)
+= \begin{bmatrix}1\\1\\1\end{bmatrix}
+$$
+4. 输出计算：
+$$
+y_t = \mathrm{ReLU}\big(w_{yh} @ h_t\big)
+= \mathrm{ReLU}\big(1\times1 + 1\times1 + (-1)\times1\big)
+= \mathrm{ReLU}(1) = 1
+$$
+当前与前一位均为1，识别到连续1，输出为1。
 
 
 
