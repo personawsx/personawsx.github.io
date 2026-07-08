@@ -92,4 +92,12 @@ $c_t=\sum_i a_{t,i}h_i$
 #### b:对于Self-Attention Layer，当输入顺序被打乱时，得到的输出相同，但会按照同样顺序被打乱。
 Solution：在输入中增加索引。
 
+### （4）Multiheaded Self-Attention Layer
 <img width="956" height="502" alt="Image" src="https://github.com/user-attachments/assets/133cfa02-5139-4f94-999c-2f34f10c292e" />
+
+### （5）三种方式的对比
+
+<img width="997" height="497" alt="Image" src="https://github.com/user-attachments/assets/e1a3ddb8-a4d9-4075-84d2-7362cf638f05" />
+
+### （6）Transformer
+<img width="662" height="477" alt="Image" src="https://github.com/user-attachments/assets/84e000d4-8ef6-4e65-adb9-0f389ece191e" />
