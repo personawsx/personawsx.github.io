@@ -10,7 +10,7 @@
         let theme = localStorage.getItem("meek_theme") || "light";
         document.documentElement.setAttribute("data-color-mode", theme);
     </script>
-<meta name="description" content="# 1、Sequence to sequence  with RNNs：
+<meta name="description" content="# 1、Sequence to sequence   with RNNs：
 ### 编码器 - 解码器（Encoder-Decoder）模型
 
 <img width='937' height='390' alt='Image' src='https://github.com/user-attachments/assets/2298c0d9-c346-4a8f-a932-95c0cbc58d5a' />
@@ -42,7 +42,7 @@ $$s_t = g_U(y_{t-1}, s_{t-1}, c)$$
 Initial decoder state $s_0$
 - 解码器第一个隐藏状态 $s_0$ 直接由上下文向量 $c$ 初始化，让解码器一开始就拥有整句输入的全局语义。">
 <meta property="og:title" content="cs231n lecture 8 Attention and Transformers">
-<meta property="og:description" content="# 1、Sequence to sequence  with RNNs：
+<meta property="og:description" content="# 1、Sequence to sequence   with RNNs：
 ### 编码器 - 解码器（Encoder-Decoder）模型
 
 <img width='937' height='390' alt='Image' src='https://github.com/user-attachments/assets/2298c0d9-c346-4a8f-a932-95c0cbc58d5a' />
@@ -133,7 +133,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </div>
 </div>
     <div id="content">
-<div class="markdown-body" id="postBody"><h1>1、Sequence to sequence  with RNNs：</h1>
+<div class="markdown-body" id="postBody"><h1>1、Sequence to sequence   with RNNs：</h1>
 <h3>编码器 - 解码器（Encoder-Decoder）模型</h3>
 <p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/2298c0d9-c346-4a8f-a932-95c0cbc58d5a"><img width="937" height="390" alt="Image" src="https://github.com/user-attachments/assets/2298c0d9-c346-4a8f-a932-95c0cbc58d5a" style="max-width: 100%; height: auto; max-height: 390px;; aspect-ratio: 937 / 390; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
 <h2>Encoder 编码器</h2>
@@ -190,7 +190,8 @@ $s_t$：解码器当前隐藏状态，用来预测当前输出单词 $y_t$
 Solution: Look back at the whole input sequence on each step of the output(在图中指每一个意大利单词生成的时刻)</p>
 <h1>2、Sequence to sequence  with RNNs and Attention</h1>
 <p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/f05489a2-d287-4fd5-a620-f7827ac7b1bc"><img width="982" height="445" alt="Image" src="https://github.com/user-attachments/assets/f05489a2-d287-4fd5-a620-f7827ac7b1bc" style="max-width: 100%; height: auto; max-height: 445px;; aspect-ratio: 982 / 445; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
-<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/7eb66fd0-2034-4373-bfe0-ad8763db5592"><img width="977" height="510" alt="Image" src="https://github.com/user-attachments/assets/7eb66fd0-2034-4373-bfe0-ad8763db5592" style="max-width: 100%; height: auto; max-height: 510px;; aspect-ratio: 977 / 510; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p></div>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/7eb66fd0-2034-4373-bfe0-ad8763db5592"><img width="977" height="510" alt="Image" src="https://github.com/user-attachments/assets/7eb66fd0-2034-4373-bfe0-ad8763db5592" style="max-width: 100%; height: auto; max-height: 510px;; aspect-ratio: 977 / 510; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/74781555-839f-470e-8a00-6368bcebc88f"><img width="965" height="420" alt="Image" src="https://github.com/user-attachments/assets/74781555-839f-470e-8a00-6368bcebc88f" style="max-width: 100%; height: auto; max-height: 420px;; aspect-ratio: 965 / 420; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p></div>
 <div style="font-size:small;margin-top:8px;float:right;"></div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
