@@ -2,7 +2,7 @@
 
 <img width="814" height="251" alt="Image" src="https://github.com/user-attachments/assets/3f26d387-c9ff-495d-b1c0-0143e42ae9fd" />
 
-#### RNN特点：当前时刻的计算依赖于当前时刻和前一时刻的RNN状态。
+#### RNN特点：当前时刻的计算依赖于当前时刻和前一时刻的RNN状态。可以是输入和输出关系可以是多对多，一对多，多对一等，有助于解决更加复杂的问题。
 
 <img width="2163" height="1167" alt="Image" src="https://github.com/user-attachments/assets/83f25cb0-5e08-4196-9bad-d131afbc8ecd" />
 
