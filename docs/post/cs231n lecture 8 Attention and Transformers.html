@@ -191,7 +191,54 @@ Solution: Look back at the whole input sequence on each step of the output(在�
 <h1>2、Sequence to sequence  with RNNs and Attention</h1>
 <p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/f05489a2-d287-4fd5-a620-f7827ac7b1bc"><img width="982" height="445" alt="Image" src="https://github.com/user-attachments/assets/f05489a2-d287-4fd5-a620-f7827ac7b1bc" style="max-width: 100%; height: auto; max-height: 445px;; aspect-ratio: 982 / 445; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
 <p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/7eb66fd0-2034-4373-bfe0-ad8763db5592"><img width="977" height="510" alt="Image" src="https://github.com/user-attachments/assets/7eb66fd0-2034-4373-bfe0-ad8763db5592" style="max-width: 100%; height: auto; max-height: 510px;; aspect-ratio: 977 / 510; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
-<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/74781555-839f-470e-8a00-6368bcebc88f"><img width="965" height="420" alt="Image" src="https://github.com/user-attachments/assets/74781555-839f-470e-8a00-6368bcebc88f" style="max-width: 100%; height: auto; max-height: 420px;; aspect-ratio: 965 / 420; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p></div>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/74781555-839f-470e-8a00-6368bcebc88f"><img width="965" height="420" alt="Image" src="https://github.com/user-attachments/assets/74781555-839f-470e-8a00-6368bcebc88f" style="max-width: 100%; height: auto; max-height: 420px;; aspect-ratio: 965 / 420; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<ol>
+<li>
+<p>编码器编码输入序列，完整保留所有时序隐向量 $h_1,h_2,...,h_T$；</p>
+</li>
+<li>
+<p>解码第 $t$步，计算对齐分数： $e_{t,i}=f_{\text{att}}(s_{t-1},h_i)$，标量数值代表当前解码步与第 $i$个输入词的匹配度；</p>
+</li>
+<li>
+<p>Softmax归一化分数得到注意力权重 $a_{t,i}$，所有权重之和为1，代表对各输入位置的关注占比；</p>
+</li>
+<li>
+<p>加权求和编码器全部隐向量，生成当前步专属上下文： $c_t=\sum_i a_{t,i}h_i$；</p>
+</li>
+<li>
+<p>将动态 $c_t$送入解码器公式  $s_t=g_U(y_{t-1},s_{t-1},c_t)$，更新隐状态并预测输出词；</p>
+</li>
+<li>
+<p>使用新的 $s_t$重复整套注意力计算，循环生成序列直至终止符。</p>
+</li>
+</ol>
+<p>Query vectors (decoder RNN states) and data vectors (encoder RNN states) get transformed to output vectors (Context states).<br>
+Each query attends to all data vectors and gives one output vector</p>
+<h3>1. Query vectors（查询向量）</h3>
+<p>解码器RNN上一时刻隐藏状态 $s_{t-1}$</p>
+<h3>2. Data vectors（数据向量）</h3>
+<p>编码器全部时序隐藏状态 $h_1,h_2,...,h_T$</p>
+<h3>3. Output vectors（输出向量）</h3>
+<p>动态上下文向量 $c_t$（Context states）</p>
+<p>一开始计算查询向量与数据向量之间的相似度，即：<br>
+$e_{t,i}=f_{\text{att}}(s_{t-1},h_i)$<br>
+得到相似度后，用softmax压缩获得注意力权重，随后求得输出向量，即：<br>
+$c_t=\sum_i a_{t,i}h_i$</p>
+<h1>2、Attention Layer</h1>
+<h3>（1）</h3>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/1f9d0e8d-0e16-47df-8037-cf803d4067d3"><img width="970" height="445" alt="Image" src="https://github.com/user-attachments/assets/1f9d0e8d-0e16-47df-8037-cf803d4067d3" style="max-width: 100%; height: auto; max-height: 445px;; aspect-ratio: 970 / 445; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>这里的 $f_{\text{att}}$ 为取二者的点积并进行缩放，进行缩放的原因是随着维度的增加，可能会出现较高的值对softmax差生影响，使概率分布集中在某一特定区域， $N_X$ 和 $D_Q$ 分别代表对应的维度。</p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/fb7bedde-4a31-4cd5-9f35-142a09634ff2"><img width="972" height="496" alt="Image" src="https://github.com/user-attachments/assets/fb7bedde-4a31-4cd5-9f35-142a09634ff2" style="max-width: 100%; height: auto; max-height: 496px;; aspect-ratio: 972 / 496; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+当相同时处理一组查询向量时，查询向量则变为矩阵形式。
+<h3>（2）Cross-Attention Layer</h3>
+<p>在计算相似度和输出向量时都用到了数据向量，为了将这两种用途区分开，引入键和查询的概念：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/47233ddb-4c61-4fa8-837d-aab449fa1307"><img width="987" height="507" alt="Image" src="https://github.com/user-attachments/assets/47233ddb-4c61-4fa8-837d-aab449fa1307" style="max-width: 100%; height: auto; max-height: 507px;; aspect-ratio: 987 / 507; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<h3>（3）Self-Attention Layer</h3>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/42cd2a18-f0af-4fc3-b42a-e62e14ce512d"><img width="978" height="515" alt="Image" src="https://github.com/user-attachments/assets/42cd2a18-f0af-4fc3-b42a-e62e14ce512d" style="max-width: 100%; height: auto; max-height: 515px;; aspect-ratio: 978 / 515; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<h4>a:一般处理两种不同类型的数据时，用Cross-Attention Layer，如图像-文字，不同的语言。</h4>
+<h4>b:对于Self-Attention Layer，当输入顺序被打乱时，得到的输出相同，但会按照同样顺序被打乱。</h4>
+<p>Solution：在输入中增加索引。</p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/133cfa02-5139-4f94-999c-2f34f10c292e"><img width="956" height="502" alt="Image" src="https://github.com/user-attachments/assets/133cfa02-5139-4f94-999c-2f34f10c292e" style="max-width: 100%; height: auto; max-height: 502px;; aspect-ratio: 956 / 502; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p></div>
 <div style="font-size:small;margin-top:8px;float:right;"></div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
