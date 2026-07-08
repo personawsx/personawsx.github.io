@@ -1,5 +1,35 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>wsx的博客</title><link>https://personawsx.github.io</link><description>我是wsx，北邮研究生</description><copyright>wsx的博客</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://avatars.githubusercontent.com/u/171470826?v=4&amp;size=64</url><title>avatar</title><link>https://personawsx.github.io</link></image><lastBuildDate>Wed, 08 Jul 2026 09:09:33 +0000</lastBuildDate><managingEditor>wsx的博客</managingEditor><ttl>60</ttl><webMaster>wsx的博客</webMaster><item><title>cs231n lecture 9 Object Detection，Image Segmentation，Visualizing</title><link>https://personawsx.github.io/post/cs231n%20lecture%209%20Object%20Detection%EF%BC%8CImage%20Segmentation%EF%BC%8CVisualizing.html</link><guid isPermaLink="true">https://personawsx.github.io/post/cs231n%20lecture%209%20Object%20Detection%EF%BC%8CImage%20Segmentation%EF%BC%8CVisualizing.html</guid><pubDate>Wed, 08 Jul 2026 09:09:06 +0000</pubDate></item><item><title>cs231n lecture 8 Attention and Transformers</title><link>https://personawsx.github.io/post/cs231n%20lecture%208%20Attention%20and%20Transformers.html</link><guid isPermaLink="true">https://personawsx.github.io/post/cs231n%20lecture%208%20Attention%20and%20Transformers.html</guid><pubDate>Tue, 07 Jul 2026 12:13:36 +0000</pubDate></item><item><title>cs231n lecture 7 Recurrent Neural Networks</title><link>https://personawsx.github.io/post/cs231n%20lecture%207%20Recurrent%20Neural%20Networks.html</link><description># 1、Recurrent Neural Networks：Process Sequences
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>wsx的博客</title><link>https://personawsx.github.io</link><description>我是wsx，北邮研究生</description><copyright>wsx的博客</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://avatars.githubusercontent.com/u/171470826?v=4&amp;size=64</url><title>avatar</title><link>https://personawsx.github.io</link></image><lastBuildDate>Wed, 08 Jul 2026 11:14:20 +0000</lastBuildDate><managingEditor>wsx的博客</managingEditor><ttl>60</ttl><webMaster>wsx的博客</webMaster><item><title>cs231n lecture 9 Object Detection，Image Segmentation，Visualizing</title><link>https://personawsx.github.io/post/cs231n%20lecture%209%20Object%20Detection%EF%BC%8CImage%20Segmentation%EF%BC%8CVisualizing.html</link><guid isPermaLink="true">https://personawsx.github.io/post/cs231n%20lecture%209%20Object%20Detection%EF%BC%8CImage%20Segmentation%EF%BC%8CVisualizing.html</guid><pubDate>Wed, 08 Jul 2026 09:09:06 +0000</pubDate></item><item><title>cs231n lecture 8 Attention and Transformers</title><link>https://personawsx.github.io/post/cs231n%20lecture%208%20Attention%20and%20Transformers.html</link><description># 1、Sequence to sequence  with RNNs：
+### 编码器 - 解码器（Encoder-Decoder）模型
+
+&lt;img width='937' height='390' alt='Image' src='https://github.com/user-attachments/assets/2298c0d9-c346-4a8f-a932-95c0cbc58d5a' /&gt;
+
+## Encoder 编码器
+### 1. 公式
+$$h_t = f_W(x_t, h_{t-1})$$
+- $f_W$：带权重 $W$ 的 RNN 单元（基础 RNN/LSTM/GRU）
+- $x_t$：第 $t$ 个输入词的词嵌入向量，图中输入 $x_1=\text{we},x_2=\text{see},x_3=\text{the},x_4=\text{sky}$
+- $h_{t-1}$：上一时刻隐藏状态， $h_t$ 当前时刻隐藏状态
+- 时序流向： $x_1 \rightarrow h_1 \rightarrow h_2 \rightarrow h_3 \rightarrow h_4$，信息单向向后传递
+
+### 2. 上下文向量 Context vector $c$
+- $T$ 是输入序列总长度（本例 $T=4$）
+- 一般直接取编码器最后一步隐藏状态 $h_4$ 作为全局上下文向量 $c$
+- 作用：把整句英文的全部语义压缩进单一固定维度向量，传给解码器
+
+## Decoder 解码器
+### 1. 公式
+$$s_t = g_U(y_{t-1}, s_{t-1}, c)$$
+- $g_U$：解码器 RNN 单元（权重 $U$，和编码器权重独立）
+输入三部分：
+1. $y_{t-1}$：上一步生成的单词（词嵌入）；第一步输入特殊起始符 $y_0=[\text{START}]$
+2. $s_{t-1}$：解码器上一时刻隐藏状态
+3. $c$：全局上下文向量（每一步解码都会复用同一个 $c$，这是无注意力机制的短板）
+- $s_t$：解码器当前隐藏状态，用来预测当前输出单词 $y_t$
+
+### 2. 解码器初始状态 $s_0$
+Initial decoder state $s_0$
+- 解码器第一个隐藏状态 $s_0$ 直接由上下文向量 $c$ 初始化，让解码器一开始就拥有整句输入的全局语义。</description><guid isPermaLink="true">https://personawsx.github.io/post/cs231n%20lecture%208%20Attention%20and%20Transformers.html</guid><pubDate>Tue, 07 Jul 2026 12:13:36 +0000</pubDate></item><item><title>cs231n lecture 7 Recurrent Neural Networks</title><link>https://personawsx.github.io/post/cs231n%20lecture%207%20Recurrent%20Neural%20Networks.html</link><description># 1、Recurrent Neural Networks：Process Sequences
 
 &lt;img width='814' height='251' alt='Image' src='https://github.com/user-attachments/assets/3f26d387-c9ff-495d-b1c0-0143e42ae9fd' /&gt;
 
