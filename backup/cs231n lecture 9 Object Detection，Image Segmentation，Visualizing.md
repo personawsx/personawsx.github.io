@@ -120,3 +120,55 @@ Problem：How to Upsampling？
 ## 3.2 Objection Detection
 语义分割只按类别区分像素，不会区分个体
 <img width="961" height="448" alt="Image" src="https://github.com/user-attachments/assets/bfe8b9a5-9837-4c37-b239-57eb8c429bc4" />
+### （1）Single Object
+<img width="2548" height="1272" alt="Image" src="https://github.com/user-attachments/assets/b13b83d3-89e9-4164-abcb-0fe533e6a090" />
+
+上路用softmax进行类别预测，下路用L2画出边框。
+
+### （2）Multiple Objects
+<img width="2438" height="1260" alt="Image" src="https://github.com/user-attachments/assets/20a3a4b6-7f68-4ac8-a320-f0dcd276adb0" />
+对于多个物体的识别，如果看成多个Single Object Detection，会导致计算量大幅增大，一般不采取这种方式。
+
+#### a：
+
+<img width="991" height="510" alt="Image" src="https://github.com/user-attachments/assets/e4b7c844-6bc2-4582-8adb-029468ae74f9" />
+
+原图自动生成约 2000 个大小、比例各不相同的候选框；
+逐个裁剪框内像素，统一缩放至 224×224，分别独立跑 CNN 提取特征；
+每个框特征分两路：SVM 做物体分类、Bbox 回归输出偏移量微调框位置尺寸。
+缺陷：2000 次独立卷积重复计算，速度极慢。
+
+#### b：
+
+<img width="607" height="471" alt="Image" src="https://github.com/user-attachments/assets/699cc1b0-9233-41e4-8a69-0d14c982e69c" />
+
+整张原图一次性卷积生成全局特征图；
+将 2000 个候选框映射至特征图，RoI 池化统一特征尺寸；
+每个区域特征分两路：Softmax 做物体分类、线性层输出偏移量微调框位置尺寸。
+
+### 框是怎么选取的？
+RPN（Region Proposal Network 区域建议网络）
+
+<img width="978" height="470" alt="Image" src="https://github.com/user-attachments/assets/be97c6a8-41df-4f6a-8bbf-0d489a25091d" />
+
+整张原图卷积生成全局特征图；
+特征图每个网格预设 K 组不同尺寸锚框，卷积输出物体置信度与框偏移；
+按物体得分筛选前 300 个高置信锚框，作为后续检测的候选区域。
+
+### （3）Single-Stage Object Detectors
+
+<img width="983" height="506" alt="Image" src="https://github.com/user-attachments/assets/25c3e43b-b11f-487a-b09d-45232175b84f" />
+
+原图卷积后划分为网格，每个网格预设 B 组基准框；
+每个基准框同时预测框偏移、物体置信度（低于阈值的框直接删掉）与全部类别得分；
+一次前向推理直接输出所有物体位置与类别，无独立候选提取阶段。
+
+### （4）Mask R-CNN
+
+<img width="997" height="510" alt="Image" src="https://github.com/user-attachments/assets/ca9f187e-6bb0-4de2-85e6-50dc77fde212" />
+
+原图卷积生成全局特征图，RPN 生成候选区域；
+经 RoI 池化后分三路预测：分类判定类别、回归微调框、新增分支预测 28×28 物体像素掩码（帮助区分）。
+
+# 4、Visualization & Understanding
+
