@@ -1,5 +1,16 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>wsx的博客</title><link>https://personawsx.github.io</link><description>我是wsx，北邮研究生</description><copyright>wsx的博客</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://avatars.githubusercontent.com/u/171470826?v=4&amp;size=64</url><title>avatar</title><link>https://personawsx.github.io</link></image><lastBuildDate>Wed, 08 Jul 2026 11:16:56 +0000</lastBuildDate><managingEditor>wsx的博客</managingEditor><ttl>60</ttl><webMaster>wsx的博客</webMaster><item><title>cs231n lecture 9 Object Detection，Image Segmentation，Visualizing</title><link>https://personawsx.github.io/post/cs231n%20lecture%209%20Object%20Detection%EF%BC%8CImage%20Segmentation%EF%BC%8CVisualizing.html</link><guid isPermaLink="true">https://personawsx.github.io/post/cs231n%20lecture%209%20Object%20Detection%EF%BC%8CImage%20Segmentation%EF%BC%8CVisualizing.html</guid><pubDate>Wed, 08 Jul 2026 09:09:06 +0000</pubDate></item><item><title>cs231n lecture 8 Attention and Transformers</title><link>https://personawsx.github.io/post/cs231n%20lecture%208%20Attention%20and%20Transformers.html</link><description># 1、Sequence to sequence   with RNNs：
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>wsx的博客</title><link>https://personawsx.github.io</link><description>我是wsx，北邮研究生</description><copyright>wsx的博客</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://avatars.githubusercontent.com/u/171470826?v=4&amp;size=64</url><title>avatar</title><link>https://personawsx.github.io</link></image><lastBuildDate>Thu, 09 Jul 2026 08:08:54 +0000</lastBuildDate><managingEditor>wsx的博客</managingEditor><ttl>60</ttl><webMaster>wsx的博客</webMaster><item><title>cs231n lecture 9 Object Detection，Image Segmentation，Visualizing</title><link>https://personawsx.github.io/post/cs231n%20lecture%209%20Object%20Detection%EF%BC%8CImage%20Segmentation%EF%BC%8CVisualizing.html</link><description># 1 ViT（Vision Transformer）
+## 1.1 使用cls token
+&lt;img width='1003' height='505' alt='Image' src='https://github.com/user-attachments/assets/28bbf6fb-5aee-4655-b940-c3a7396426de' /&gt;
+
+## （1）基础概念回顾
+1. **Patch**：单张图像分割出的像素小方块；
+2. **N**：单张图片分割得到的Patch总数量，图片所示维9；
+3. **Token**：经过线性投影后的D维特征向量，是Transformer处理的最小序列单元；
+4. **D**：单个Token的特征向量维度；
+5. **L**：单张图完整序列长度， $L=N+1$（N个Patch Token + 1个分类Token）；
+6. **Batch**：模型一次并行处理的图片总数；
+7. **NLP Transformer**：Transformer最初用于自然语言处理（见lecture 8），ViT直接复用完全相同的Encoder结构。</description><guid isPermaLink="true">https://personawsx.github.io/post/cs231n%20lecture%209%20Object%20Detection%EF%BC%8CImage%20Segmentation%EF%BC%8CVisualizing.html</guid><pubDate>Wed, 08 Jul 2026 09:09:06 +0000</pubDate></item><item><title>cs231n lecture 8 Attention and Transformers</title><link>https://personawsx.github.io/post/cs231n%20lecture%208%20Attention%20and%20Transformers.html</link><description># 1、Sequence to sequence   with RNNs：
 ### 编码器 - 解码器（Encoder-Decoder）模型
 
 &lt;img width='937' height='390' alt='Image' src='https://github.com/user-attachments/assets/2298c0d9-c346-4a8f-a932-95c0cbc58d5a' /&gt;

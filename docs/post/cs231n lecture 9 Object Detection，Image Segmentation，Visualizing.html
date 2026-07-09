@@ -10,9 +10,31 @@
         let theme = localStorage.getItem("meek_theme") || "light";
         document.documentElement.setAttribute("data-color-mode", theme);
     </script>
-<meta name="description" content="">
+<meta name="description" content="# 1 ViT（Vision Transformer）
+## 1.1 使用cls token
+<img width='1003' height='505' alt='Image' src='https://github.com/user-attachments/assets/28bbf6fb-5aee-4655-b940-c3a7396426de' />
+
+## （1）基础概念回顾
+1. **Patch**：单张图像分割出的像素小方块；
+2. **N**：单张图片分割得到的Patch总数量，图片所示维9；
+3. **Token**：经过线性投影后的D维特征向量，是Transformer处理的最小序列单元；
+4. **D**：单个Token的特征向量维度；
+5. **L**：单张图完整序列长度， $L=N+1$（N个Patch Token + 1个分类Token）；
+6. **Batch**：模型一次并行处理的图片总数；
+7. **NLP Transformer**：Transformer最初用于自然语言处理（见lecture 8），ViT直接复用完全相同的Encoder结构。">
 <meta property="og:title" content="cs231n lecture 9 Object Detection，Image Segmentation，Visualizing">
-<meta property="og:description" content="">
+<meta property="og:description" content="# 1 ViT（Vision Transformer）
+## 1.1 使用cls token
+<img width='1003' height='505' alt='Image' src='https://github.com/user-attachments/assets/28bbf6fb-5aee-4655-b940-c3a7396426de' />
+
+## （1）基础概念回顾
+1. **Patch**：单张图像分割出的像素小方块；
+2. **N**：单张图片分割得到的Patch总数量，图片所示维9；
+3. **Token**：经过线性投影后的D维特征向量，是Transformer处理的最小序列单元；
+4. **D**：单个Token的特征向量维度；
+5. **L**：单张图完整序列长度， $L=N+1$（N个Patch Token + 1个分类Token）；
+6. **Batch**：模型一次并行处理的图片总数；
+7. **NLP Transformer**：Transformer最初用于自然语言处理（见lecture 8），ViT直接复用完全相同的Encoder结构。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://personawsx.github.io/post/cs231n%20lecture%209%20Object%20Detection%EF%BC%8CImage%20Segmentation%EF%BC%8CVisualizing.html">
 <meta property="og:image" content="https://avatars.githubusercontent.com/u/171470826?v=4&size=64">
@@ -73,7 +95,108 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </div>
 </div>
     <div id="content">
-<div class="markdown-body" id="postBody"></div>
+<div class="markdown-body" id="postBody"><h1>1 ViT（Vision Transformer）</h1>
+<h2>1.1 使用cls token</h2>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/28bbf6fb-5aee-4655-b940-c3a7396426de"><img width="1003" height="505" alt="Image" src="https://github.com/user-attachments/assets/28bbf6fb-5aee-4655-b940-c3a7396426de" style="max-width: 100%; height: auto; max-height: 505px;; aspect-ratio: 1003 / 505; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<h2>（1）基础概念回顾</h2>
+<ol>
+<li>
+<strong>Patch</strong>：单张图像分割出的像素小方块；</li>
+<li>
+<strong>N</strong>：单张图片分割得到的Patch总数量，图片所示维9；</li>
+<li>
+<strong>Token</strong>：经过线性投影后的D维特征向量，是Transformer处理的最小序列单元；</li>
+<li>
+<strong>D</strong>：单个Token的特征向量维度；</li>
+<li>
+<strong>L</strong>：单张图完整序列长度， $L=N+1$（N个Patch Token + 1个分类Token）；</li>
+<li>
+<strong>Batch</strong>：模型一次并行处理的图片总数；</li>
+<li>
+<strong>NLP Transformer</strong>：Transformer最初用于自然语言处理（见lecture 8），ViT直接复用完全相同的Encoder结构。</li>
+</ol>
+<h2>（2）ViT 完整分步流程</h2>
+<h3>步骤1：图像切分，生成原始Patch</h3>
+<p>将RGB原图均匀切割为无重叠的固定尺寸像素块，单张图得到 $N$个像素Patch。注意此时仅为像素数组，还不是Token。</p>
+<h3>步骤2：线性投影，将Patch 转换为 Patch Token</h3>
+<p>对每个16×16×3的像素Patch做展平，通过线性全连接层做矩阵映射，输出固定长度<strong>D维特征向量</strong>。</p>
+<blockquote>
+<p>关键：这一步完成「像素Patch → 向量Token」的转换。</p>
+</blockquote>
+<h3>步骤3：叠加位置编码</h3>
+<p>将上一步得到的D维Patch向量，与同维度可学习的位置编码向量逐元素相加。解决Transformer无法天然感知图像块空间位置的缺陷。</p>
+<h3>步骤4：添加分类Token</h3>
+<p>在所有Patch Token序列最前端，拼接1个独立可学习的D维<strong>分类Token（cls token）</strong>。<br>
+此时输入张量形状：<code class="notranslate">[batch, L, D]</code></p>
+<ul>
+<li>batch：单次并行图片数量</li>
+<li>L：单张图Token总个数 $L=N+1$
+</li>
+<li>D：每个Token的特征维度</li>
+</ul>
+<h3>步骤5：送入Transformer Encoder</h3>
+<p>输入与NLP结构完全一致的Transformer编码器。<br>
+Transformer输入输出维度不变，输出张量仍为 <code class="notranslate">[batch, L, D]</code>。</p>
+<h3>步骤6：单独提取分类Token作为全局图像特征</h3>
+<p>Transformer会输出一整串等长Token向量，<strong>仅保留每张图头部的分类Token输出向量</strong>，丢弃所有Patch对应的输出向量。<br>
+提取后张量形状简化为：<code class="notranslate">[batch, D]</code></p>
+<h3>步骤7：线性分类头映射，输出分类预测分数</h3>
+<p>将D维分类Token向量送入单层线性层，线性层本质为「矩阵乘法+可学习偏置」：<br>
+把D维特征向量映射为C维向量（C=分类总类别数），得到每一类的预测得分；<br>
+搭配Softmax即可输出各类别概率，完成图像分类任务。</p>
+<h2>1.2 用Pooling Layer（池化层）代替cls token</h2>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/62610efa-bba9-481a-9f71-056c0f19e96c"><img width="985" height="513" alt="Image" src="https://github.com/user-attachments/assets/62610efa-bba9-481a-9f71-056c0f19e96c" style="max-width: 100%; height: auto; max-height: 513px;; aspect-ratio: 985 / 513; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<h1>2、Tweaking Transformers</h1>
+<h3>（1）：</h3>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/8fd5d5d2-3065-40c0-9375-d880ed6add61"><img width="451" height="502" alt="Image" src="https://github.com/user-attachments/assets/8fd5d5d2-3065-40c0-9375-d880ed6add61" style="max-width: 100%; height: auto; max-height: 502px;; aspect-ratio: 451 / 502; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/0ac25fd5-afe8-4dac-94c5-d156919e63d4"><img width="442" height="492" alt="Image" src="https://github.com/user-attachments/assets/0ac25fd5-afe8-4dac-94c5-d156919e63d4" style="max-width: 100%; height: auto; max-height: 492px;; aspect-ratio: 442 / 492; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+Problem：Layer normalization is outside the residual connections.Kind of weird, the model can’t actually learn the identify function.
+Solution: Move layer normalization before the Self-Attention and MLP, inside the residual connections. Training is more stable.
+<h3>Post-LN（后置 LN）为什么学不会恒等映射？</h3>
+<p>第一层输出：<br>
+$$X_{out} =\text{LN}(X_{in} +\text{SelfAtt}(X_{in}))$$</p>
+<p>假设模型想学习恒等映射（注意力模块输出全 0）：<br>
+此时 $\text{SelfAtt}(X_{in})=0$，式子变为：<br>
+$$X_{out} =\text{LN}(X_{in})$$</p>
+<p>LN 会强制把 $X_{in}$ 标准化到均值 0、方差 1，输出永远不等于原始输入 $X_{in}$。</p>
+<h3>Pre-LN（前置 LN）怎么解决这个问题？</h3>
+<p>第一层输出：<br>
+$$X_{mid} =X_{in} +\text{SelfAtt}(\text{LN}(X_{in}))$$</p>
+<p>当模型想做恒等映射时，只需让 $\text{SelfAtt}(\cdot)=0$，直接得到：<br>
+$$X_{mid} =X_{in}$$</p>
+<p>LN 只作用在支路，残差直通路完全保留原始输入，模型可以实现恒等映射。</p>
+<h3>（2）全连接层优化：</h3>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/002b8078-ffca-4d99-8798-162ee047c9d2"><img width="973" height="500" alt="Image" src="https://github.com/user-attachments/assets/002b8078-ffca-4d99-8798-162ee047c9d2" style="max-width: 100%; height: auto; max-height: 500px;; aspect-ratio: 973 / 500; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>Classic MLP:</p>
+<p>$Y = \sigma(XW_1)W_2$</p>
+<p>SwiGLU MLP:</p>
+<p>$Y = (\sigma(XW_1) \odot XW_2)W_3$</p>
+<h3>（3）Mixture of Experts（MoE）</h3>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/1b618e98-b638-4ae8-bbc5-59f57a38e7a0"><img width="986" height="502" alt="Image" src="https://github.com/user-attachments/assets/1b618e98-b638-4ae8-bbc5-59f57a38e7a0" style="max-width: 100%; height: auto; max-height: 502px;; aspect-ratio: 986 / 502; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>MoE是对 Transformer 中 MLP 模块的升级，每层搭建 E 套独立的 MLP 权重大幅扩充模型总参数量，再通过路由机制让每个 token 仅分配给远少于专家总数的 A 个专家参与计算，实现模型知识容量大幅提升的同时仅小幅增加实时计算量。</p>
+<h1>3、Computer Vision Tasks</h1>
+<h1>3.1 Semantic Segmentation</h1>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/8c069b17-8884-4a4b-a45d-80fb625b980d"><img width="967" height="487" alt="Image" src="https://github.com/user-attachments/assets/8c069b17-8884-4a4b-a45d-80fb625b980d" style="max-width: 100%; height: auto; max-height: 487px;; aspect-ratio: 967 / 487; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+用固定尺寸窗口在整张图逐像素滑动，每截取一块局部 patch，送入 CNN 只预测窗口中心像素的类别，遍历所有像素得到分割图。
+Problem：重叠窗口会重复提取大量重复像素特征
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/8ac582e0-0c53-476c-a119-865ecf129386"><img width="940" height="495" alt="Image" src="https://github.com/user-attachments/assets/8ac582e0-0c53-476c-a119-865ecf129386" style="max-width: 100%; height: auto; max-height: 495px;; aspect-ratio: 940 / 495; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+直接把整张图片送入CNN 提取全局特征，再做像素分割
+Problem：语义分割要求输出分割图和原图长宽完全一致
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/f7f397fa-9f3a-4796-b99a-080068660952"><img width="1001" height="492" alt="Image" src="https://github.com/user-attachments/assets/f7f397fa-9f3a-4796-b99a-080068660952" style="max-width: 100%; height: auto; max-height: 492px;; aspect-ratio: 1001 / 492; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+全程只用卷积、不做任何下采样，特征图始终保持原图 H×W 尺寸
+Problem：全程高分辨率卷积，特征图尺寸巨大，开销爆炸
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/9d2e9eb1-04e1-4346-b51e-c76146f5ec01"><img width="992" height="503" alt="Image" src="https://github.com/user-attachments/assets/9d2e9eb1-04e1-4346-b51e-c76146f5ec01" style="max-width: 100%; height: auto; max-height: 503px;; aspect-ratio: 992 / 503; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+#### 下采样压缩（编码器）
+通过池化、步幅卷积逐步缩小特征图，大幅降低计算量
+#### 上采样还原（解码器）
+对低分辨率高层特征做上采样，把尺寸恢复到输入原图大小
+Problem：How to Upsampling？
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/80d0c0b1-0f06-4c6a-a86e-dd3891604b3d"><img width="955" height="366" alt="Image" src="https://github.com/user-attachments/assets/80d0c0b1-0f06-4c6a-a86e-dd3891604b3d" style="max-width: 100%; height: auto; max-height: 366px;; aspect-ratio: 955 / 366; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/3ebfda2a-5588-4f78-9a7e-127f56cc7d3d"><img width="946" height="485" alt="Image" src="https://github.com/user-attachments/assets/3ebfda2a-5588-4f78-9a7e-127f56cc7d3d" style="max-width: 100%; height: auto; max-height: 485px;; aspect-ratio: 946 / 485; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+如果采用了最大池化，并且保留了位置信息，Max Unpooling可以还原出其所在位置。
+<h2>3.2 Objection Detection</h2>
+<p>语义分割只按类别区分像素，不会区分个体<br>
+<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/bfe8b9a5-9837-4c37-b239-57eb8c429bc4"><img width="961" height="448" alt="Image" src="https://github.com/user-attachments/assets/bfe8b9a5-9837-4c37-b239-57eb8c429bc4" style="max-width: 100%; height: auto; max-height: 448px;; aspect-ratio: 961 / 448; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p></div>
 <div style="font-size:small;margin-top:8px;float:right;"></div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
@@ -175,6 +298,6 @@ function iFrameLoading(){
 
 
 </script>
-
+<script>MathJax = {tex: {inlineMath: [["$", "$"]]}};</script><script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
 </html>
