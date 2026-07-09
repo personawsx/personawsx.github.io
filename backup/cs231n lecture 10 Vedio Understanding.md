@@ -58,3 +58,5 @@ Late Fusion图示：
 <img width="966" height="488" alt="Image" src="https://github.com/user-attachments/assets/dfd80ec7-ca17-45e1-9405-23775a0ce6d7" />
 
 <img width="910" height="471" alt="Image" src="https://github.com/user-attachments/assets/00dda73e-45fd-4dc1-9829-f538171b927a" />
+
+## 1.6 Modeling long-term temporal structure
