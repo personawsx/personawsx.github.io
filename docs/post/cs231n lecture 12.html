@@ -10,9 +10,43 @@
         let theme = localStorage.getItem("meek_theme") || "light";
         document.documentElement.setAttribute("data-color-mode", theme);
     </script>
-<meta name="description" content="">
+<meta name="description" content=" 
+<img width='937' height='487' alt='Image' src='https://github.com/user-attachments/assets/01c7141a-26ef-4488-a8d2-52a9a34f9ea9' />
+Pretext Objective：
+能自动把视觉上同类的图片区分开、聚集在一起，但不能独立完成分类任务，也不认识任何类别名称
+# 1、Self-Supervised pretext tasks
+<img width='877' height='390' alt='Image' src='https://github.com/user-attachments/assets/5f5f8146-f110-440b-9a6d-30b5603a688b' />
+
+### （1）主要任务：
+<img width='883' height='442' alt='Image' src='https://github.com/user-attachments/assets/279cc097-9aa0-4a9f-8723-6e6fb989aeac' />
+
+### （2）How to evaluate？
+<img width='903' height='443' alt='Image' src='https://github.com/user-attachments/assets/1f616730-a7e9-49b6-a292-8cd8ca833fdd' />
+其中，一般最关注的是下游任务的表现，即Transfer Learning and Downstream Task Performance
+
+<img width='972' height='472' alt='Image' src='https://github.com/user-attachments/assets/964f1664-2fd7-4a8e-99d2-06aa65368650' />
+
+自监督预训练：卷积层 conv + 全连接 fc，以预测旋转角度90°为训练目标，预训练完成后，会丢弃旋转预测用的全连接头，只保留卷积主干用于下游迁移
+。">
 <meta property="og:title" content="cs231n lecture 12">
-<meta property="og:description" content="">
+<meta property="og:description" content=" 
+<img width='937' height='487' alt='Image' src='https://github.com/user-attachments/assets/01c7141a-26ef-4488-a8d2-52a9a34f9ea9' />
+Pretext Objective：
+能自动把视觉上同类的图片区分开、聚集在一起，但不能独立完成分类任务，也不认识任何类别名称
+# 1、Self-Supervised pretext tasks
+<img width='877' height='390' alt='Image' src='https://github.com/user-attachments/assets/5f5f8146-f110-440b-9a6d-30b5603a688b' />
+
+### （1）主要任务：
+<img width='883' height='442' alt='Image' src='https://github.com/user-attachments/assets/279cc097-9aa0-4a9f-8723-6e6fb989aeac' />
+
+### （2）How to evaluate？
+<img width='903' height='443' alt='Image' src='https://github.com/user-attachments/assets/1f616730-a7e9-49b6-a292-8cd8ca833fdd' />
+其中，一般最关注的是下游任务的表现，即Transfer Learning and Downstream Task Performance
+
+<img width='972' height='472' alt='Image' src='https://github.com/user-attachments/assets/964f1664-2fd7-4a8e-99d2-06aa65368650' />
+
+自监督预训练：卷积层 conv + 全连接 fc，以预测旋转角度90°为训练目标，预训练完成后，会丢弃旋转预测用的全连接头，只保留卷积主干用于下游迁移
+。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://personawsx.github.io/post/cs231n%20lecture%2012.html">
 <meta property="og:image" content="https://avatars.githubusercontent.com/u/171470826?v=4&size=64">
@@ -73,7 +107,18 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </div>
 </div>
     <div id="content">
-<div class="markdown-body" id="postBody"></div>
+<div class="markdown-body" id="postBody"><p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/01c7141a-26ef-4488-a8d2-52a9a34f9ea9"><img width="937" height="487" alt="Image" src="https://github.com/user-attachments/assets/01c7141a-26ef-4488-a8d2-52a9a34f9ea9" style="max-width: 100%; height: auto; max-height: 487px;; aspect-ratio: 937 / 487; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+Pretext Objective：
+能自动把视觉上同类的图片区分开、聚集在一起，但不能独立完成分类任务，也不认识任何类别名称
+# 1、Self-Supervised pretext tasks
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/5f5f8146-f110-440b-9a6d-30b5603a688b"><img width="877" height="390" alt="Image" src="https://github.com/user-attachments/assets/5f5f8146-f110-440b-9a6d-30b5603a688b" style="max-width: 100%; height: auto; max-height: 390px;; aspect-ratio: 877 / 390; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<h3>（1）主要任务：</h3>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/279cc097-9aa0-4a9f-8723-6e6fb989aeac"><img width="883" height="442" alt="Image" src="https://github.com/user-attachments/assets/279cc097-9aa0-4a9f-8723-6e6fb989aeac" style="max-width: 100%; height: auto; max-height: 442px;; aspect-ratio: 883 / 442; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<h3>（2）How to evaluate？</h3>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/1f616730-a7e9-49b6-a292-8cd8ca833fdd"><img width="903" height="443" alt="Image" src="https://github.com/user-attachments/assets/1f616730-a7e9-49b6-a292-8cd8ca833fdd" style="max-width: 100%; height: auto; max-height: 443px;; aspect-ratio: 903 / 443; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+其中，一般最关注的是下游任务的表现，即Transfer Learning and Downstream Task Performance
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/964f1664-2fd7-4a8e-99d2-06aa65368650"><img width="972" height="472" alt="Image" src="https://github.com/user-attachments/assets/964f1664-2fd7-4a8e-99d2-06aa65368650" style="max-width: 100%; height: auto; max-height: 472px;; aspect-ratio: 972 / 472; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>自监督预训练：卷积层 conv + 全连接 fc，以预测旋转角度90°为训练目标，预训练完成后，会丢弃旋转预测用的全连接头，只保留卷积主干用于下游迁移</p></div>
 <div style="font-size:small;margin-top:8px;float:right;"></div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
