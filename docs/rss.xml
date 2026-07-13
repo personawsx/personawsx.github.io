@@ -1,8 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>wsx的博客</title><link>https://personawsx.github.io</link><description>我是wsx，北邮研究生</description><copyright>wsx的博客</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://avatars.githubusercontent.com/u/171470826?v=4&amp;size=64</url><title>avatar</title><link>https://personawsx.github.io</link></image><lastBuildDate>Mon, 13 Jul 2026 13:32:13 +0000</lastBuildDate><managingEditor>wsx的博客</managingEditor><ttl>60</ttl><webMaster>wsx的博客</webMaster><item><title>cs231n lecture 13</title><link>https://personawsx.github.io/post/cs231n%20lecture%2013.html</link><guid isPermaLink="true">https://personawsx.github.io/post/cs231n%20lecture%2013.html</guid><pubDate>Mon, 13 Jul 2026 04:03:34 +0000</pubDate></item><item><title>cs231n lecture 12</title><link>https://personawsx.github.io/post/cs231n%20lecture%2012.html</link><description> 
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>wsx的博客</title><link>https://personawsx.github.io</link><description>我是wsx，北邮研究生</description><copyright>wsx的博客</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://avatars.githubusercontent.com/u/171470826?v=4&amp;size=64</url><title>avatar</title><link>https://personawsx.github.io</link></image><lastBuildDate>Mon, 13 Jul 2026 15:03:05 +0000</lastBuildDate><managingEditor>wsx的博客</managingEditor><ttl>60</ttl><webMaster>wsx的博客</webMaster><item><title>cs231n lecture 13</title><link>https://personawsx.github.io/post/cs231n%20lecture%2013.html</link><guid isPermaLink="true">https://personawsx.github.io/post/cs231n%20lecture%2013.html</guid><pubDate>Mon, 13 Jul 2026 04:03:34 +0000</pubDate></item><item><title>cs231n lecture 12 Self-Supervised Learning</title><link>https://personawsx.github.io/post/cs231n%20lecture%2012%20Self-Supervised%20Learning.html</link><description> 
 &lt;img width='937' height='487' alt='Image' src='https://github.com/user-attachments/assets/01c7141a-26ef-4488-a8d2-52a9a34f9ea9' /&gt;
 Pretext Objective：
 能自动把视觉上同类的图片区分开、聚集在一起，但不能独立完成分类任务，也不认识任何类别名称
+
 # 1、Self-Supervised pretext tasks
 &lt;img width='877' height='390' alt='Image' src='https://github.com/user-attachments/assets/5f5f8146-f110-440b-9a6d-30b5603a688b' /&gt;
 
@@ -16,7 +17,7 @@ Pretext Objective：
 &lt;img width='972' height='472' alt='Image' src='https://github.com/user-attachments/assets/964f1664-2fd7-4a8e-99d2-06aa65368650' /&gt;
 
 自监督预训练：卷积层 conv + 全连接 fc，以预测旋转角度90°为训练目标，预训练完成后，会丢弃旋转预测用的全连接头，只保留卷积主干用于下游迁移
-。</description><guid isPermaLink="true">https://personawsx.github.io/post/cs231n%20lecture%2012.html</guid><pubDate>Mon, 13 Jul 2026 04:03:03 +0000</pubDate></item><item><title>cs231n lecture 11 Large-Scale Distributed Training</title><link>https://personawsx.github.io/post/cs231n%20lecture%2011%20Large-Scale%20Distributed%20Training.html</link><description># 1、How to train on lots of GPUs？
+。</description><guid isPermaLink="true">https://personawsx.github.io/post/cs231n%20lecture%2012%20Self-Supervised%20Learning.html</guid><pubDate>Mon, 13 Jul 2026 04:03:03 +0000</pubDate></item><item><title>cs231n lecture 11 Large-Scale Distributed Training</title><link>https://personawsx.github.io/post/cs231n%20lecture%2011%20Large-Scale%20Distributed%20Training.html</link><description># 1、How to train on lots of GPUs？
 
 &lt;img width='895' height='442' alt='Image' src='https://github.com/user-attachments/assets/eb2cfe8f-ce5b-476a-b3d9-31a2837b29c4' /&gt;
 
