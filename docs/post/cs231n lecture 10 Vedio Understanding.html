@@ -19,7 +19,9 @@ HD (1920 x 1080): ~10 GB per minute
 Solution: Train on short clips: low fps and low spatial resolution
 
 <img width='985' height='503' alt='Image' src='https://github.com/user-attachments/assets/fc2bb18b-b6d2-4d03-9a63-45398adff8eb' /> 
+
 # 1、Vedio Classification
+
 ## 1.1 Single-Frame CNN
 
 <img width='981' height='492' alt='Image' src='https://github.com/user-attachments/assets/df32fdab-4864-4c43-8cd9-70f02a020017' />
@@ -40,7 +42,9 @@ HD (1920 x 1080): ~10 GB per minute
 Solution: Train on short clips: low fps and low spatial resolution
 
 <img width='985' height='503' alt='Image' src='https://github.com/user-attachments/assets/fc2bb18b-b6d2-4d03-9a63-45398adff8eb' /> 
+
 # 1、Vedio Classification
+
 ## 1.1 Single-Frame CNN
 
 <img width='981' height='492' alt='Image' src='https://github.com/user-attachments/assets/df32fdab-4864-4c43-8cd9-70f02a020017' />
@@ -119,8 +123,8 @@ SD (640 x 480): ~1.5 GB per minute<br>
 HD (1920 x 1080): ~10 GB per minute<br>
 Solution: Train on short clips: low fps and low spatial resolution</p>
 <p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/fc2bb18b-b6d2-4d03-9a63-45398adff8eb"><img width="985" height="503" alt="Image" src="https://github.com/user-attachments/assets/fc2bb18b-b6d2-4d03-9a63-45398adff8eb" style="max-width: 100%; height: auto; max-height: 503px;; aspect-ratio: 985 / 503; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p> 
-# 1、Vedio Classification
-## 1.1 Single-Frame CNN
+<h1>1、Vedio Classification</h1>
+<h2>1.1 Single-Frame CNN</h2>
 <p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/df32fdab-4864-4c43-8cd9-70f02a020017"><img width="981" height="492" alt="Image" src="https://github.com/user-attachments/assets/df32fdab-4864-4c43-8cd9-70f02a020017" style="max-width: 100%; height: auto; max-height: 492px;; aspect-ratio: 981 / 492; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
 <h2>1.2 Late Fusion</h2>
 <h3>a:（with FC layers）</h3>
@@ -152,9 +156,28 @@ Problem：仅依靠单一层卷积做时序处理，对长序列、复杂动作�
 <h2>1.4 C3D</h2>
 <p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/01213453-ded2-4885-8b78-3dff9c5b82b4"><img width="967" height="503" alt="Image" src="https://github.com/user-attachments/assets/01213453-ded2-4885-8b78-3dff9c5b82b4" style="max-width: 100%; height: auto; max-height: 503px;; aspect-ratio: 967 / 503; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
 <h2>1.5</h2>
+<h3>（1）光流</h3>
 <p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/dfd80ec7-ca17-45e1-9405-23775a0ce6d7"><img width="966" height="488" alt="Image" src="https://github.com/user-attachments/assets/dfd80ec7-ca17-45e1-9405-23775a0ce6d7" style="max-width: 100%; height: auto; max-height: 488px;; aspect-ratio: 966 / 488; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+光流的核心是计算相邻帧中像素的移动
+### （2）双流神经网络
 <p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/00dda73e-45fd-4dc1-9829-f538171b927a"><img width="910" height="471" alt="Image" src="https://github.com/user-attachments/assets/00dda73e-45fd-4dc1-9829-f538171b927a" style="max-width: 100%; height: auto; max-height: 471px;; aspect-ratio: 910 / 471; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
-<h2>1.6 Modeling long-term temporal structure</h2></div>
+两路分支：
+Spatial stream 空间流：外观分类
+Temporal stream 时间流：利用光流判断动作
+一般来说，时间流比空间流效果更好
+<h2>1.6 Modeling long-term temporal structure</h2>
+<h3>（1）借助RNN</h3>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/66868180-0da4-48b7-a243-bb9c6f9e0968"><img width="850" height="497" alt="Image" src="https://github.com/user-attachments/assets/66868180-0da4-48b7-a243-bb9c6f9e0968" style="max-width: 100%; height: auto; max-height: 497px;; aspect-ratio: 850 / 497; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/a2e541f2-d6ef-46f7-837f-12f2afc08e3c"><img width="990" height="512" alt="Image" src="https://github.com/user-attachments/assets/a2e541f2-d6ef-46f7-837f-12f2afc08e3c" style="max-width: 100%; height: auto; max-height: 512px;; aspect-ratio: 990 / 512; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>某一单元的输出取决于同层上一时间步的输出和同一时间步上一层的输出</p>
+<p>原理图示：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/ad15adcc-d117-47ec-9f41-ad59dea8378e"><img width="997" height="503" alt="Image" src="https://github.com/user-attachments/assets/ad15adcc-d117-47ec-9f41-ad59dea8378e" style="max-width: 100%; height: auto; max-height: 503px;; aspect-ratio: 997 / 503; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<h4>Problem：</h4>
+<p>RNN处理非常慢，视频序列一般很长，所以非常费时间</p>
+<h3>（2）Spatio-Temporal Self-Attention（Nonlocal Block）</h3>
+<p>引入注意力机制：<br>
+<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/61caa3ac-4871-4dcf-b36d-bf3400658871"><img width="985" height="501" alt="Image" src="https://github.com/user-attachments/assets/61caa3ac-4871-4dcf-b36d-bf3400658871" style="max-width: 100%; height: auto; max-height: 501px;; aspect-ratio: 985 / 501; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/53cc833b-af33-4d92-b0db-a8c725dcd3f6"><img width="987" height="456" alt="Image" src="https://github.com/user-attachments/assets/53cc833b-af33-4d92-b0db-a8c725dcd3f6" style="max-width: 100%; height: auto; max-height: 456px;; aspect-ratio: 987 / 456; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p></div>
 <div style="font-size:small;margin-top:8px;float:right;"></div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>

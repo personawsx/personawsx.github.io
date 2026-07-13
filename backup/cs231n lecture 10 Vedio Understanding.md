@@ -7,7 +7,9 @@ HD (1920 x 1080): ~10 GB per minute
 Solution: Train on short clips: low fps and low spatial resolution
 
 <img width="985" height="503" alt="Image" src="https://github.com/user-attachments/assets/fc2bb18b-b6d2-4d03-9a63-45398adff8eb" /> 
+
 # 1、Vedio Classification
+
 ## 1.1 Single-Frame CNN
 
 <img width="981" height="492" alt="Image" src="https://github.com/user-attachments/assets/df32fdab-4864-4c43-8cd9-70f02a020017" />
@@ -54,9 +56,34 @@ Late Fusion图示：
 <img width="967" height="503" alt="Image" src="https://github.com/user-attachments/assets/01213453-ded2-4885-8b78-3dff9c5b82b4" />
 
 ## 1.5
-
+### （1）光流
 <img width="966" height="488" alt="Image" src="https://github.com/user-attachments/assets/dfd80ec7-ca17-45e1-9405-23775a0ce6d7" />
-
+光流的核心是计算相邻帧中像素的移动
+### （2）双流神经网络
 <img width="910" height="471" alt="Image" src="https://github.com/user-attachments/assets/00dda73e-45fd-4dc1-9829-f538171b927a" />
+两路分支：
+Spatial stream 空间流：外观分类
+Temporal stream 时间流：利用光流判断动作
+一般来说，时间流比空间流效果更好
 
 ## 1.6 Modeling long-term temporal structure
+### （1）借助RNN
+
+<img width="850" height="497" alt="Image" src="https://github.com/user-attachments/assets/66868180-0da4-48b7-a243-bb9c6f9e0968" />
+
+<img width="990" height="512" alt="Image" src="https://github.com/user-attachments/assets/a2e541f2-d6ef-46f7-837f-12f2afc08e3c" />
+
+某一单元的输出取决于同层上一时间步的输出和同一时间步上一层的输出
+
+原理图示：
+
+<img width="997" height="503" alt="Image" src="https://github.com/user-attachments/assets/ad15adcc-d117-47ec-9f41-ad59dea8378e" />
+
+#### Problem：
+RNN处理非常慢，视频序列一般很长，所以非常费时间
+
+### （2）Spatio-Temporal Self-Attention（Nonlocal Block）
+引入注意力机制：
+<img width="985" height="501" alt="Image" src="https://github.com/user-attachments/assets/61caa3ac-4871-4dcf-b36d-bf3400658871" />
+
+<img width="987" height="456" alt="Image" src="https://github.com/user-attachments/assets/53cc833b-af33-4d92-b0db-a8c725dcd3f6" />
