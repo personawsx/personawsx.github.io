@@ -10,9 +10,99 @@
         let theme = localStorage.getItem("meek_theme") || "light";
         document.documentElement.setAttribute("data-color-mode", theme);
     </script>
-<meta name="description" content="">
+<meta name="description" content="# Supervised vs Unsupervised Learning 监督学习 vs 无监督学习
+### Supervised Learning 监督学习
+1. Data: $(x, y)$
+   $x$ is data, $y$ is label
+2. Goal: Learn a function to map $x \rightarrow y$
+3. Examples: Classification, regression, object detection, semantic segmentation, image captioning, etc.
+
+### Unsupervised Learning 无监督学习
+1. Data: $x$
+   Just data, no labels!
+2. Goal: Learn hidden structure in data
+3. Examples: Clustering（聚类）, dimensionality reduction（降维）, density estimation（密度估计）, etc.
+
+# Generative vs Discriminative Models
+
+## （1）Discriminative Model（判别模型）:
+Learn a probability distribution $p(y|x)$
+
+<img width='607' height='417' alt='Image' src='https://github.com/user-attachments/assets/a17f03a6-239c-4a4f-8c04-49bd6b8e1f2d' />
+
+Problem：无法处理有问题的输入，依旧会给出所有可能的概率分布（即使输入不属于所有标签中的任意一个）
+
+## （2）Generative Model:
+Learn a probability distribution $p(x)$
+
+<img width='602' height='452' alt='Image' src='https://github.com/user-attachments/assets/c1927147-7230-44d6-989c-d6b717b96615' />
+
+目标：搞清楚 “什么样的图片是现实中合理、常见的”
+
+## （3）Conditional Generative Model: Learn $p(x|y)$
+
+<img width='623' height='428' alt='Image' src='https://github.com/user-attachments/assets/1485fc8a-e488-41dd-b0ec-82e27266ec4f' />
+
+目标：学习每一类标签专属的图像分布
+
+<img width='931' height='437' alt='Image' src='https://github.com/user-attachments/assets/c932f7df-943b-4645-8a83-d79545968c4f' />
+
+一般来说，Generative model在实际中应用较少，Conditional generative models应用更加广泛
+
+# Why Generative Models?
+
+Modeling ambiguity: If there are many possible outputs x for an input y, we want to model $P(x | y)$
+
+Language Modeling: Produce output text x from input text y
+
+。">
 <meta property="og:title" content="cs231n lecture 13 Generative Models 1">
-<meta property="og:description" content="">
+<meta property="og:description" content="# Supervised vs Unsupervised Learning 监督学习 vs 无监督学习
+### Supervised Learning 监督学习
+1. Data: $(x, y)$
+   $x$ is data, $y$ is label
+2. Goal: Learn a function to map $x \rightarrow y$
+3. Examples: Classification, regression, object detection, semantic segmentation, image captioning, etc.
+
+### Unsupervised Learning 无监督学习
+1. Data: $x$
+   Just data, no labels!
+2. Goal: Learn hidden structure in data
+3. Examples: Clustering（聚类）, dimensionality reduction（降维）, density estimation（密度估计）, etc.
+
+# Generative vs Discriminative Models
+
+## （1）Discriminative Model（判别模型）:
+Learn a probability distribution $p(y|x)$
+
+<img width='607' height='417' alt='Image' src='https://github.com/user-attachments/assets/a17f03a6-239c-4a4f-8c04-49bd6b8e1f2d' />
+
+Problem：无法处理有问题的输入，依旧会给出所有可能的概率分布（即使输入不属于所有标签中的任意一个）
+
+## （2）Generative Model:
+Learn a probability distribution $p(x)$
+
+<img width='602' height='452' alt='Image' src='https://github.com/user-attachments/assets/c1927147-7230-44d6-989c-d6b717b96615' />
+
+目标：搞清楚 “什么样的图片是现实中合理、常见的”
+
+## （3）Conditional Generative Model: Learn $p(x|y)$
+
+<img width='623' height='428' alt='Image' src='https://github.com/user-attachments/assets/1485fc8a-e488-41dd-b0ec-82e27266ec4f' />
+
+目标：学习每一类标签专属的图像分布
+
+<img width='931' height='437' alt='Image' src='https://github.com/user-attachments/assets/c932f7df-943b-4645-8a83-d79545968c4f' />
+
+一般来说，Generative model在实际中应用较少，Conditional generative models应用更加广泛
+
+# Why Generative Models?
+
+Modeling ambiguity: If there are many possible outputs x for an input y, we want to model $P(x | y)$
+
+Language Modeling: Produce output text x from input text y
+
+。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://personawsx.github.io/post/cs231n%20lecture%2013%20Generative%20Models%201.html">
 <meta property="og:image" content="https://avatars.githubusercontent.com/u/171470826?v=4&size=64">
@@ -73,7 +163,40 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </div>
 </div>
     <div id="content">
-<div class="markdown-body" id="postBody"></div>
+<div class="markdown-body" id="postBody"><h1>Supervised vs Unsupervised Learning 监督学习 vs 无监督学习</h1>
+<h3>Supervised Learning 监督学习</h3>
+<ol>
+<li>Data: $(x, y)$<br>
+$x$ is data, $y$ is label</li>
+<li>Goal: Learn a function to map $x \rightarrow y$
+</li>
+<li>Examples: Classification, regression, object detection, semantic segmentation, image captioning, etc.</li>
+</ol>
+<h3>Unsupervised Learning 无监督学习</h3>
+<ol>
+<li>Data: $x$<br>
+Just data, no labels!</li>
+<li>Goal: Learn hidden structure in data</li>
+<li>Examples: Clustering（聚类）, dimensionality reduction（降维）, density estimation（密度估计）, etc.</li>
+</ol>
+<h1>Generative vs Discriminative Models</h1>
+<h2>（1）Discriminative Model（判别模型）:</h2>
+<p>Learn a probability distribution $p(y|x)$</p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/a17f03a6-239c-4a4f-8c04-49bd6b8e1f2d"><img width="607" height="417" alt="Image" src="https://github.com/user-attachments/assets/a17f03a6-239c-4a4f-8c04-49bd6b8e1f2d" style="max-width: 100%; height: auto; max-height: 417px;; aspect-ratio: 607 / 417; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>Problem：无法处理有问题的输入，依旧会给出所有可能的概率分布（即使输入不属于所有标签中的任意一个）</p>
+<h2>（2）Generative Model:</h2>
+<p>Learn a probability distribution $p(x)$</p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/c1927147-7230-44d6-989c-d6b717b96615"><img width="602" height="452" alt="Image" src="https://github.com/user-attachments/assets/c1927147-7230-44d6-989c-d6b717b96615" style="max-width: 100%; height: auto; max-height: 452px;; aspect-ratio: 602 / 452; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>目标：搞清楚 “什么样的图片是现实中合理、常见的”</p>
+<h2>（3）Conditional Generative Model: Learn $p(x|y)$
+</h2>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/1485fc8a-e488-41dd-b0ec-82e27266ec4f"><img width="623" height="428" alt="Image" src="https://github.com/user-attachments/assets/1485fc8a-e488-41dd-b0ec-82e27266ec4f" style="max-width: 100%; height: auto; max-height: 428px;; aspect-ratio: 623 / 428; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>目标：学习每一类标签专属的图像分布</p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/c932f7df-943b-4645-8a83-d79545968c4f"><img width="931" height="437" alt="Image" src="https://github.com/user-attachments/assets/c932f7df-943b-4645-8a83-d79545968c4f" style="max-width: 100%; height: auto; max-height: 437px;; aspect-ratio: 931 / 437; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>一般来说，Generative model在实际中应用较少，Conditional generative models应用更加广泛</p>
+<h1>Why Generative Models?</h1>
+<p>Modeling ambiguity: If there are many possible outputs x for an input y, we want to model $P(x | y)$</p>
+<p>Language Modeling: Produce output text x from input text y</p></div>
 <div style="font-size:small;margin-top:8px;float:right;"></div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
@@ -175,6 +298,6 @@ function iFrameLoading(){
 
 
 </script>
-
+<script>MathJax = {tex: {inlineMath: [["$", "$"]]}};</script><script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
 </html>
