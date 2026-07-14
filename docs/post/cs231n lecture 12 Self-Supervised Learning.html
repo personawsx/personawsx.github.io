@@ -28,7 +28,59 @@ Pretext Objective：
 <img width='972' height='472' alt='Image' src='https://github.com/user-attachments/assets/964f1664-2fd7-4a8e-99d2-06aa65368650' />
 
 自监督预训练：卷积层 conv + 全连接 fc，以预测旋转角度90°为训练目标，预训练完成后，会丢弃旋转预测用的全连接头，只保留卷积主干用于下游迁移
-。">
+
+# 2、Pretext task from image transformations
+### （1）predict rotations
+
+<img width='913' height='411' alt='Image' src='https://github.com/user-attachments/assets/ae39ebae-f89e-46d3-8fd0-a4d0989f605a' />
+
+### （2）predict relative patch locations
+
+<img width='845' height='413' alt='Image' src='https://github.com/user-attachments/assets/a7120e06-3a48-4f83-ba03-6e6463476a72' />
+
+ example：
+
+<img width='972' height='408' alt='Image' src='https://github.com/user-attachments/assets/e423bd67-01bf-4f23-aa69-da5c052a7cf1' />
+论文提前预先定义了64 种不同的打乱置换规则（表格里index=64代表第 64 套打乱顺序，如9,4,6,8,3,2,5,1,7就是一种 打乱排列）
+每一种打乱排列 = 一个独立类别
+总共预设了 64 种合法打乱方案，因此输出分类维度是64
+
+### （3）predict missing pixels（inpainting）修复
+
+<img width='828' height='438' alt='Image' src='https://github.com/user-attachments/assets/b920d8c2-30c3-49c5-8f0e-e9f5b1991916' />
+
+
+总损失由重建损失与对抗损失两部分相加构成：
+$$L(x) = L_{recon}(x) + L_{adv}(x)$$
+$L_{recon}$ 代表像素重建损失
+$L_{adv}$ 代表GAN对抗生成损失
+
+### a:全部符号定义
+1. $x$：原始完整真实图像
+2. $M$：二值掩码矩阵（与图像同尺寸，逐像素运算）
+
+$$
+M_{i,j}=
+\begin{cases}
+0 & \text{未被遮挡区域（原图保留区域）} \\
+1 & \text{被遮挡缺失区域（网络需要补全的区域）}
+\end{cases}
+$$
+
+3. $*$：逐元素相乘（Element wise multiplication），不是矩阵乘法
+4. $F_\theta$：修复生成网络（编码器+解码器，$\theta$ 为网络参数），输入残缺掩码图，输出补全后的完整图像
+5. $D$：GAN判别网络，用于区分真实图像与网络修复生成的图像
+6. $\|\cdot\|_2^2$：L2平方范数，等价于像素层面均方误差MSE
+7. $\mathbb{E}[\cdot]$：对一个批次的图像做数学期望
+
+### b:重建损失 
+$L_{recon}(x) = \big\| M * \big(x - F_\theta\big((1-M)*x\big)\big) \big\|_2^2$
+
+#### 分步运算逻辑
+1. $(1-M)*x$
+掩码取反后与原图逐像素相乘：
+- 未遮挡区域 $M=0 \Rightarrow 1-M=1$，保留原图原始像素；
+- 遮挡区域 $M=1 \Rightarrow 1-M=0$，像素置零，得到残缺输入图像。">
 <meta property="og:title" content="cs231n lecture 12 Self-Supervised Learning">
 <meta property="og:description" content=" 
 <img width='937' height='487' alt='Image' src='https://github.com/user-attachments/assets/01c7141a-26ef-4488-a8d2-52a9a34f9ea9' />
@@ -48,7 +100,59 @@ Pretext Objective：
 <img width='972' height='472' alt='Image' src='https://github.com/user-attachments/assets/964f1664-2fd7-4a8e-99d2-06aa65368650' />
 
 自监督预训练：卷积层 conv + 全连接 fc，以预测旋转角度90°为训练目标，预训练完成后，会丢弃旋转预测用的全连接头，只保留卷积主干用于下游迁移
-。">
+
+# 2、Pretext task from image transformations
+### （1）predict rotations
+
+<img width='913' height='411' alt='Image' src='https://github.com/user-attachments/assets/ae39ebae-f89e-46d3-8fd0-a4d0989f605a' />
+
+### （2）predict relative patch locations
+
+<img width='845' height='413' alt='Image' src='https://github.com/user-attachments/assets/a7120e06-3a48-4f83-ba03-6e6463476a72' />
+
+ example：
+
+<img width='972' height='408' alt='Image' src='https://github.com/user-attachments/assets/e423bd67-01bf-4f23-aa69-da5c052a7cf1' />
+论文提前预先定义了64 种不同的打乱置换规则（表格里index=64代表第 64 套打乱顺序，如9,4,6,8,3,2,5,1,7就是一种 打乱排列）
+每一种打乱排列 = 一个独立类别
+总共预设了 64 种合法打乱方案，因此输出分类维度是64
+
+### （3）predict missing pixels（inpainting）修复
+
+<img width='828' height='438' alt='Image' src='https://github.com/user-attachments/assets/b920d8c2-30c3-49c5-8f0e-e9f5b1991916' />
+
+
+总损失由重建损失与对抗损失两部分相加构成：
+$$L(x) = L_{recon}(x) + L_{adv}(x)$$
+$L_{recon}$ 代表像素重建损失
+$L_{adv}$ 代表GAN对抗生成损失
+
+### a:全部符号定义
+1. $x$：原始完整真实图像
+2. $M$：二值掩码矩阵（与图像同尺寸，逐像素运算）
+
+$$
+M_{i,j}=
+\begin{cases}
+0 & \text{未被遮挡区域（原图保留区域）} \\
+1 & \text{被遮挡缺失区域（网络需要补全的区域）}
+\end{cases}
+$$
+
+3. $*$：逐元素相乘（Element wise multiplication），不是矩阵乘法
+4. $F_\theta$：修复生成网络（编码器+解码器，$\theta$ 为网络参数），输入残缺掩码图，输出补全后的完整图像
+5. $D$：GAN判别网络，用于区分真实图像与网络修复生成的图像
+6. $\|\cdot\|_2^2$：L2平方范数，等价于像素层面均方误差MSE
+7. $\mathbb{E}[\cdot]$：对一个批次的图像做数学期望
+
+### b:重建损失 
+$L_{recon}(x) = \big\| M * \big(x - F_\theta\big((1-M)*x\big)\big) \big\|_2^2$
+
+#### 分步运算逻辑
+1. $(1-M)*x$
+掩码取反后与原图逐像素相乘：
+- 未遮挡区域 $M=0 \Rightarrow 1-M=1$，保留原图原始像素；
+- 遮挡区域 $M=1 \Rightarrow 1-M=0$，像素置零，得到残缺输入图像。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://personawsx.github.io/post/cs231n%20lecture%2012%20Self-Supervised%20Learning.html">
 <meta property="og:image" content="https://avatars.githubusercontent.com/u/171470826?v=4&size=64">
@@ -120,7 +224,201 @@ Pretext Objective：
 <p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/1f616730-a7e9-49b6-a292-8cd8ca833fdd"><img width="903" height="443" alt="Image" src="https://github.com/user-attachments/assets/1f616730-a7e9-49b6-a292-8cd8ca833fdd" style="max-width: 100%; height: auto; max-height: 443px;; aspect-ratio: 903 / 443; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
 其中，一般最关注的是下游任务的表现，即Transfer Learning and Downstream Task Performance
 <p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/964f1664-2fd7-4a8e-99d2-06aa65368650"><img width="972" height="472" alt="Image" src="https://github.com/user-attachments/assets/964f1664-2fd7-4a8e-99d2-06aa65368650" style="max-width: 100%; height: auto; max-height: 472px;; aspect-ratio: 972 / 472; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
-<p>自监督预训练：卷积层 conv + 全连接 fc，以预测旋转角度90°为训练目标，预训练完成后，会丢弃旋转预测用的全连接头，只保留卷积主干用于下游迁移</p></div>
+<p>自监督预训练：卷积层 conv + 全连接 fc，以预测旋转角度90°为训练目标，预训练完成后，会丢弃旋转预测用的全连接头，只保留卷积主干用于下游迁移</p>
+<h1>2、Pretext task from image transformations</h1>
+<h3>（1）predict rotations</h3>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/ae39ebae-f89e-46d3-8fd0-a4d0989f605a"><img width="913" height="411" alt="Image" src="https://github.com/user-attachments/assets/ae39ebae-f89e-46d3-8fd0-a4d0989f605a" style="max-width: 100%; height: auto; max-height: 411px;; aspect-ratio: 913 / 411; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<h3>（2）predict relative patch locations</h3>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/a7120e06-3a48-4f83-ba03-6e6463476a72"><img width="845" height="413" alt="Image" src="https://github.com/user-attachments/assets/a7120e06-3a48-4f83-ba03-6e6463476a72" style="max-width: 100%; height: auto; max-height: 413px;; aspect-ratio: 845 / 413; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>example：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/e423bd67-01bf-4f23-aa69-da5c052a7cf1"><img width="972" height="408" alt="Image" src="https://github.com/user-attachments/assets/e423bd67-01bf-4f23-aa69-da5c052a7cf1" style="max-width: 100%; height: auto; max-height: 408px;; aspect-ratio: 972 / 408; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+论文提前预先定义了64 种不同的打乱置换规则（表格里index=64代表第 64 套打乱顺序，如9,4,6,8,3,2,5,1,7就是一种 打乱排列）
+每一种打乱排列 = 一个独立类别
+总共预设了 64 种合法打乱方案，因此输出分类维度是64
+<h3>（3）predict missing pixels（inpainting）修复</h3>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/b920d8c2-30c3-49c5-8f0e-e9f5b1991916"><img width="828" height="438" alt="Image" src="https://github.com/user-attachments/assets/b920d8c2-30c3-49c5-8f0e-e9f5b1991916" style="max-width: 100%; height: auto; max-height: 438px;; aspect-ratio: 828 / 438; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>总损失由重建损失与对抗损失两部分相加构成：<br>
+$$L(x) = L_{recon}(x) + L_{adv}(x)$$<br>
+$L_{recon}$ 代表像素重建损失<br>
+$L_{adv}$ 代表GAN对抗生成损失</p>
+<h3>a:全部符号定义</h3>
+<ol>
+<li>
+$x$：原始完整真实图像</li>
+<li>
+$M$：二值掩码矩阵（与图像同尺寸，逐像素运算）</li>
+</ol>
+<p>$$
+M_{i,j}=
+\begin{cases}
+0 &amp; \text{未被遮挡区域（原图保留区域）} \\
+1 &amp; \text{被遮挡缺失区域（网络需要补全的区域）}
+\end{cases}
+$$</p>
+<ol start="3">
+<li>
+$*$：逐元素相乘（Element wise multiplication），不是矩阵乘法</li>
+<li>
+$F_\theta$：修复生成网络（编码器+解码器，$\theta$ 为网络参数），输入残缺掩码图，输出补全后的完整图像</li>
+<li>
+$D$：GAN判别网络，用于区分真实图像与网络修复生成的图像</li>
+<li>
+$|\cdot|_2^2$：L2平方范数，等价于像素层面均方误差MSE</li>
+<li>
+$\mathbb{E}[\cdot]$：对一个批次的图像做数学期望</li>
+</ol>
+<h3>b:重建损失</h3>
+<p>$L_{recon}(x) = \big| M * \big(x - F_\theta\big((1-M)*x\big)\big) \big|_2^2$</p>
+<h4>分步运算逻辑</h4>
+<ol>
+<li>
+$(1-M)*x$<br>
+掩码取反后与原图逐像素相乘：</li>
+</ol>
+<ul>
+<li>未遮挡区域 $M=0 \Rightarrow 1-M=1$，保留原图原始像素；</li>
+<li>遮挡区域 $M=1 \Rightarrow 1-M=0$，像素置零，得到残缺输入图像。</li>
+</ul>
+<ol start="2">
+<li>
+$F_\theta\big((1-M)*x\big)$<br>
+将残缺图送入生成网络，输出网络修复完成的图像。</li>
+<li>
+$x - F_\theta(\dots)$<br>
+完整原图减去网络修复图，得到整张图像的像素误差图。</li>
+<li>
+$M * \big(x - F_\theta(\dots)\big)$<br>
+用原始掩码 $M$ 乘以误差图：<strong>仅保留被遮挡区域的像素误差，完好区域误差直接置0</strong>。<br>
+含义：仅约束网络把缺失待修复区域的像素还原到和原图一致，完好可见区域不参与重建损失计算。</li>
+<li>
+$|\cdot|_2^2$<br>
+对遮挡区域所有像素误差做平方求和，即MSE重建损失。</li>
+</ol>
+<h3>c:对抗损失</h3>
+<p>$L_{adv} = \max_D \mathbb{E}\big[\log(D(x)) + \log\big(1 - D(F((1-M)*x))\big)\big]$</p>
+<ul>
+<li>判别器 $D$：优化目标为最大化该式 $\max_D$
+</li>
+<li>生成器 $F$：整体总损失最小化，等价于最小化 $L_{adv}$
+</li>
+</ul>
+<h4>分项含义</h4>
+<ol>
+<li>
+$\log(D(x))$：输入真实完整图像 $x$ 到判别器，希望判别器输出趋近1，让判别器学会识别真实图像。</li>
+<li>
+$\log\big(1 - D(F((1-M)*x))\big)$：输入网络生成的修复假图到判别器，希望判别器输出趋近0，让判别器分辨修复图是生成的假图。</li>
+</ol>
+<h3>d:两种损失的意义：</h3>
+<ul>
+<li>重建损失：约束待修复区域像素和原图匹配；</li>
+<li>对抗损失：约束修复区域视觉质感贴近真实图像；</li>
+</ul>
+<h3>Pretext task：image coloring</h3>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/54565dc8-ff7c-441b-8094-78ad42d3c00f"><img width="927" height="473" alt="Image" src="https://github.com/user-attachments/assets/54565dc8-ff7c-441b-8094-78ad42d3c00f" style="max-width: 100%; height: auto; max-height: 473px;; aspect-ratio: 927 / 473; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<h3>原图拆分两路输入</h3>
+<p>完整彩色原图 $X$ 拆分成两个独立输入：</p>
+<ul>
+<li>上分支输入：仅灰度 $L$ 通道（丢失颜色）</li>
+<li>下分支输入：仅 $ab$ 色彩通道（丢失明暗轮廓）</li>
+</ul>
+<h3>双分支网络互相预测</h3>
+<ul>
+<li>分支网络 $\mathcal{F}_1$：输入灰度 $L$，预测缺失的 $ab$ 色彩图；</li>
+<li>分支网络 $\mathcal{F}_2$：输入纯色彩 $ab$，反向预测缺失的灰度 $L$ 轮廓图；</li>
+</ul>
+<h3>融合重建完整图像</h3>
+<p>把 $\mathcal{F}_1$ 预测的 $ab$、 $\mathcal{F}_2$ 预测的 $L$ 拼接，重建出完整彩色预测图像 $\hat{X}$；<br>
+两路同时做重建损失约束，双向迫使网络同时学习<strong>空间结构（亮度）和语义色彩先验</strong>。</p>
+<p>注：RGB 色彩空间无法分离，Lab色彩空间可以分离</p>
+<h3>拓展：</h3>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/db5a3be5-3c03-44d8-aa9d-7b8c93ff1540"><img width="935" height="478" alt="Image" src="https://github.com/user-attachments/assets/db5a3be5-3c03-44d8-aa9d-7b8c93ff1540" style="max-width: 100%; height: auto; max-height: 478px;; aspect-ratio: 935 / 478; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<h3>（4）video coloring</h3>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/85f884f2-d045-4a3e-8fa8-5352ca41bd6b"><img width="982" height="515" alt="Image" src="https://github.com/user-attachments/assets/85f884f2-d045-4a3e-8fa8-5352ca41bd6b" style="max-width: 100%; height: auto; max-height: 515px;; aspect-ratio: 982 / 515; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>输入全部是灰度视频帧，分为两类：</p>
+<ol>
+<li>
+<strong>Reference Frame 参考帧</strong><br>
+视频中拥有真实色彩基准的关键帧，转为灰度后输入CNN；每个像素自带真实颜色标签 $c_i$。</li>
+<li>
+<strong>Target Frame 目标帧</strong><br>
+需要上色的待处理灰度帧，只有轮廓纹理、无颜色信息，是网络需要预测色彩的对象。</li>
+</ol>
+<h3>处理流程</h3>
+<h3>1. CNN 提取像素级特征</h3>
+<p>参考帧、目标帧共用同一个CNN网络，对图像逐像素提取特征向量：</p>
+<ul>
+<li>参考帧像素特征： $f_i$
+</li>
+<li>目标帧像素特征： $f_j$
+</li>
+</ul>
+<h3>2. 帧间注意力权重计算 $A_{ij}$
+</h3>
+<p>$$
+A_{ij} = \frac{\exp(f_i^T f_j)}{\sum_k \exp(f_k^T f_j)}
+$$</p>
+<p>即标准点积自注意力+Softmax归一化：</p>
+<ol>
+<li>计算目标像素 $j$ 与参考帧所有像素 $i$ 的特征相似度；</li>
+<li>归一化得到权重 $A_{ij}$，代表两帧像素属于同一物体的匹配概率；</li>
+<li>示意图黄色箭头代表高权重匹配：两帧中三角形物体特征相似，注意力权重更高。</li>
+</ol>
+<h3>3. 加权预测目标帧像素颜色 $y_j$
+</h3>
+<p>$$
+y_j = \sum_i A_{ij} c_i
+$$</p>
+<p>目标帧每个像素的预测颜色，是参考帧所有真实颜色 $c_i$ 按注意力权重加权求和。</p>
+<h3>4. 训练损失函数</h3>
+<p>$$
+\min_\theta \sum_j \mathcal{L}(y_j,c_j)
+$$</p>
+<ul>
+<li>
+$y_j$：网络预测的目标像素色彩</li>
+<li>
+$c_j$：目标帧像素真实色彩（监督真值）<br>
+$\min_\theta$代表最小化所有可学习参数</li>
+</ul>
+<h3>（5）MAE（Masked Autoencoder ，掩码自编码器）</h3>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/cf086225-96b8-46d5-984a-a7c444651913"><img width="961" height="462" alt="Image" src="https://github.com/user-attachments/assets/cf086225-96b8-46d5-984a-a7c444651913" style="max-width: 100%; height: auto; max-height: 462px;; aspect-ratio: 961 / 462; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<h4>特点：</h4>
+<p>图像分块逻辑：和原始ViT一致，把完整图片切分为互不重叠的图像块（patch）。<br>
+高比例随机掩码：均匀随机遮盖75%的patch，仅保留25%可见patch送入编码器（迫使网络学习图像全局语义）。</p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/3b71bf1f-64cc-47cf-abdf-bd4aa887020f"><img width="962" height="503" alt="Image" src="https://github.com/user-attachments/assets/3b71bf1f-64cc-47cf-abdf-bd4aa887020f" style="max-width: 100%; height: auto; max-height: 503px;; aspect-ratio: 962 / 503; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>编码器只处理<strong>未被掩码的25%可见patch</strong></p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/51665aed-2b16-4eed-b46f-a63d61be8db5"><img width="942" height="408" alt="Image" src="https://github.com/user-attachments/assets/51665aed-2b16-4eed-b46f-a63d61be8db5" style="max-width: 100%; height: auto; max-height: 408px;; aspect-ratio: 942 / 408; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>解码器输入：编码器输出的可见patch特征和<strong>共享可学习掩码token</strong>填充到之前被遮盖的位置，其中全部token统一添加位置编码</p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/53e03c36-2c0b-4b1e-bde2-844b4f1a51c6"><img width="895" height="293" alt="Image" src="https://github.com/user-attachments/assets/53e03c36-2c0b-4b1e-bde2-844b4f1a51c6" style="max-width: 100%; height: auto; max-height: 293px;; aspect-ratio: 895 / 293; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>Linear Probing 线性探测（冻结预训练主干）<br>
+将预训练好的 Encoder 全程冻结，在 Encoder 输出的特征后面，只加一层最简单的线性层（全连接层）。训练的时候，只更新这最后一层线性层的权重，前面巨大的主干网络完全不动</p>
+<p>Full Fine-tuning 全量微调（放开全部参数）<br>
+预训练 Encoder不冻结，里面所有参数全部放开，参与梯度更新，预训练是给模型一个优质初始起点。</p>
+<p><strong>只计算被掩码遮盖patch的损失</strong>，可见的25%原始patch不参与损失计算</p>
+<h1>3、Contrastive representation learning</h1>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/676d7163-e8dd-4205-aa06-7d0f587e75b2"><img width="957" height="472" alt="Image" src="https://github.com/user-attachments/assets/676d7163-e8dd-4205-aa06-7d0f587e75b2" style="max-width: 100%; height: auto; max-height: 472px;; aspect-ratio: 957 / 472; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/f14c2803-af41-4ea6-9191-b6566ede4f8c"><img width="862" height="426" alt="Image" src="https://github.com/user-attachments/assets/f14c2803-af41-4ea6-9191-b6566ede4f8c" style="max-width: 100%; height: auto; max-height: 426px;; aspect-ratio: 862 / 426; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/9ee882d3-2d7d-455a-91ae-d2308769224d"><img width="965" height="487" alt="Image" src="https://github.com/user-attachments/assets/9ee882d3-2d7d-455a-91ae-d2308769224d" style="max-width: 100%; height: auto; max-height: 487px;; aspect-ratio: 965 / 487; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>图示这种损失函数的计算方法与softmax类似</p>
+<h3>（1）SimCLR</h3>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/9aab9934-05e5-4cd0-873a-a2bf8de09bf5"><img width="941" height="427" alt="Image" src="https://github.com/user-attachments/assets/9aab9934-05e5-4cd0-873a-a2bf8de09bf5" style="max-width: 100%; height: auto; max-height: 427px;; aspect-ratio: 941 / 427; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<ol>
+<li>
+$x$：原始输入图像</li>
+<li>
+$\tilde{x}_i,\tilde{x}_j$：原图经过两种不同随机数据增强变换 $t,t' \sim \mathcal{T}$ 得到的两张增强视图（一对正样本）</li>
+<li>
+$f(\cdot)$：主干编码器（CNN/ViT），输出图像基础表征 $h_i, h_j$，下游任务最终只用这个 $f$
+</li>
+<li>
+$g(\cdot)$：投影头（Projection Network，多层全连接），把基础表征映射到对比学习专用空间，得到 $z_i,z_j$
+</li>
+<li>
+$z_i,z_j$：投影后的特征向量，用来计算相似度损失</li>
+<li>Maximize agreement：最大化 $z_i$ 和 $z_j$ 的相似度（拉近正样本）</li>
+</ol>
+<p>核心：对同一张原图做两次独立随机增强，得到两张视觉有差异、但语义完全相同的图片，作为一对<strong>正样本</strong>；批次里其他所有图片的增强视图，全部作为<strong>负样本</strong>。</p></div>
 <div style="font-size:small;margin-top:8px;float:right;"></div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
@@ -222,6 +520,6 @@ function iFrameLoading(){
 
 
 </script>
-
+<script>MathJax = {tex: {inlineMath: [["$", "$"]]}};</script><script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
 </html>

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>wsx的博客</title><link>https://personawsx.github.io</link><description>我是wsx，北邮研究生</description><copyright>wsx的博客</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://avatars.githubusercontent.com/u/171470826?v=4&amp;size=64</url><title>avatar</title><link>https://personawsx.github.io</link></image><lastBuildDate>Mon, 13 Jul 2026 15:03:05 +0000</lastBuildDate><managingEditor>wsx的博客</managingEditor><ttl>60</ttl><webMaster>wsx的博客</webMaster><item><title>cs231n lecture 13</title><link>https://personawsx.github.io/post/cs231n%20lecture%2013.html</link><guid isPermaLink="true">https://personawsx.github.io/post/cs231n%20lecture%2013.html</guid><pubDate>Mon, 13 Jul 2026 04:03:34 +0000</pubDate></item><item><title>cs231n lecture 12 Self-Supervised Learning</title><link>https://personawsx.github.io/post/cs231n%20lecture%2012%20Self-Supervised%20Learning.html</link><description> 
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>wsx的博客</title><link>https://personawsx.github.io</link><description>我是wsx，北邮研究生</description><copyright>wsx的博客</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://avatars.githubusercontent.com/u/171470826?v=4&amp;size=64</url><title>avatar</title><link>https://personawsx.github.io</link></image><lastBuildDate>Tue, 14 Jul 2026 11:03:28 +0000</lastBuildDate><managingEditor>wsx的博客</managingEditor><ttl>60</ttl><webMaster>wsx的博客</webMaster><item><title>cs231n lecture 13</title><link>https://personawsx.github.io/post/cs231n%20lecture%2013.html</link><guid isPermaLink="true">https://personawsx.github.io/post/cs231n%20lecture%2013.html</guid><pubDate>Mon, 13 Jul 2026 04:03:34 +0000</pubDate></item><item><title>cs231n lecture 12 Self-Supervised Learning</title><link>https://personawsx.github.io/post/cs231n%20lecture%2012%20Self-Supervised%20Learning.html</link><description> 
 &lt;img width='937' height='487' alt='Image' src='https://github.com/user-attachments/assets/01c7141a-26ef-4488-a8d2-52a9a34f9ea9' /&gt;
 Pretext Objective：
 能自动把视觉上同类的图片区分开、聚集在一起，但不能独立完成分类任务，也不认识任何类别名称
@@ -17,7 +17,59 @@ Pretext Objective：
 &lt;img width='972' height='472' alt='Image' src='https://github.com/user-attachments/assets/964f1664-2fd7-4a8e-99d2-06aa65368650' /&gt;
 
 自监督预训练：卷积层 conv + 全连接 fc，以预测旋转角度90°为训练目标，预训练完成后，会丢弃旋转预测用的全连接头，只保留卷积主干用于下游迁移
-。</description><guid isPermaLink="true">https://personawsx.github.io/post/cs231n%20lecture%2012%20Self-Supervised%20Learning.html</guid><pubDate>Mon, 13 Jul 2026 04:03:03 +0000</pubDate></item><item><title>cs231n lecture 11 Large-Scale Distributed Training</title><link>https://personawsx.github.io/post/cs231n%20lecture%2011%20Large-Scale%20Distributed%20Training.html</link><description># 1、How to train on lots of GPUs？
+
+# 2、Pretext task from image transformations
+### （1）predict rotations
+
+&lt;img width='913' height='411' alt='Image' src='https://github.com/user-attachments/assets/ae39ebae-f89e-46d3-8fd0-a4d0989f605a' /&gt;
+
+### （2）predict relative patch locations
+
+&lt;img width='845' height='413' alt='Image' src='https://github.com/user-attachments/assets/a7120e06-3a48-4f83-ba03-6e6463476a72' /&gt;
+
+ example：
+
+&lt;img width='972' height='408' alt='Image' src='https://github.com/user-attachments/assets/e423bd67-01bf-4f23-aa69-da5c052a7cf1' /&gt;
+论文提前预先定义了64 种不同的打乱置换规则（表格里index=64代表第 64 套打乱顺序，如9,4,6,8,3,2,5,1,7就是一种 打乱排列）
+每一种打乱排列 = 一个独立类别
+总共预设了 64 种合法打乱方案，因此输出分类维度是64
+
+### （3）predict missing pixels（inpainting）修复
+
+&lt;img width='828' height='438' alt='Image' src='https://github.com/user-attachments/assets/b920d8c2-30c3-49c5-8f0e-e9f5b1991916' /&gt;
+
+
+总损失由重建损失与对抗损失两部分相加构成：
+$$L(x) = L_{recon}(x) + L_{adv}(x)$$
+$L_{recon}$ 代表像素重建损失
+$L_{adv}$ 代表GAN对抗生成损失
+
+### a:全部符号定义
+1. $x$：原始完整真实图像
+2. $M$：二值掩码矩阵（与图像同尺寸，逐像素运算）
+
+$$
+M_{i,j}=
+\begin{cases}
+0 &amp; \text{未被遮挡区域（原图保留区域）} \\
+1 &amp; \text{被遮挡缺失区域（网络需要补全的区域）}
+\end{cases}
+$$
+
+3. $*$：逐元素相乘（Element wise multiplication），不是矩阵乘法
+4. $F_\theta$：修复生成网络（编码器+解码器，$\theta$ 为网络参数），输入残缺掩码图，输出补全后的完整图像
+5. $D$：GAN判别网络，用于区分真实图像与网络修复生成的图像
+6. $\|\cdot\|_2^2$：L2平方范数，等价于像素层面均方误差MSE
+7. $\mathbb{E}[\cdot]$：对一个批次的图像做数学期望
+
+### b:重建损失 
+$L_{recon}(x) = \big\| M * \big(x - F_\theta\big((1-M)*x\big)\big) \big\|_2^2$
+
+#### 分步运算逻辑
+1. $(1-M)*x$
+掩码取反后与原图逐像素相乘：
+- 未遮挡区域 $M=0 \Rightarrow 1-M=1$，保留原图原始像素；
+- 遮挡区域 $M=1 \Rightarrow 1-M=0$，像素置零，得到残缺输入图像。</description><guid isPermaLink="true">https://personawsx.github.io/post/cs231n%20lecture%2012%20Self-Supervised%20Learning.html</guid><pubDate>Mon, 13 Jul 2026 04:03:03 +0000</pubDate></item><item><title>cs231n lecture 11 Large-Scale Distributed Training</title><link>https://personawsx.github.io/post/cs231n%20lecture%2011%20Large-Scale%20Distributed%20Training.html</link><description># 1、How to train on lots of GPUs？
 
 &lt;img width='895' height='442' alt='Image' src='https://github.com/user-attachments/assets/eb2cfe8f-ce5b-476a-b3d9-31a2837b29c4' /&gt;
 
