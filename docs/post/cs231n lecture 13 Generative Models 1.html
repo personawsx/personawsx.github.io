@@ -63,7 +63,9 @@ Language Modeling: Produce output text x from input text y
 左左：精确可计算密度；左右：近似密度
 右左：可以一步直接采样；右右：间接迭代采样，需多轮
 
-# 5、Autoregressive Models
+# 5、MLE（最大似然估计）
+
+## （1）基础原理
 
 <img width='943' height='492' alt='Image' src='https://github.com/user-attachments/assets/13e96a15-fc22-4109-8da4-c7da5a3ac819' />
 
@@ -128,7 +130,9 @@ Language Modeling: Produce output text x from input text y
 左左：精确可计算密度；左右：近似密度
 右左：可以一步直接采样；右右：间接迭代采样，需多轮
 
-# 5、Autoregressive Models
+# 5、MLE（最大似然估计）
+
+## （1）基础原理
 
 <img width='943' height='492' alt='Image' src='https://github.com/user-attachments/assets/13e96a15-fc22-4109-8da4-c7da5a3ac819' />
 
@@ -238,7 +242,8 @@ Just data, no labels!</li>
 <p>左边分支：可以写出概率分布；右边分支：写不出概率分布<br>
 左左：精确可计算密度；左右：近似密度<br>
 右左：可以一步直接采样；右右：间接迭代采样，需多轮</p>
-<h1>5、Autoregressive Models</h1>
+<h1>5、MLE（最大似然估计）</h1>
+<h2>（1）基础原理</h2>
 <p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/13e96a15-fc22-4109-8da4-c7da5a3ac819"><img width="943" height="492" alt="Image" src="https://github.com/user-attachments/assets/13e96a15-fc22-4109-8da4-c7da5a3ac819" style="max-width: 100%; height: auto; max-height: 492px;; aspect-ratio: 943 / 492; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
 <h2>各个参数含义</h2>
 <h3>1. $x$：单个数据样本</h3>
@@ -298,11 +303,17 @@ $$</p>
 $\displaystyle W^{*}=\arg\min_{W}\left[ -\sum_{i=1}^N \log f(x^{(i)},W) \right]$<br>
 $\log f(x^{(i)},W)$ 越大，负对数似然损失越小；<br>
 模型预测样本概率越高，损失越低，符合训练逻辑。</p>
+<h1>6、Autoregressive Models（自回归模型）</h1>
 <p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/6e2b4a77-44bf-434b-88e9-86d309323dcc"><img width="957" height="488" alt="Image" src="https://github.com/user-attachments/assets/6e2b4a77-44bf-434b-88e9-86d309323dcc" style="max-width: 100%; height: auto; max-height: 488px;; aspect-ratio: 957 / 488; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
 <p>用链式法则写出 $x$的表达式，其与RNN，transformer有些类似</p>
 <p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/32136bb7-2cc4-4667-bf23-043855570767"><img width="978" height="497" alt="Image" src="https://github.com/user-attachments/assets/32136bb7-2cc4-4667-bf23-043855570767" style="max-width: 100%; height: auto; max-height: 497px;; aspect-ratio: 978 / 497; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
-<h1>6、Variational Autoencoders（VAEs）</h1>
-<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/a3e15d0c-e74c-4124-a376-3d371aee725a"><img width="887" height="465" alt="Image" src="https://github.com/user-attachments/assets/a3e15d0c-e74c-4124-a376-3d371aee725a" style="max-width: 100%; height: auto; max-height: 465px;; aspect-ratio: 887 / 465; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p></div>
+<h1>7、Variational Autoencoders（VAEs，变分自编码器）</h1>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/a3e15d0c-e74c-4124-a376-3d371aee725a"><img width="887" height="465" alt="Image" src="https://github.com/user-attachments/assets/a3e15d0c-e74c-4124-a376-3d371aee725a" style="max-width: 100%; height: auto; max-height: 465px;; aspect-ratio: 887 / 465; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>因为不能直接精确计算VAE的真实概率密度，所以要用其他方法</p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/08a9a52e-217a-4a7e-931f-d4d698bbf918"><img width="968" height="482" alt="Image" src="https://github.com/user-attachments/assets/08a9a52e-217a-4a7e-931f-d4d698bbf918" style="max-width: 100%; height: auto; max-height: 482px;; aspect-ratio: 968 / 482; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>本图是讲RNN如何实现自回归</p>
+<h1>8、（Non-Variational） Autoencoders（自编码器）</h1>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/0717c384-8795-4f25-b2a6-ea05cbfc3157"><img width="976" height="506" alt="Image" src="https://github.com/user-attachments/assets/0717c384-8795-4f25-b2a6-ea05cbfc3157" style="max-width: 100%; height: auto; max-height: 506px;; aspect-ratio: 976 / 506; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p></div>
 <div style="font-size:small;margin-top:8px;float:right;"></div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>

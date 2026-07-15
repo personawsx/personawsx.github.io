@@ -51,7 +51,9 @@ Language Modeling: Produce output text x from input text y
 左左：精确可计算密度；左右：近似密度
 右左：可以一步直接采样；右右：间接迭代采样，需多轮
 
-# 5、Autoregressive Models
+# 5、MLE（最大似然估计）
+
+## （1）基础原理
 
 <img width="943" height="492" alt="Image" src="https://github.com/user-attachments/assets/13e96a15-fc22-4109-8da4-c7da5a3ac819" />
 
@@ -132,12 +134,24 @@ $\displaystyle W^{*}=\arg\min_{W}\left[ -\sum_{i=1}^N \log f(x^{(i)},W) \right]$
 $\log f(x^{(i)},W)$ 越大，负对数似然损失越小；
 模型预测样本概率越高，损失越低，符合训练逻辑。
 
+# 6、Autoregressive Models（自回归模型）
+
 <img width="957" height="488" alt="Image" src="https://github.com/user-attachments/assets/6e2b4a77-44bf-434b-88e9-86d309323dcc" />
 
 用链式法则写出 $x$的表达式，其与RNN，transformer有些类似
 
 <img width="978" height="497" alt="Image" src="https://github.com/user-attachments/assets/32136bb7-2cc4-4667-bf23-043855570767" />
 
-# 6、Variational Autoencoders（VAEs）
+# 7、Variational Autoencoders（VAEs，变分自编码器）
 
 <img width="887" height="465" alt="Image" src="https://github.com/user-attachments/assets/a3e15d0c-e74c-4124-a376-3d371aee725a" />
+
+因为不能直接精确计算VAE的真实概率密度，所以要用其他方法
+
+<img width="968" height="482" alt="Image" src="https://github.com/user-attachments/assets/08a9a52e-217a-4a7e-931f-d4d698bbf918" />
+
+本图是讲RNN如何实现自回归
+
+# 8、（Non-Variational） Autoencoders（自编码器）
+
+<img width="976" height="506" alt="Image" src="https://github.com/user-attachments/assets/0717c384-8795-4f25-b2a6-ea05cbfc3157" />

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>wsx的博客</title><link>https://personawsx.github.io</link><description>我是wsx，北邮研究生</description><copyright>wsx的博客</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://avatars.githubusercontent.com/u/171470826?v=4&amp;size=64</url><title>avatar</title><link>https://personawsx.github.io</link></image><lastBuildDate>Wed, 15 Jul 2026 06:12:14 +0000</lastBuildDate><managingEditor>wsx的博客</managingEditor><ttl>60</ttl><webMaster>wsx的博客</webMaster><item><title>cs231n lecture 13 Generative Models 1</title><link>https://personawsx.github.io/post/cs231n%20lecture%2013%20Generative%20Models%201.html</link><description># 1、Supervised vs Unsupervised Learning 监督学习 vs 无监督学习
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>wsx的博客</title><link>https://personawsx.github.io</link><description>我是wsx，北邮研究生</description><copyright>wsx的博客</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://avatars.githubusercontent.com/u/171470826?v=4&amp;size=64</url><title>avatar</title><link>https://personawsx.github.io</link></image><lastBuildDate>Wed, 15 Jul 2026 09:25:33 +0000</lastBuildDate><managingEditor>wsx的博客</managingEditor><ttl>60</ttl><webMaster>wsx的博客</webMaster><item><title>cs231n lecture 13 Generative Models 1</title><link>https://personawsx.github.io/post/cs231n%20lecture%2013%20Generative%20Models%201.html</link><description># 1、Supervised vs Unsupervised Learning 监督学习 vs 无监督学习
 ### Supervised Learning 监督学习
 1. Data: $(x, y)$
    $x$ is data, $y$ is label
@@ -52,7 +52,9 @@ Language Modeling: Produce output text x from input text y
 左左：精确可计算密度；左右：近似密度
 右左：可以一步直接采样；右右：间接迭代采样，需多轮
 
-# 5、Autoregressive Models
+# 5、MLE（最大似然估计）
+
+## （1）基础原理
 
 &lt;img width='943' height='492' alt='Image' src='https://github.com/user-attachments/assets/13e96a15-fc22-4109-8da4-c7da5a3ac819' /&gt;
 
