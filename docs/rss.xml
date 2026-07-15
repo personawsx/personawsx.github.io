@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>wsx的博客</title><link>https://personawsx.github.io</link><description>我是wsx，北邮研究生</description><copyright>wsx的博客</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://avatars.githubusercontent.com/u/171470826?v=4&amp;size=64</url><title>avatar</title><link>https://personawsx.github.io</link></image><lastBuildDate>Tue, 14 Jul 2026 13:22:46 +0000</lastBuildDate><managingEditor>wsx的博客</managingEditor><ttl>60</ttl><webMaster>wsx的博客</webMaster><item><title>cs231n lecture 13 Generative Models 1</title><link>https://personawsx.github.io/post/cs231n%20lecture%2013%20Generative%20Models%201.html</link><description># Supervised vs Unsupervised Learning 监督学习 vs 无监督学习
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>wsx的博客</title><link>https://personawsx.github.io</link><description>我是wsx，北邮研究生</description><copyright>wsx的博客</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://avatars.githubusercontent.com/u/171470826?v=4&amp;size=64</url><title>avatar</title><link>https://personawsx.github.io</link></image><lastBuildDate>Wed, 15 Jul 2026 06:12:14 +0000</lastBuildDate><managingEditor>wsx的博客</managingEditor><ttl>60</ttl><webMaster>wsx的博客</webMaster><item><title>cs231n lecture 13 Generative Models 1</title><link>https://personawsx.github.io/post/cs231n%20lecture%2013%20Generative%20Models%201.html</link><description># 1、Supervised vs Unsupervised Learning 监督学习 vs 无监督学习
 ### Supervised Learning 监督学习
 1. Data: $(x, y)$
    $x$ is data, $y$ is label
@@ -12,7 +12,7 @@
 2. Goal: Learn hidden structure in data
 3. Examples: Clustering（聚类）, dimensionality reduction（降维）, density estimation（密度估计）, etc.
 
-# Generative vs Discriminative Models
+# 2、Generative vs Discriminative Models
 
 ## （1）Discriminative Model（判别模型）:
 Learn a probability distribution $p(y|x)$
@@ -38,13 +38,31 @@ Learn a probability distribution $p(x)$
 
 一般来说，Generative model在实际中应用较少，Conditional generative models应用更加广泛
 
-# Why Generative Models?
+# 3、Why Generative Models?
 
 Modeling ambiguity: If there are many possible outputs x for an input y, we want to model $P(x | y)$
 
 Language Modeling: Produce output text x from input text y
 
-。</description><guid isPermaLink="true">https://personawsx.github.io/post/cs231n%20lecture%2013%20Generative%20Models%201.html</guid><pubDate>Mon, 13 Jul 2026 04:03:34 +0000</pubDate></item><item><title>cs231n lecture 12 Self-Supervised Learning</title><link>https://personawsx.github.io/post/cs231n%20lecture%2012%20Self-Supervised%20Learning.html</link><description> 
+# 4、Taxonomy of Generative Models
+
+&lt;img width='997' height='455' alt='Image' src='https://github.com/user-attachments/assets/e401078d-d694-44ef-b3c3-6709a87259b9' /&gt;
+
+左边分支：可以写出概率分布；右边分支：写不出概率分布
+左左：精确可计算密度；左右：近似密度
+右左：可以一步直接采样；右右：间接迭代采样，需多轮
+
+# 5、Autoregressive Models
+
+&lt;img width='943' height='492' alt='Image' src='https://github.com/user-attachments/assets/13e96a15-fc22-4109-8da4-c7da5a3ac819' /&gt;
+
+## 各个参数含义
+### 1. $x$：单个数据样本
+ $x$ 代表**一条完整训练数据**，根据模型场景含义不同：
+大语言模型（GPT自回归）： $x$ = 一整段文本序列 $x=(x_1,x_2,...,x_T)$，  $x_1,x_2$ 是句子里每个单词/Token；
+图像模型（PixelCNN自回归）： $x$ = 一张图片，展平成像素序列 $x=(x_1,x_2,...,x_T)$， $x_t$ 是第t个像素；
+
+ $x^{(i)}$ 加了上标 $(i)$：数据集里第 $i$ 个样本，一共有 $N$ 个样本， $i=1,2,...,N$。</description><guid isPermaLink="true">https://personawsx.github.io/post/cs231n%20lecture%2013%20Generative%20Models%201.html</guid><pubDate>Mon, 13 Jul 2026 04:03:34 +0000</pubDate></item><item><title>cs231n lecture 12 Self-Supervised Learning</title><link>https://personawsx.github.io/post/cs231n%20lecture%2012%20Self-Supervised%20Learning.html</link><description> 
 &lt;img width='937' height='487' alt='Image' src='https://github.com/user-attachments/assets/01c7141a-26ef-4488-a8d2-52a9a34f9ea9' /&gt;
 Pretext Objective：
 能自动把视觉上同类的图片区分开、聚集在一起，但不能独立完成分类任务，也不认识任何类别名称
