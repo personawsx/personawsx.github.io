@@ -142,7 +142,7 @@ $\log f(x^{(i)},W)$ 越大，负对数似然损失越小；
 
 <img width="978" height="497" alt="Image" src="https://github.com/user-attachments/assets/32136bb7-2cc4-4667-bf23-043855570767" />
 
-# 7、Variational Autoencoders（VAEs，变分自编码器）
+# 7、（Non-Variational） Autoencoders（自编码器）
 
 <img width="887" height="465" alt="Image" src="https://github.com/user-attachments/assets/a3e15d0c-e74c-4124-a376-3d371aee725a" />
 
@@ -152,6 +152,74 @@ $\log f(x^{(i)},W)$ 越大，负对数似然损失越小；
 
 本图是讲RNN如何实现自回归
 
-# 8、（Non-Variational） Autoencoders（自编码器）
-
 <img width="976" height="506" alt="Image" src="https://github.com/user-attachments/assets/0717c384-8795-4f25-b2a6-ea05cbfc3157" />
+
+$$\text{输入原图 }x \xrightarrow{\text{Encoder编码器}} \text{低维特征向量 } z \xrightarrow{\text{Decoder解码器}} \text{重建图片 }\hat{x}$$
+ $x$：原始输入图像； $z$：压缩后的特征（高维图片浓缩成少量数字）；$\hat{x}$：模型还原出来的重建图像
+下方是真实输入图片，上方是模型重建输出
+ 只做**压缩+还原重建**，没有概率建模，没有生成新图像的能力
+
+<img width="990" height="503" alt="Image" src="https://github.com/user-attachments/assets/97b2f2d8-8c99-4f8b-ab40-8634b75fda20" />
+
+训练好的编码器可用于下游分类任务：
+1. 先用第一张图的无监督方式完整训练AE（只做重建，不用标签）；
+2. 冻结/复用训练好的Encoder，输入图片 $x$ 得到特征 $z$ ；
+3. 在特征 $z$ 后额外加一层分类器Classifier；
+4. 用图片真实标签 $y$ ，计算Softmax分类损失，训练分类头，输出预测类别 $\hat{y}$。
+
+<img width="970" height="490" alt="Image" src="https://github.com/user-attachments/assets/ae199ade-124c-4919-b71a-b25a772b98f2" />
+
+### 设想：能不能手动造一个新 $z$ ，输入解码器生成全新图片？
+### Problem
+训练得到的所有有效 $z$只零散分布在高维空间一小片区域；
+随便随机生成一个 $z$，几乎一定落在有效区域外，解码器输出杂乱无意义噪点，根本得不到清晰新图。
+
+### Solution
+训练时强制所有特征 $z$ 服从**已知标准正态分布 $\mathcal{N}(0,1)$**
+生成时直接从标准正态分布随机采样 $z$，送入解码器，就能生成合理、全新的图片，即**VAE（变分自编码器）**。
+
+# 8、Variational Autoencoders（VAEs，变分自编码器）
+  
+<img width="965" height="508" alt="Image" src="https://github.com/user-attachments/assets/dc7f4926-1be6-4118-914b-16cf2f54d723" />
+
+变量定义：
+1. $\theta$：解码器网络全部可训练参数（权重、偏置）
+2. $\theta^*$：**训练完成、收敛后的最优固定参数**，不再更新；训练过程中只用 $\theta$，生成阶段用 $\theta^*$
+3. $p$：概率分布
+4. $p(A|B)$：条件概率，已知$B$时$A$的分布
+5. $z$：低维隐变量（隐特征向量）； $x$：原始观测样本（图片/文本）
+6. $p_{\theta^*}(z)$
+训练完成后隐变量 $z$的先验分布（prior），
+7. $p_{\theta^*}(x \mid z)$
+全称：给定隐变量 $z$时，观测样本 $x$的条件分布，也就是**解码器分布**
+8. 在解码器参数为 $\theta$ 的模型下，**单条样本 $x$（图片/文本）出现的边缘概率**，也就是我们标准MLE想要最大化的核心目标
+Problem：对于多维的 $z$，无法直接计算积分
+
+<img width="930" height="497" alt="Image" src="https://github.com/user-attachments/assets/505ec29c-06e2-4c1c-bf32-1aaca180ef5c" />
+<img width="972" height="507" alt="Image" src="https://github.com/user-attachments/assets/664c18a4-057b-484b-b6ca-9b306f02ebf1" />
+
+若采用贝叶斯公式，仍然存在问题：
+ $p_\theta(z|x)$ 无法直接求解
+Solution：
+额外训练一个**编码器网络** $q_\phi(z|x)$，用它的分布去近似无法计算的真实后验 $p_\theta(z|x)$；
+ $\phi$ 代表编码器网络参数， $\theta$ 代表解码器网络参数。
+近似后的似然表达式：
+
+$$
+p_\theta(x) \approx \frac{p_\theta(x|z)p_\theta(z)}{q_\phi(z|x)}
+$$
+
+依靠这个近似，我们就能构造可优化的下界ELBO，替代无法计算的真实 $\log p(x)$。
+
+<img width="978" height="498" alt="Image" src="https://github.com/user-attachments/assets/489e6a3f-a7c3-4f2b-be17-b69d9a66fe42" />
+
+1. 同时联合训练编码器 $q_\phi(z|x)$ + 解码器 $p_\theta(x|z)$；
+2. 最大化 $\log p_\theta(x|z)$ 等价于最小化原图 $x$ 和解码输出之间的L2重建损失
+
+<img width="965" height="442" alt="Image" src="https://github.com/user-attachments/assets/9ddcbdb5-2fef-4d9c-b41d-38a133387de0" />
+
+图中最后的第三项恒大于0，前两项 $\mathbb{E}[\log p(x|z)] - \mathbb{E}[\log\frac{q(z|x)}{p(z)}]$ 合在一起就是ELBO（证据下界），所以：
+
+$$\log p_\theta(x) \ge \mathrm{ELBO}$$
+
+将问题转化为求解ELBO最大值

@@ -307,13 +307,76 @@ $\log f(x^{(i)},W)$ 越大，负对数似然损失越小；<br>
 <p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/6e2b4a77-44bf-434b-88e9-86d309323dcc"><img width="957" height="488" alt="Image" src="https://github.com/user-attachments/assets/6e2b4a77-44bf-434b-88e9-86d309323dcc" style="max-width: 100%; height: auto; max-height: 488px;; aspect-ratio: 957 / 488; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
 <p>用链式法则写出 $x$的表达式，其与RNN，transformer有些类似</p>
 <p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/32136bb7-2cc4-4667-bf23-043855570767"><img width="978" height="497" alt="Image" src="https://github.com/user-attachments/assets/32136bb7-2cc4-4667-bf23-043855570767" style="max-width: 100%; height: auto; max-height: 497px;; aspect-ratio: 978 / 497; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
-<h1>7、Variational Autoencoders（VAEs，变分自编码器）</h1>
+<h1>7、（Non-Variational） Autoencoders（自编码器）</h1>
 <p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/a3e15d0c-e74c-4124-a376-3d371aee725a"><img width="887" height="465" alt="Image" src="https://github.com/user-attachments/assets/a3e15d0c-e74c-4124-a376-3d371aee725a" style="max-width: 100%; height: auto; max-height: 465px;; aspect-ratio: 887 / 465; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
 <p>因为不能直接精确计算VAE的真实概率密度，所以要用其他方法</p>
 <p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/08a9a52e-217a-4a7e-931f-d4d698bbf918"><img width="968" height="482" alt="Image" src="https://github.com/user-attachments/assets/08a9a52e-217a-4a7e-931f-d4d698bbf918" style="max-width: 100%; height: auto; max-height: 482px;; aspect-ratio: 968 / 482; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
 <p>本图是讲RNN如何实现自回归</p>
-<h1>8、（Non-Variational） Autoencoders（自编码器）</h1>
-<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/0717c384-8795-4f25-b2a6-ea05cbfc3157"><img width="976" height="506" alt="Image" src="https://github.com/user-attachments/assets/0717c384-8795-4f25-b2a6-ea05cbfc3157" style="max-width: 100%; height: auto; max-height: 506px;; aspect-ratio: 976 / 506; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p></div>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/0717c384-8795-4f25-b2a6-ea05cbfc3157"><img width="976" height="506" alt="Image" src="https://github.com/user-attachments/assets/0717c384-8795-4f25-b2a6-ea05cbfc3157" style="max-width: 100%; height: auto; max-height: 506px;; aspect-ratio: 976 / 506; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>$$\text{输入原图 }x \xrightarrow{\text{Encoder编码器}} \text{低维特征向量 } z \xrightarrow{\text{Decoder解码器}} \text{重建图片 }\hat{x}$$<br>
+$x$：原始输入图像； $z$：压缩后的特征（高维图片浓缩成少量数字）；$\hat{x}$：模型还原出来的重建图像<br>
+下方是真实输入图片，上方是模型重建输出<br>
+只做<strong>压缩+还原重建</strong>，没有概率建模，没有生成新图像的能力</p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/97b2f2d8-8c99-4f8b-ab40-8634b75fda20"><img width="990" height="503" alt="Image" src="https://github.com/user-attachments/assets/97b2f2d8-8c99-4f8b-ab40-8634b75fda20" style="max-width: 100%; height: auto; max-height: 503px;; aspect-ratio: 990 / 503; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>训练好的编码器可用于下游分类任务：</p>
+<ol>
+<li>先用第一张图的无监督方式完整训练AE（只做重建，不用标签）；</li>
+<li>冻结/复用训练好的Encoder，输入图片 $x$ 得到特征 $z$ ；</li>
+<li>在特征 $z$ 后额外加一层分类器Classifier；</li>
+<li>用图片真实标签 $y$ ，计算Softmax分类损失，训练分类头，输出预测类别 $\hat{y}$。</li>
+</ol>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/ae199ade-124c-4919-b71a-b25a772b98f2"><img width="970" height="490" alt="Image" src="https://github.com/user-attachments/assets/ae199ade-124c-4919-b71a-b25a772b98f2" style="max-width: 100%; height: auto; max-height: 490px;; aspect-ratio: 970 / 490; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<h3>设想：能不能手动造一个新 $z$ ，输入解码器生成全新图片？</h3>
+<h3>Problem</h3>
+<p>训练得到的所有有效 $z$只零散分布在高维空间一小片区域；<br>
+随便随机生成一个 $z$，几乎一定落在有效区域外，解码器输出杂乱无意义噪点，根本得不到清晰新图。</p>
+<h3>Solution</h3>
+<p>训练时强制所有特征 $z$ 服从<strong>已知标准正态分布 $\mathcal{N}(0,1)$</strong><br>
+生成时直接从标准正态分布随机采样 $z$，送入解码器，就能生成合理、全新的图片，即<strong>VAE（变分自编码器）</strong>。</p>
+<h1>8、Variational Autoencoders（VAEs，变分自编码器）</h1>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/dc7f4926-1be6-4118-914b-16cf2f54d723"><img width="965" height="508" alt="Image" src="https://github.com/user-attachments/assets/dc7f4926-1be6-4118-914b-16cf2f54d723" style="max-width: 100%; height: auto; max-height: 508px;; aspect-ratio: 965 / 508; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>变量定义：</p>
+<ol>
+<li>
+$\theta$：解码器网络全部可训练参数（权重、偏置）</li>
+<li>$\theta^<em>$：<strong>训练完成、收敛后的最优固定参数</strong>，不再更新；训练过程中只用 $\theta$，生成阶段用 $\theta^</em>$</li>
+<li>
+$p$：概率分布</li>
+<li>
+$p(A|B)$：条件概率，已知$B$时$A$的分布</li>
+<li>
+$z$：低维隐变量（隐特征向量）； $x$：原始观测样本（图片/文本）</li>
+<li>
+$p_{\theta^*}(z)$<br>
+训练完成后隐变量 $z$的先验分布（prior），</li>
+<li>
+$p_{\theta^*}(x \mid z)$<br>
+全称：给定隐变量 $z$时，观测样本 $x$的条件分布，也就是<strong>解码器分布</strong>
+</li>
+<li>在解码器参数为 $\theta$ 的模型下，<strong>单条样本 $x$（图片/文本）出现的边缘概率</strong>，也就是我们标准MLE想要最大化的核心目标<br>
+Problem：对于多维的 $z$，无法直接计算积分</li>
+</ol>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/505ec29c-06e2-4c1c-bf32-1aaca180ef5c"><img width="930" height="497" alt="Image" src="https://github.com/user-attachments/assets/505ec29c-06e2-4c1c-bf32-1aaca180ef5c" style="max-width: 100%; height: auto; max-height: 497px;; aspect-ratio: 930 / 497; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/664c18a4-057b-484b-b6ca-9b306f02ebf1"><img width="972" height="507" alt="Image" src="https://github.com/user-attachments/assets/664c18a4-057b-484b-b6ca-9b306f02ebf1" style="max-width: 100%; height: auto; max-height: 507px;; aspect-ratio: 972 / 507; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>若采用贝叶斯公式，仍然存在问题：<br>
+$p_\theta(z|x)$ 无法直接求解<br>
+Solution：<br>
+额外训练一个<strong>编码器网络</strong> $q_\phi(z|x)$，用它的分布去近似无法计算的真实后验 $p_\theta(z|x)$；<br>
+$\phi$ 代表编码器网络参数， $\theta$ 代表解码器网络参数。<br>
+近似后的似然表达式：</p>
+<p>$$
+p_\theta(x) \approx \frac{p_\theta(x|z)p_\theta(z)}{q_\phi(z|x)}
+$$</p>
+<p>依靠这个近似，我们就能构造可优化的下界ELBO，替代无法计算的真实 $\log p(x)$。</p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/489e6a3f-a7c3-4f2b-be17-b69d9a66fe42"><img width="978" height="498" alt="Image" src="https://github.com/user-attachments/assets/489e6a3f-a7c3-4f2b-be17-b69d9a66fe42" style="max-width: 100%; height: auto; max-height: 498px;; aspect-ratio: 978 / 498; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<ol>
+<li>同时联合训练编码器 $q_\phi(z|x)$ + 解码器 $p_\theta(x|z)$；</li>
+<li>最大化 $\log p_\theta(x|z)$ 等价于最小化原图 $x$ 和解码输出之间的L2重建损失</li>
+</ol>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/9ddcbdb5-2fef-4d9c-b41d-38a133387de0"><img width="965" height="442" alt="Image" src="https://github.com/user-attachments/assets/9ddcbdb5-2fef-4d9c-b41d-38a133387de0" style="max-width: 100%; height: auto; max-height: 442px;; aspect-ratio: 965 / 442; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>图中最后的第三项恒大于0，前两项 $\mathbb{E}[\log p(x|z)] - \mathbb{E}[\log\frac{q(z|x)}{p(z)}]$ 合在一起就是ELBO（证据下界），所以：</p>
+<p>$$\log p_\theta(x) \ge \mathrm{ELBO}$$</p>
+<p>将问题转化为求解ELBO最大值</p></div>
 <div style="font-size:small;margin-top:8px;float:right;"></div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
