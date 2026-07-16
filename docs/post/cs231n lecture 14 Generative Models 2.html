@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    
+    <link rel="icon" href="https://avatars.githubusercontent.com/u/171470826?v=4&size=64"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="# 1、Generative Adversarial Networks
+Generative Adversarial Networks give up on modeling p(x) ，but allow us to draw samples from p(x) .
+
+<img width='978' height='501' alt='Image' src='https://github.com/user-attachments/assets/584a4ce3-9ff0-4a9f-89bf-ed87659cdc07' />
+
+相关符号：
+1. $z \sim p(z)$：从标准正态分布采样随机隐向量；
+2. $G(z)$：生成器，输入 $z$输出伪造样本；
+3. $p_G$：生成器造出图片的分布；
+4. $p_{\text{data}}$：数据集真实图片的分布；
+5. $D(x)$：判别器，输入图片输出“是真实图的概率”。">
+<meta property="og:title" content="cs231n lecture 14 Generative Models 2">
+<meta property="og:description" content="# 1、Generative Adversarial Networks
+Generative Adversarial Networks give up on modeling p(x) ，but allow us to draw samples from p(x) .
+
+<img width='978' height='501' alt='Image' src='https://github.com/user-attachments/assets/584a4ce3-9ff0-4a9f-89bf-ed87659cdc07' />
+
+相关符号：
+1. $z \sim p(z)$：从标准正态分布采样随机隐向量；
+2. $G(z)$：生成器，输入 $z$输出伪造样本；
+3. $p_G$：生成器造出图片的分布；
+4. $p_{\text{data}}$：数据集真实图片的分布；
+5. $D(x)$：判别器，输入图片输出“是真实图的概率”。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://personawsx.github.io/post/cs231n%20lecture%2014%20Generative%20Models%202.html">
+<meta property="og:image" content="https://avatars.githubusercontent.com/u/171470826?v=4&size=64">
+<title>cs231n lecture 14 Generative Models 2</title>
+
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">cs231n lecture 14 Generative Models 2</h1>
+<div class="title-right">
+    <a href="https://personawsx.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/personawsx/personawsx.github.io/issues/15" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><h1>1、Generative Adversarial Networks</h1>
+<p>Generative Adversarial Networks give up on modeling p(x) ，but allow us to draw samples from p(x) .</p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/584a4ce3-9ff0-4a9f-89bf-ed87659cdc07"><img width="978" height="501" alt="Image" src="https://github.com/user-attachments/assets/584a4ce3-9ff0-4a9f-89bf-ed87659cdc07" style="max-width: 100%; height: auto; max-height: 501px;; aspect-ratio: 978 / 501; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>相关符号：</p>
+<ol>
+<li>
+$z \sim p(z)$：从标准正态分布采样随机隐向量；</li>
+<li>
+$G(z)$：生成器，输入 $z$输出伪造样本；</li>
+<li>
+$p_G$：生成器造出图片的分布；</li>
+<li>
+$p_{\text{data}}$：数据集真实图片的分布；</li>
+<li>
+$D(x)$：判别器，输入图片输出“是真实图的概率”。</li>
+</ol>
+<p>对抗思路：</p>
+<ol>
+<li>
+$p_{\text{data}}(x)$：真实数据分布<br>
+我们手里的真实图片、真实样本，全部来自这个真实世界分布 $p_{\text{data}}(x)$；<br>
+模型最终目标：能生成和真实数据一模一样的样本，也就是让模型生成分布等于真实分布 $p_G=p_{\text{data}}$。</li>
+<li>核心Idea<br>
+引入隐变量 $z$，先验 $p(z)$ 一般取标准正态分布（和VAE的 $z$先验一样）；<br>
+随机采样一个 $z$，送入<strong>生成器G</strong>，输出假图片 $x=G(z)$；<br>
+生成器产出的图片服从生成分布 $p_G$，我们希望训练到 $p_G$ 和真实分布完全重合。<br>
+将训练得到的伪造图和真实图一起送入判别器网络 $D$。<br>
+判别器输出二分类结果：<code class="notranslate">Fake</code> / <code class="notranslate">Real</code>。判别器越难以识别真假，说明模型效果越好</li>
+</ol>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/c6442ddf-e20c-4bd5-814a-faad97453950"><img width="966" height="301" alt="Image" src="https://github.com/user-attachments/assets/c6442ddf-e20c-4bd5-814a-faad97453950" style="max-width: 100%; height: auto; max-height: 301px;; aspect-ratio: 966 / 301; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p><strong>用极小极大博弈（minimax game），同时对抗训练生成器G、判别器D</strong>。</p>
+<h3>公式：</h3>
+<p>$$
+
+\min_G \max_D \left( \mathbb{E}_{x\sim p_{\text{data}}} \big[\log D(x)\big] + \mathbb{E}_{z\sim p(z)} \big[\log\big(1-D(G(z))\big)\big] \right)
+
+$$</p>
+<p>相关符号定义：</p>
+<h3>第一项： $\mathbb{E}<em>{x\sim p</em>{\text{data}}}[\log D(x)]$ 真实图片损失项</h3>
+<ol>
+<li>
+$x\sim p_{\text{data}}$：从真实数据集里采样真实图片$x$；</li>
+<li>
+$D(x)$：判别器输出，代表这张图是「真实图片」的概率，取值0（假）或1（真）；</li>
+<li>
+$\log D(x)$：对数损失；</li>
+<li>
+$\mathbb{E}$：期望，对全部真实图片取平均。</li>
+</ol>
+<h3>第二项： $\mathbb{E}_{z\sim p(z)}\big[\log\big(1-D(G(z))\big)\big]$ 假图片损失项</h3>
+<ol>
+<li>
+$z\sim p(z)$：从标准正态先验随机采样隐向量 $z$；</li>
+<li>
+$G(z)$：生成器接收 $z$，输出一张伪造图片；</li>
+<li>
+$D(G(z))$：判别器给假图打分，代表它认为这张假图是真实图的概率；</li>
+<li>
+$1-D(G(z))$：判别器认为这张是假图的概率；</li>
+<li>
+$\log(1-D(G(z)))$：对数损失；</li>
+<li>
+$\mathbb{E}$：对大量采样的 $z$取平均。</li>
+</ol>
+<h3>外层符号 $\min_G \max_D$：极小极大博弈</h3>
+<h3>
+$\max_D$：先固定G，最大化整个式子（训练判别器D），即在训练D时，生成器G权重冻结不动，只更新D。</h3>
+<h3>
+$\min_G$：再固定D，最小化整个式子（训练生成器G）</h3>
+<p>$\max_D$的目标是把括号里这一整项尽可能拉大：</p>
+<ol>
+<li>真实图片输入： $D(x)=1$ → $\log D(x)=\log1=0$，值最大；</li>
+<li>G生成的假图输入： $D(G(z))=0$ → $\log(1-D(G(z)))=\log1=0$，值最大；<br>
+即给真实图打1、假图打0，最大化目标值。</li>
+</ol>
+<p>$\min_G$的目标是把括号里这一整项尽可能缩小：<br>
+此时固定判别器D，只更新生成器G，生成器只关心伪造图片对应的第二项，第一项来自真实图片、不受G控制，G只能改变假图得分。</p>
+<ol>
+<li>G生成的假图输入： $D(G(z))=1$ → $\log(1-D(G(z)))=\log0=-\infty$，该项会变得极小；</li>
+<li>真实图片项 $\log D(x)$ 和生成器无关，无法调整；<br>
+即生成器努力让假图被判别器当成真实图、给假图打1，以此压低整体目标函数数值。</li>
+</ol>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/7b788998-d675-4a33-87cb-c492ae5e79ac"><img width="972" height="491" alt="Image" src="https://github.com/user-attachments/assets/7b788998-d675-4a33-87cb-c492ae5e79ac" style="max-width: 100%; height: auto; max-height: 491px;; aspect-ratio: 972 / 491; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>+对应最大化，采用梯度上升；-号对应最小化，采用梯度下降</p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/2e054c9f-b6c9-4df4-bcf7-20f541db8f39"><img width="948" height="491" alt="Image" src="https://github.com/user-attachments/assets/2e054c9f-b6c9-4df4-bcf7-20f541db8f39" style="max-width: 100%; height: auto; max-height: 491px;; aspect-ratio: 948 / 491; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>Problem：对于蓝色曲线 $\log(1-D(G(z)))$，左端（ $D≈0$）平缓、梯度微弱，意味着反向传播时几乎没有更新信号，生成器停滞、无法优化。<br>
+Solution：不再最小化 $\log(1-D(G(z)))$，改为<strong>最小化 $-\log(D(G(z)))$</strong>。</p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/262fe80a-ee46-445a-95b5-b62e9d2201af"><img width="967" height="501" alt="Image" src="https://github.com/user-attachments/assets/262fe80a-ee46-445a-95b5-b62e9d2201af" style="max-width: 100%; height: auto; max-height: 501px;; aspect-ratio: 967 / 501; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>为何GAN极小极大目标函数设计合理？<br>
+内层 $\max_D$：固定生成器时，理论最优判别器 $D_G^*(x)=\frac{p_{\text{data}}(x)}{p_{\text{data}}(x)+p_G(x)}$；<br>
+外层 $\min_G$：在最优判别器基础上，最优生成结果是生成分布等于真实分布 $p_G=p_{\text{data}}$；<br>
+两点现实局限：神经网络拟合能力有限；有限数据下无法保证训练收敛。</p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/0b4b681c-392a-42a4-baf8-79f6fa6dca3f"><img width="977" height="462" alt="Image" src="https://github.com/user-attachments/assets/0b4b681c-392a-42a4-baf8-79f6fa6dca3f" style="max-width: 100%; height: auto; max-height: 462px;; aspect-ratio: 977 / 462; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/702da444-e03e-4564-bd8d-f8abbe9fe055"><img width="968" height="457" alt="Image" src="https://github.com/user-attachments/assets/702da444-e03e-4564-bd8d-f8abbe9fe055" style="max-width: 100%; height: auto; max-height: 457px;; aspect-ratio: 968 / 457; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<h3>VAE 与 GAN 核心差异简要对比</h3>
+<p>VAE：编码器(Encoder)+解码器(Decoder)，<strong>双向映射</strong><br>
+$x \Rightarrow z$（编码）、 $z \Rightarrow x$（解码）<br>
+GAN：生成器G+判别器D，<strong>仅单向映射</strong><br>
+只有 $z \Rightarrow x$，无编码器，无法从图片反推隐变量z</p>
+<p>VAE：有规整连续隐空间，支持图像重建、插值、原图编辑<br>
+GAN：隐空间无显式反向映射，不能直接编码真实图片</p>
+<p>VAE：图像偏模糊，稳定易训练<br>
+GAN：图像清晰度更高，易出现梯度消失、模式崩溃，训练不稳定</p>
+<h1>2、Diffusion Models：Intuition</h1>
+<p>GAN通过生成器学习确定性映射直接将z映射到x，扩散模型采用更加间接的方式</p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/109b19c1-3de6-4f1c-ac7a-30533a00233b"><img width="963" height="505" alt="Image" src="https://github.com/user-attachments/assets/109b19c1-3de6-4f1c-ac7a-30533a00233b" style="max-width: 100%; height: auto; max-height: 505px;; aspect-ratio: 963 / 505; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<h3>扩散模型核心概括</h3>
+<ol>
+<li>
+<strong>前向扩散（训练）</strong>：原图 $x_0$ 随时间步 $t$ 逐步叠加高斯噪声，最终变成纯噪声图；</li>
+<li>
+<strong>网络训练目标</strong>：训练网络 $f_\theta(x_t,t)$，输入带噪图与时间步，学习单次小幅去除噪声；</li>
+<li>
+<strong>反向生成（推理）</strong>：从随机纯噪声出发，反复调用去噪网络迭代去噪，逐步还原清晰原图；</li>
+</ol>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/182ccc0c-2d5c-4976-aa0a-77e304abf891"><img width="952" height="463" alt="Image" src="https://github.com/user-attachments/assets/182ccc0c-2d5c-4976-aa0a-77e304abf891" style="max-width: 100%; height: auto; max-height: 463px;; aspect-ratio: 952 / 463; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>训练阶段：<br>
+存在两种分布，真实数据分布 $p_{\text{data}}$（原图区域）、噪声分布 $p_{\text{noise}}$（高斯噪声区域）<br>
+每一步同时采样三样东西：真实图 $x$、高斯噪声 $z$、0~1均匀时间步 $t$。<br>
+中间样本： $x_t=(1-t)x + tz$<br>
+目标速度向量： $v=z-x$<br>
+网络 $f_\theta(x_t,t)$ 输入中间图+时间步，预测速度 $v$；损失为预测速度与真实速度的L2距离。<br>
+代码实现如下：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/4bb44095-a57e-49d1-ac8a-2a8ad927f488"><img width="975" height="456" alt="Image" src="https://github.com/user-attachments/assets/4bb44095-a57e-49d1-ac8a-2a8ad927f488" style="max-width: 100%; height: auto; max-height: 456px;; aspect-ratio: 975 / 456; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/997d225d-b374-4179-a633-5e0e63fc9914"><img width="977" height="457" alt="Image" src="https://github.com/user-attachments/assets/997d225d-b374-4179-a633-5e0e63fc9914" style="max-width: 100%; height: auto; max-height: 457px;; aspect-ratio: 977 / 457; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>采样阶段是从z还原到x，时间步t从1降至0，即沿着反方向走。</p>
+<p>上述都是无条件生成模型，我们真正关心地是条件生成模型，如下：</p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/9b8c1478-66a2-4383-a87a-61693bdd9c1e"><img width="980" height="487" alt="Image" src="https://github.com/user-attachments/assets/9b8c1478-66a2-4383-a87a-61693bdd9c1e" style="max-width: 100%; height: auto; max-height: 487px;; aspect-ratio: 980 / 487; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>Problem：Can we control how much we “emphasize” the conditioning y?<br>
+一般来说，将y喂进模型之后，只有 “用 / 不用” 两种状态；但实际生成时我们想要可调强度：<br>
+弱强调：轻微贴合y，画面自由度高，和描述略有出入；<br>
+强强调：严格贴合y，画面完全匹配输入条件，不能跑偏。<br>
+Solution：Classifier-Free Guidance（CFG）</p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/952cafad-1bc6-4d33-9f2a-a76403509e2a"><img width="963" height="500" alt="Image" src="https://github.com/user-attachments/assets/952cafad-1bc6-4d33-9f2a-a76403509e2a" style="max-width: 100%; height: auto; max-height: 500px;; aspect-ratio: 963 / 500; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>关键：每次训练有50%概率把有效条件 $y$ 替换为空条件 $y_\emptyset$，即模型可以同时具备条件生成和无条件生成两种能力</p>
+<h3>三个速度向量几何含义</h3>
+<ol>
+<li>
+$v^\emptyset$：空条件预测速度，往全部真实图片区域走，不区分类别；</li>
+<li>
+$v^y$：带条件y的速度，专门往匹配y的图片子集走；</li>
+<li>
+$v^{cfg}$：CFG加权融合后的最终速度，比单纯 $v^y$更偏向符合y的区域，即：</li>
+</ol>
+<p>$$
+v^{cfg} = (1+w)v^y - wv^\emptyset
+$$</p>
+<p>其中 $w$ = CFG权重（引导强度，人为可调）<br>
+$w$越大， $v^{cfg}$越偏向 $p(x|y)$，生成图像严格匹配提示词；<br>
+$w=0$ 等价普通条件生成，无强化；<br>
+$w$过小，画面会偏离输入的描述y。</p>
+<p>Problem：原生均匀t采样不合理，因为中等噪声最难，但训练样本较少<br>
+Solution：Logit-Normal 非均匀采样，提升中间噪声 t 的采样概率</p>
+<p>Problem：扩散模型在高分辨率情况下工作状态不理想，因为高分辨率需要更加精细的纹理信息、光影细节，高噪声容易损失掉这部分信息，如果t按均匀采样或者在中间采样，会导致高噪声情况下采样少，难以还原</p>
+<h1>3、Latent Diffusion Models（LDM 潜扩散模型）</h1>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/b7615828-e880-4e16-9713-20e23a615a28"><img width="977" height="505" alt="Image" src="https://github.com/user-attachments/assets/b7615828-e880-4e16-9713-20e23a615a28" style="max-width: 100%; height: auto; max-height: 505px;; aspect-ratio: 977 / 505; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/1fdb99b0-2983-4a39-9927-53e6a78989ea"><img width="977" height="501" alt="Image" src="https://github.com/user-attachments/assets/1fdb99b0-2983-4a39-9927-53e6a78989ea" style="max-width: 100%; height: auto; max-height: 501px;; aspect-ratio: 977 / 501; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/601d5595-3676-4637-9c31-adb445752fa6"><img width="986" height="495" alt="Image" src="https://github.com/user-attachments/assets/601d5595-3676-4637-9c31-adb445752fa6" style="max-width: 100%; height: auto; max-height: 495px;; aspect-ratio: 986 / 495; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>Problem：原始扩散模型计算量大，内存开销大<br>
+Solution：先引入VAE，原图 $H×W×3$ 经过Encoder下采样D倍，得到小潜变量 $H/D × W/D × C$；Decoder可以把latent还原回高清原图</p>
+<p>Problem：单纯标准VAE解码出来的图像普遍模糊<br>
+Solution：VAE训练时额外加一个<strong>判别器Discriminator</strong>，对抗训练提升细节清晰度</p>
+<h1>4、DiT Diffusion Transformer（基于 Transformer 的扩散骨干）</h1>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/343db7f2-9e4f-47cb-8e7e-6fccc0bb4718"><img width="855" height="480" alt="Image" src="https://github.com/user-attachments/assets/343db7f2-9e4f-47cb-8e7e-6fccc0bb4718" style="max-width: 100%; height: auto; max-height: 480px;; aspect-ratio: 855 / 480; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<h1>5、Text-to-Image</h1>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/23c6b506-08f4-4699-8ef5-1b372b6cbed3"><img width="977" height="505" alt="Image" src="https://github.com/user-attachments/assets/23c6b506-08f4-4699-8ef5-1b372b6cbed3" style="max-width: 100%; height: auto; max-height: 505px;; aspect-ratio: 977 / 505; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<h1>6、Text-to-Video</h1>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/c06d1622-c81f-44e0-b910-5b299136c412"><img width="987" height="490" alt="Image" src="https://github.com/user-attachments/assets/c06d1622-c81f-44e0-b910-5b299136c412" style="max-width: 100%; height: auto; max-height: 490px;; aspect-ratio: 987 / 490; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<h1>7、Diffusion Distillation 扩散蒸馏（解决采样慢的痛点）</h1>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/3a115995-1007-489c-98f8-32e0c15d3af6"><img width="982" height="505" alt="Image" src="https://github.com/user-attachments/assets/3a115995-1007-489c-98f8-32e0c15d3af6" style="max-width: 100%; height: auto; max-height: 505px;; aspect-ratio: 982 / 505; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<h1>8、Generalized Diffusion</h1>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/b2348494-4891-4f2c-b935-faf60f5595a2"><img width="882" height="298" alt="Image" src="https://github.com/user-attachments/assets/b2348494-4891-4f2c-b935-faf60f5595a2" style="max-width: 100%; height: auto; max-height: 298px;; aspect-ratio: 882 / 298; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>实际中，一般以各种函数来替代上文所讲的模型中的相关变量：</p>
+<p>$$
+\begin{aligned}
+a(t) &amp;= 1 - t \\
+b(t) &amp;= t \\
+c(t) &amp;= -1 \\
+d(t) &amp;= 1
+\end{aligned}
+$$</p>
+<p>How do we choose these functions？<br>
+Usually through some mathematical formalism.</p>
+<p>（1）</p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/efd7224e-2e33-45b2-9519-2959ca614754"><img width="852" height="356" alt="Image" src="https://github.com/user-attachments/assets/efd7224e-2e33-45b2-9519-2959ca614754" style="max-width: 100%; height: auto; max-height: 356px;; aspect-ratio: 852 / 356; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p> 
+<p>（2）</p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/a79b2558-27c6-48fe-8a6a-f8e7854c4c5d"><img width="826" height="333" alt="Image" src="https://github.com/user-attachments/assets/a79b2558-27c6-48fe-8a6a-f8e7854c4c5d" style="max-width: 100%; height: auto; max-height: 333px;; aspect-ratio: 826 / 333; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>（3）</p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/8e4acfb8-a973-4919-8652-3ff98083cf04"><img width="598" height="340" alt="Image" src="https://github.com/user-attachments/assets/8e4acfb8-a973-4919-8652-3ff98083cf04" style="max-width: 100%; height: auto; max-height: 340px;; aspect-ratio: 598 / 340; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p></div>
+<div style="font-size:small;margin-top:8px;float:right;"></div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://personawsx.github.io">wsx的博客</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if(""!=""){
+    var startSite=new Date("");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="网站运行 "+diffDay+" 天"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.disabled=true;
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","personawsx/personawsx.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+
+
+</script>
+<script>MathJax = {tex: {inlineMath: [["$", "$"]]}};</script><script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+</html>
