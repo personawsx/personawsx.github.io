@@ -10,9 +10,57 @@
         let theme = localStorage.getItem("meek_theme") || "light";
         document.documentElement.setAttribute("data-color-mode", theme);
     </script>
-<meta name="description" content="">
+<meta name="description" content=" 
+<img width='961' height='432' alt='Image' src='https://github.com/user-attachments/assets/252e661d-2d1c-4436-9b04-fa7a39cc8ac2' />
+
+<img width='868' height='421' alt='Image' src='https://github.com/user-attachments/assets/5be79945-996b-4037-ac5c-63c816c64017' />
+
+<img width='917' height='410' alt='Image' src='https://github.com/user-attachments/assets/32579b32-3922-447c-8cf0-9f4e0b30ff13' />
+
+<img width='983' height='327' alt='Image' src='https://github.com/user-attachments/assets/8e34bdaa-8615-4252-9758-bfcd02184ffe' />
+
+#### How do identify a model as a Foundation（基础模型）?
+Always see with foundation models:
+general /robust to many different tasks
+
+#### Often see with foundation models:
+Large # params
+Large amount of data
+Self-supervised pre-training objective
+
+自监督学习的目标：
+将带有同类元素的照片和文字归为一类
+<img width='950' height='430' alt='Image' src='https://github.com/user-attachments/assets/4b496669-809f-430c-a39c-5153673d7898' />
+
+<img width='897' height='500' alt='Image' src='https://github.com/user-attachments/assets/37ef3912-7ee4-4cae-834f-e3c9e6ecdd1d' />
+
+ 。">
 <meta property="og:title" content="cs231n lecture 16 Vision and Language">
-<meta property="og:description" content="">
+<meta property="og:description" content=" 
+<img width='961' height='432' alt='Image' src='https://github.com/user-attachments/assets/252e661d-2d1c-4436-9b04-fa7a39cc8ac2' />
+
+<img width='868' height='421' alt='Image' src='https://github.com/user-attachments/assets/5be79945-996b-4037-ac5c-63c816c64017' />
+
+<img width='917' height='410' alt='Image' src='https://github.com/user-attachments/assets/32579b32-3922-447c-8cf0-9f4e0b30ff13' />
+
+<img width='983' height='327' alt='Image' src='https://github.com/user-attachments/assets/8e34bdaa-8615-4252-9758-bfcd02184ffe' />
+
+#### How do identify a model as a Foundation（基础模型）?
+Always see with foundation models:
+general /robust to many different tasks
+
+#### Often see with foundation models:
+Large # params
+Large amount of data
+Self-supervised pre-training objective
+
+自监督学习的目标：
+将带有同类元素的照片和文字归为一类
+<img width='950' height='430' alt='Image' src='https://github.com/user-attachments/assets/4b496669-809f-430c-a39c-5153673d7898' />
+
+<img width='897' height='500' alt='Image' src='https://github.com/user-attachments/assets/37ef3912-7ee4-4cae-834f-e3c9e6ecdd1d' />
+
+ 。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://personawsx.github.io/post/cs231n%20lecture%2016%20Vision%20and%20Language.html">
 <meta property="og:image" content="https://avatars.githubusercontent.com/u/171470826?v=4&size=64">
@@ -73,7 +121,21 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </div>
 </div>
     <div id="content">
-<div class="markdown-body" id="postBody"></div>
+<div class="markdown-body" id="postBody"><p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/252e661d-2d1c-4436-9b04-fa7a39cc8ac2"><img width="961" height="432" alt="Image" src="https://github.com/user-attachments/assets/252e661d-2d1c-4436-9b04-fa7a39cc8ac2" style="max-width: 100%; height: auto; max-height: 432px;; aspect-ratio: 961 / 432; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/5be79945-996b-4037-ac5c-63c816c64017"><img width="868" height="421" alt="Image" src="https://github.com/user-attachments/assets/5be79945-996b-4037-ac5c-63c816c64017" style="max-width: 100%; height: auto; max-height: 421px;; aspect-ratio: 868 / 421; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/32579b32-3922-447c-8cf0-9f4e0b30ff13"><img width="917" height="410" alt="Image" src="https://github.com/user-attachments/assets/32579b32-3922-447c-8cf0-9f4e0b30ff13" style="max-width: 100%; height: auto; max-height: 410px;; aspect-ratio: 917 / 410; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/8e34bdaa-8615-4252-9758-bfcd02184ffe"><img width="983" height="327" alt="Image" src="https://github.com/user-attachments/assets/8e34bdaa-8615-4252-9758-bfcd02184ffe" style="max-width: 100%; height: auto; max-height: 327px;; aspect-ratio: 983 / 327; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<h4>How do identify a model as a Foundation（基础模型）?</h4>
+<p>Always see with foundation models:<br>
+general /robust to many different tasks</p>
+<h4>Often see with foundation models:</h4>
+<p>Large # params<br>
+Large amount of data<br>
+Self-supervised pre-training objective</p>
+<p>自监督学习的目标：<br>
+将带有同类元素的照片和文字归为一类<br>
+<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/4b496669-809f-430c-a39c-5153673d7898"><img width="950" height="430" alt="Image" src="https://github.com/user-attachments/assets/4b496669-809f-430c-a39c-5153673d7898" style="max-width: 100%; height: auto; max-height: 430px;; aspect-ratio: 950 / 430; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/37ef3912-7ee4-4cae-834f-e3c9e6ecdd1d"><img width="897" height="500" alt="Image" src="https://github.com/user-attachments/assets/37ef3912-7ee4-4cae-834f-e3c9e6ecdd1d" style="max-width: 100%; height: auto; max-height: 500px;; aspect-ratio: 897 / 500; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p></div>
 <div style="font-size:small;margin-top:8px;float:right;"></div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
