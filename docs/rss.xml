@@ -1,5 +1,74 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>wsx的博客</title><link>https://personawsx.github.io</link><description>我是wsx，北邮研究生</description><copyright>wsx的博客</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://avatars.githubusercontent.com/u/171470826?v=4&amp;size=64</url><title>avatar</title><link>https://personawsx.github.io</link></image><lastBuildDate>Thu, 16 Jul 2026 12:33:57 +0000</lastBuildDate><managingEditor>wsx的博客</managingEditor><ttl>60</ttl><webMaster>wsx的博客</webMaster><item><title>cs231n lecture 18 Human-Centered AI</title><link>https://personawsx.github.io/post/cs231n%20lecture%2018%20Human-Centered%20AI.html</link><guid isPermaLink="true">https://personawsx.github.io/post/cs231n%20lecture%2018%20Human-Centered%20AI.html</guid><pubDate>Thu, 16 Jul 2026 12:33:27 +0000</pubDate></item><item><title>cs231n lecture 17 Robot Learning</title><link>https://personawsx.github.io/post/cs231n%20lecture%2017%20Robot%20Learning.html</link><guid isPermaLink="true">https://personawsx.github.io/post/cs231n%20lecture%2017%20Robot%20Learning.html</guid><pubDate>Thu, 16 Jul 2026 12:32:44 +0000</pubDate></item><item><title>cs231n lecture 16 Vision and Language</title><link>https://personawsx.github.io/post/cs231n%20lecture%2016%20Vision%20and%20Language.html</link><guid isPermaLink="true">https://personawsx.github.io/post/cs231n%20lecture%2016%20Vision%20and%20Language.html</guid><pubDate>Wed, 15 Jul 2026 11:52:19 +0000</pubDate></item><item><title>cs231n lecture 15 3D Vision</title><link>https://personawsx.github.io/post/cs231n%20lecture%2015%203D%20Vision.html</link><guid isPermaLink="true">https://personawsx.github.io/post/cs231n%20lecture%2015%203D%20Vision.html</guid><pubDate>Wed, 15 Jul 2026 11:51:48 +0000</pubDate></item><item><title>cs231n lecture 14 Generative Models 2</title><link>https://personawsx.github.io/post/cs231n%20lecture%2014%20Generative%20Models%202.html</link><description># 1、Generative Adversarial Networks
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>wsx的博客</title><link>https://personawsx.github.io</link><description>我是wsx，北邮研究生</description><copyright>wsx的博客</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://avatars.githubusercontent.com/u/171470826?v=4&amp;size=64</url><title>avatar</title><link>https://personawsx.github.io</link></image><lastBuildDate>Thu, 16 Jul 2026 15:30:06 +0000</lastBuildDate><managingEditor>wsx的博客</managingEditor><ttl>60</ttl><webMaster>wsx的博客</webMaster><item><title>cs231n lecture 18 Human-Centered AI</title><link>https://personawsx.github.io/post/cs231n%20lecture%2018%20Human-Centered%20AI.html</link><guid isPermaLink="true">https://personawsx.github.io/post/cs231n%20lecture%2018%20Human-Centered%20AI.html</guid><pubDate>Thu, 16 Jul 2026 12:33:27 +0000</pubDate></item><item><title>cs231n lecture 17 Robot Learning</title><link>https://personawsx.github.io/post/cs231n%20lecture%2017%20Robot%20Learning.html</link><guid isPermaLink="true">https://personawsx.github.io/post/cs231n%20lecture%2017%20Robot%20Learning.html</guid><pubDate>Thu, 16 Jul 2026 12:32:44 +0000</pubDate></item><item><title>cs231n lecture 16 Vision and Language</title><link>https://personawsx.github.io/post/cs231n%20lecture%2016%20Vision%20and%20Language.html</link><guid isPermaLink="true">https://personawsx.github.io/post/cs231n%20lecture%2016%20Vision%20and%20Language.html</guid><pubDate>Wed, 15 Jul 2026 11:52:19 +0000</pubDate></item><item><title>cs231n lecture 15 3D Vision</title><link>https://personawsx.github.io/post/cs231n%20lecture%2015%203D%20Vision.html</link><description>&lt;img width='913' height='477' alt='Image' src='https://github.com/user-attachments/assets/394d504d-7594-49ef-89e4-7b2b4f4581d8' /&gt;
+
+### （1）显式表示（Explicit）：
+点云（Point cloud）
+多边形网格（Polygon mesh）
+细分曲面、非均匀有理B样条（Subdivision, NURBS）
+ ……
+
+### （2）隐式表示（Implicit）：
+水平集（Level sets，图内拼写笔误Lever）
+代数曲面（Algebraic surface）
+距离函数（Distance functions）
+ ……
+
+每种表示方案都最适配特定任务、特定类型的几何体
+
+&lt;img width='692' height='407' alt='Image' src='https://github.com/user-attachments/assets/1f3cf86d-b3a1-4840-aa29-c79ae463cce0' /&gt;
+
+### 几何表示方案的考量因素
+1. **存储需求**：数据需要能在计算机中保存
+2. **模型创建**：生成全新模型
+    输入交互方式、操作界面……
+3. **几何运算**
+    编辑、简化、平滑、滤波、修复……
+4. **渲染输出**
+    光栅化、光线追踪、神经渲染……
+5. **动画制作**
+ 
+&lt;img width='913' height='523' alt='Image' src='https://github.com/user-attachments/assets/e4bfdde3-3ab5-47d8-b6f3-8a2a017efba9' /&gt;
+
+# 一、Explicit
+
+### 1、Point Clouds
+
+Simplest representation: only points, no connectivity
+Collection of $(x,y,z)$ coordinates, possibly with normal
+Points with orientation are called surfels（面元）
+Often results from scanners
+Potentially noisy
+Registration of multiple images
+
+### 优点：
+Easily represent any kind of geometry
+Useful for large datasets
+### Other limitations:
+Difficult to draw in undersampled regions（采样稀疏处难以绘制）
+No simplification（模型简化） or subdivision（细分曲面）
+No direction smooth rendering（基于方向的平滑渲染）
+No topological information（缺少拓普信息）
+
+&lt;img width='537' height='117' alt='Image' src='https://github.com/user-attachments/assets/56d55dea-a52c-493e-9bc4-dabd2905e2e8' /&gt;
+
+### 2、Polygon meshes（多边形网格）
+
+&lt;img width='622' height='170' alt='Image' src='https://github.com/user-attachments/assets/2775798b-28ea-4f5b-911e-659ed859157c' /&gt;
+
+Subdivision（细分曲面）
+需要精细：增加网格数量；需要快速：减少网格数量
+
+Mesh Regularization：用三角形网格连接
+
+### 3、Shape Representations：
+Non-parametric：Points，Meshes
+Parametric Representations：
+
+&lt;img width='290' height='177' alt='Image' src='https://github.com/user-attachments/assets/7ab4c1a1-eeaf-4dbe-a2fe-29aa99001d08' /&gt;
+
+&lt;img width='742' height='498' alt='Image' src='https://github.com/user-attachments/assets/50ca378d-0119-4272-b30f-439e00a534c3' /&gt;
+
+上述方法都属于显性采样，所有点都被直接给出来。</description><guid isPermaLink="true">https://personawsx.github.io/post/cs231n%20lecture%2015%203D%20Vision.html</guid><pubDate>Wed, 15 Jul 2026 11:51:48 +0000</pubDate></item><item><title>cs231n lecture 14 Generative Models 2</title><link>https://personawsx.github.io/post/cs231n%20lecture%2014%20Generative%20Models%202.html</link><description># 1、Generative Adversarial Networks
 Generative Adversarial Networks give up on modeling p(x) ，but allow us to draw samples from p(x) .
 
 &lt;img width='978' height='501' alt='Image' src='https://github.com/user-attachments/assets/584a4ce3-9ff0-4a9f-89bf-ed87659cdc07' /&gt;
