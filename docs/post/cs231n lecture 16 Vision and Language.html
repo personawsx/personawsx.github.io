@@ -32,9 +32,35 @@ Self-supervised pre-training objective
 将带有同类元素的照片和文字归为一类
 <img width='950' height='430' alt='Image' src='https://github.com/user-attachments/assets/4b496669-809f-430c-a39c-5153673d7898' />
 
+# 1、SimCLR VS CLIP
 <img width='897' height='500' alt='Image' src='https://github.com/user-attachments/assets/37ef3912-7ee4-4cae-834f-e3c9e6ecdd1d' />
 
- 。">
+SimCLR：只能实现图像的对比学习
+CLIP：跨模态图文对比学习
+
+
+<img width='975' height='435' alt='Image' src='https://github.com/user-attachments/assets/42f2aef0-b14e-40de-a847-80297feda334' />
+
+CLIP：先用海量图文对做无监督对比预训练，得到通用图像编码器，再拿这个编码器配合简单线性层，直接完成分类、检测、分割等各类视觉任务
+ 
+Problem：想要做图像分类 / 检测 / 分割，必须提供该任务的标注数据，训练这个新增线性层，即不支持 Zero-Shot（零样本）
+
+
+### LLM的不同之处：支持 Zero-Shot（零样本）
+
+<img width='987' height='495' alt='Image' src='https://github.com/user-attachments/assets/724a1c1f-c91c-4ae0-8893-f6e7c8d6d008' />
+
+<img width='962' height='462' alt='Image' src='https://github.com/user-attachments/assets/769b2c9a-dc6d-4f39-98e4-33a66534fb71' />
+
+Question：视觉语言模型（CLIP）怎么零样本使用？
+
+<img width='633' height='323' alt='Image' src='https://github.com/user-attachments/assets/187cfadd-37ac-4be1-b63e-4f35cc959136' />
+
+### Solution：
+
+待识别图片送入 Image Encoder，得到图像向量 image vector；
+类别文字（比如 'Dog'等）送入 Text Encoder，得到文本向量 text vector；
+计算两个向量的相似度匹配分数（图里 0.27），分数越高代表图片和这个文字描述越匹配（1-NN 近邻思想）。">
 <meta property="og:title" content="cs231n lecture 16 Vision and Language">
 <meta property="og:description" content=" 
 <img width='961' height='432' alt='Image' src='https://github.com/user-attachments/assets/252e661d-2d1c-4436-9b04-fa7a39cc8ac2' />
@@ -58,9 +84,35 @@ Self-supervised pre-training objective
 将带有同类元素的照片和文字归为一类
 <img width='950' height='430' alt='Image' src='https://github.com/user-attachments/assets/4b496669-809f-430c-a39c-5153673d7898' />
 
+# 1、SimCLR VS CLIP
 <img width='897' height='500' alt='Image' src='https://github.com/user-attachments/assets/37ef3912-7ee4-4cae-834f-e3c9e6ecdd1d' />
 
- 。">
+SimCLR：只能实现图像的对比学习
+CLIP：跨模态图文对比学习
+
+
+<img width='975' height='435' alt='Image' src='https://github.com/user-attachments/assets/42f2aef0-b14e-40de-a847-80297feda334' />
+
+CLIP：先用海量图文对做无监督对比预训练，得到通用图像编码器，再拿这个编码器配合简单线性层，直接完成分类、检测、分割等各类视觉任务
+ 
+Problem：想要做图像分类 / 检测 / 分割，必须提供该任务的标注数据，训练这个新增线性层，即不支持 Zero-Shot（零样本）
+
+
+### LLM的不同之处：支持 Zero-Shot（零样本）
+
+<img width='987' height='495' alt='Image' src='https://github.com/user-attachments/assets/724a1c1f-c91c-4ae0-8893-f6e7c8d6d008' />
+
+<img width='962' height='462' alt='Image' src='https://github.com/user-attachments/assets/769b2c9a-dc6d-4f39-98e4-33a66534fb71' />
+
+Question：视觉语言模型（CLIP）怎么零样本使用？
+
+<img width='633' height='323' alt='Image' src='https://github.com/user-attachments/assets/187cfadd-37ac-4be1-b63e-4f35cc959136' />
+
+### Solution：
+
+待识别图片送入 Image Encoder，得到图像向量 image vector；
+类别文字（比如 'Dog'等）送入 Text Encoder，得到文本向量 text vector；
+计算两个向量的相似度匹配分数（图里 0.27），分数越高代表图片和这个文字描述越匹配（1-NN 近邻思想）。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://personawsx.github.io/post/cs231n%20lecture%2016%20Vision%20and%20Language.html">
 <meta property="og:image" content="https://avatars.githubusercontent.com/u/171470826?v=4&size=64">
@@ -135,7 +187,27 @@ Self-supervised pre-training objective</p>
 <p>自监督学习的目标：<br>
 将带有同类元素的照片和文字归为一类<br>
 <a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/4b496669-809f-430c-a39c-5153673d7898"><img width="950" height="430" alt="Image" src="https://github.com/user-attachments/assets/4b496669-809f-430c-a39c-5153673d7898" style="max-width: 100%; height: auto; max-height: 430px;; aspect-ratio: 950 / 430; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
-<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/37ef3912-7ee4-4cae-834f-e3c9e6ecdd1d"><img width="897" height="500" alt="Image" src="https://github.com/user-attachments/assets/37ef3912-7ee4-4cae-834f-e3c9e6ecdd1d" style="max-width: 100%; height: auto; max-height: 500px;; aspect-ratio: 897 / 500; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p></div>
+<h1>1、SimCLR VS CLIP</h1>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/37ef3912-7ee4-4cae-834f-e3c9e6ecdd1d"><img width="897" height="500" alt="Image" src="https://github.com/user-attachments/assets/37ef3912-7ee4-4cae-834f-e3c9e6ecdd1d" style="max-width: 100%; height: auto; max-height: 500px;; aspect-ratio: 897 / 500; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>SimCLR：只能实现图像的对比学习<br>
+CLIP：跨模态图文对比学习</p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/42f2aef0-b14e-40de-a847-80297feda334"><img width="975" height="435" alt="Image" src="https://github.com/user-attachments/assets/42f2aef0-b14e-40de-a847-80297feda334" style="max-width: 100%; height: auto; max-height: 435px;; aspect-ratio: 975 / 435; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>CLIP：先用海量图文对做无监督对比预训练，得到通用图像编码器，再拿这个编码器配合简单线性层，直接完成分类、检测、分割等各类视觉任务</p>
+<p>Problem：想要做图像分类 / 检测 / 分割，必须提供该任务的标注数据，训练这个新增线性层，即不支持 Zero-Shot（零样本）</p>
+<h3>LLM的不同之处：支持 Zero-Shot（零样本）</h3>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/724a1c1f-c91c-4ae0-8893-f6e7c8d6d008"><img width="987" height="495" alt="Image" src="https://github.com/user-attachments/assets/724a1c1f-c91c-4ae0-8893-f6e7c8d6d008" style="max-width: 100%; height: auto; max-height: 495px;; aspect-ratio: 987 / 495; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/769b2c9a-dc6d-4f39-98e4-33a66534fb71"><img width="962" height="462" alt="Image" src="https://github.com/user-attachments/assets/769b2c9a-dc6d-4f39-98e4-33a66534fb71" style="max-width: 100%; height: auto; max-height: 462px;; aspect-ratio: 962 / 462; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>Question：视觉语言模型（CLIP）怎么零样本使用？</p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/187cfadd-37ac-4be1-b63e-4f35cc959136"><img width="633" height="323" alt="Image" src="https://github.com/user-attachments/assets/187cfadd-37ac-4be1-b63e-4f35cc959136" style="max-width: 100%; height: auto; max-height: 323px;; aspect-ratio: 633 / 323; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<h3>Solution：</h3>
+<p>待识别图片送入 Image Encoder，得到图像向量 image vector；<br>
+类别文字（比如 "Dog"等）送入 Text Encoder，得到文本向量 text vector；<br>
+计算两个向量的相似度匹配分数（图里 0.27），分数越高代表图片和这个文字描述越匹配（1-NN 近邻思想）。</p>
+<h3>improvement：</h3>
+<h4>（1）使用完整描述短语，提升精度；</h4>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/1c10cb44-c641-4991-8e47-58904b309a00"><img width="647" height="307" alt="Image" src="https://github.com/user-attachments/assets/1c10cb44-c641-4991-8e47-58904b309a00" style="max-width: 100%; height: auto; max-height: 307px;; aspect-ratio: 647 / 307; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<h4>（2）多短语消除偏见</h4>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/bb80f15c-e6e7-4219-9a3a-af344c79f82e"><img width="623" height="307" alt="Image" src="https://github.com/user-attachments/assets/bb80f15c-e6e7-4219-9a3a-af344c79f82e" style="max-width: 100%; height: auto; max-height: 307px;; aspect-ratio: 623 / 307; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p></div>
 <div style="font-size:small;margin-top:8px;float:right;"></div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>

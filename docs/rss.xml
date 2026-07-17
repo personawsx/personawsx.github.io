@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>wsx的博客</title><link>https://personawsx.github.io</link><description>我是wsx，北邮研究生</description><copyright>wsx的博客</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://avatars.githubusercontent.com/u/171470826?v=4&amp;size=64</url><title>avatar</title><link>https://personawsx.github.io</link></image><lastBuildDate>Thu, 16 Jul 2026 15:46:46 +0000</lastBuildDate><managingEditor>wsx的博客</managingEditor><ttl>60</ttl><webMaster>wsx的博客</webMaster><item><title>cs231n lecture 18 Human-Centered AI</title><link>https://personawsx.github.io/post/cs231n%20lecture%2018%20Human-Centered%20AI.html</link><guid isPermaLink="true">https://personawsx.github.io/post/cs231n%20lecture%2018%20Human-Centered%20AI.html</guid><pubDate>Thu, 16 Jul 2026 12:33:27 +0000</pubDate></item><item><title>cs231n lecture 17 Robot Learning</title><link>https://personawsx.github.io/post/cs231n%20lecture%2017%20Robot%20Learning.html</link><description> 
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>wsx的博客</title><link>https://personawsx.github.io</link><description>我是wsx，北邮研究生</description><copyright>wsx的博客</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://avatars.githubusercontent.com/u/171470826?v=4&amp;size=64</url><title>avatar</title><link>https://personawsx.github.io</link></image><lastBuildDate>Fri, 17 Jul 2026 03:07:11 +0000</lastBuildDate><managingEditor>wsx的博客</managingEditor><ttl>60</ttl><webMaster>wsx的博客</webMaster><item><title>cs231n lecture 18 Human-Centered AI</title><link>https://personawsx.github.io/post/cs231n%20lecture%2018%20Human-Centered%20AI.html</link><guid isPermaLink="true">https://personawsx.github.io/post/cs231n%20lecture%2018%20Human-Centered%20AI.html</guid><pubDate>Thu, 16 Jul 2026 12:33:27 +0000</pubDate></item><item><title>cs231n lecture 17 Robot Learning</title><link>https://personawsx.github.io/post/cs231n%20lecture%2017%20Robot%20Learning.html</link><description> 
 &lt;img width='946' height='435' alt='Image' src='https://github.com/user-attachments/assets/6c38ac93-ba62-4560-8c1a-66c22485991c' /&gt;
 
 # 1、Problem Formulation
@@ -25,9 +25,35 @@ Self-supervised pre-training objective
 将带有同类元素的照片和文字归为一类
 &lt;img width='950' height='430' alt='Image' src='https://github.com/user-attachments/assets/4b496669-809f-430c-a39c-5153673d7898' /&gt;
 
+# 1、SimCLR VS CLIP
 &lt;img width='897' height='500' alt='Image' src='https://github.com/user-attachments/assets/37ef3912-7ee4-4cae-834f-e3c9e6ecdd1d' /&gt;
 
- 。</description><guid isPermaLink="true">https://personawsx.github.io/post/cs231n%20lecture%2016%20Vision%20and%20Language.html</guid><pubDate>Wed, 15 Jul 2026 11:52:19 +0000</pubDate></item><item><title>cs231n lecture 15 3D Vision</title><link>https://personawsx.github.io/post/cs231n%20lecture%2015%203D%20Vision.html</link><description>&lt;img width='913' height='477' alt='Image' src='https://github.com/user-attachments/assets/394d504d-7594-49ef-89e4-7b2b4f4581d8' /&gt;
+SimCLR：只能实现图像的对比学习
+CLIP：跨模态图文对比学习
+
+
+&lt;img width='975' height='435' alt='Image' src='https://github.com/user-attachments/assets/42f2aef0-b14e-40de-a847-80297feda334' /&gt;
+
+CLIP：先用海量图文对做无监督对比预训练，得到通用图像编码器，再拿这个编码器配合简单线性层，直接完成分类、检测、分割等各类视觉任务
+ 
+Problem：想要做图像分类 / 检测 / 分割，必须提供该任务的标注数据，训练这个新增线性层，即不支持 Zero-Shot（零样本）
+
+
+### LLM的不同之处：支持 Zero-Shot（零样本）
+
+&lt;img width='987' height='495' alt='Image' src='https://github.com/user-attachments/assets/724a1c1f-c91c-4ae0-8893-f6e7c8d6d008' /&gt;
+
+&lt;img width='962' height='462' alt='Image' src='https://github.com/user-attachments/assets/769b2c9a-dc6d-4f39-98e4-33a66534fb71' /&gt;
+
+Question：视觉语言模型（CLIP）怎么零样本使用？
+
+&lt;img width='633' height='323' alt='Image' src='https://github.com/user-attachments/assets/187cfadd-37ac-4be1-b63e-4f35cc959136' /&gt;
+
+### Solution：
+
+待识别图片送入 Image Encoder，得到图像向量 image vector；
+类别文字（比如 'Dog'等）送入 Text Encoder，得到文本向量 text vector；
+计算两个向量的相似度匹配分数（图里 0.27），分数越高代表图片和这个文字描述越匹配（1-NN 近邻思想）。</description><guid isPermaLink="true">https://personawsx.github.io/post/cs231n%20lecture%2016%20Vision%20and%20Language.html</guid><pubDate>Wed, 15 Jul 2026 11:52:19 +0000</pubDate></item><item><title>cs231n lecture 15 3D Vision</title><link>https://personawsx.github.io/post/cs231n%20lecture%2015%203D%20Vision.html</link><description>&lt;img width='913' height='477' alt='Image' src='https://github.com/user-attachments/assets/394d504d-7594-49ef-89e4-7b2b4f4581d8' /&gt;
 
 ### （1）显式表示（Explicit）：
 点云（Point cloud）
