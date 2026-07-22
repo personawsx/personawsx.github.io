@@ -1,5 +1,24 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>wsx的博客</title><link>https://personawsx.github.io</link><description>我是wsx，北邮研究生</description><copyright>wsx的博客</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://avatars.githubusercontent.com/u/171470826?v=4&amp;size=64</url><title>avatar</title><link>https://personawsx.github.io</link></image><lastBuildDate>Tue, 21 Jul 2026 13:26:32 +0000</lastBuildDate><managingEditor>wsx的博客</managingEditor><ttl>60</ttl><webMaster>wsx的博客</webMaster><item><title>cs336 lecture 2 Pytorch</title><link>https://personawsx.github.io/post/cs336%20lecture%202%20Pytorch.html</link><guid isPermaLink="true">https://personawsx.github.io/post/cs336%20lecture%202%20Pytorch.html</guid><pubDate>Mon, 20 Jul 2026 10:47:32 +0000</pubDate></item><item><title>cs336 lecture 1 overview；tokenization</title><link>https://personawsx.github.io/post/cs336%20lecture%201%20overview%EF%BC%9Btokenization.html</link><description>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>wsx的博客</title><link>https://personawsx.github.io</link><description>我是wsx，北邮研究生</description><copyright>wsx的博客</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://avatars.githubusercontent.com/u/171470826?v=4&amp;size=64</url><title>avatar</title><link>https://personawsx.github.io</link></image><lastBuildDate>Wed, 22 Jul 2026 12:18:50 +0000</lastBuildDate><managingEditor>wsx的博客</managingEditor><ttl>60</ttl><webMaster>wsx的博客</webMaster><item><title>cs336 lecture 2 Pytorch</title><link>https://personawsx.github.io/post/cs336%20lecture%202%20Pytorch.html</link><description>Recall: what's the best model one can train given fixed resources (compute, memory)?
+In other words: maximize (computational) efficiency.
+Prerequisite: understand the resources (compute, memory) for a given computation.
+
+motivating_questions()
+What knowledge to take away from this lecture:    
+Mechanics: straightforward (PyTorch semantics) 
+Mindset: resource accounting (remember to do it)   
+Intuitions: get a sense of how resources are spent, no ML magic today
+
+### 1、def tensors_basics():（张量的定义）
+    Tensors are the basic building block for storing everything:
+data    
+parameters 
+gradients  
+optimizer state   
+activations
+张量包括向量、矩阵甚至任意阶的数组
+
+问：张量需要多少存储空间？答：取决于张量的类型，一般张量里存储的是浮点数（大多指float32），也可以为整数或者其他类型。</description><guid isPermaLink="true">https://personawsx.github.io/post/cs336%20lecture%202%20Pytorch.html</guid><pubDate>Mon, 20 Jul 2026 10:47:32 +0000</pubDate></item><item><title>cs336 lecture 1 overview；tokenization</title><link>https://personawsx.github.io/post/cs336%20lecture%201%20overview%EF%BC%9Btokenization.html</link><description>
 ### What can we learn in this class that transfers to frontier model？
 There are three types of knowledge:
 Mechanics: how things work (what a Transformer is, how model parallelism works)
