@@ -19,7 +19,7 @@ What knowledge to take away from this lecture:
 Mechanics: straightforward (PyTorch semantics) 
 Mindset: resource accounting (remember to do it)   
 Intuitions: get a sense of how resources are spent, no ML magic today
-
+ 
 ### 1、def tensors_basics():（张量的定义）
     Tensors are the basic building block for storing everything:
 data    
@@ -40,7 +40,7 @@ What knowledge to take away from this lecture:
 Mechanics: straightforward (PyTorch semantics) 
 Mindset: resource accounting (remember to do it)   
 Intuitions: get a sense of how resources are spent, no ML magic today
-
+ 
 ### 1、def tensors_basics():（张量的定义）
     Tensors are the basic building block for storing everything:
 data    
@@ -138,7 +138,61 @@ gradients<br>
 optimizer state<br>
 activations<br>
 张量包括向量、矩阵甚至任意阶的数组</p>
-<p>问：张量需要多少存储空间？答：取决于张量的类型，一般张量里存储的是浮点数（大多指float32），也可以为整数或者其他类型。</p></div>
+<p>问：张量需要多少存储空间？答：取决于张量的类型，一般张量里存储的是浮点数（大多指float32），也可以为整数或者其他类型。</p>
+<h3>float32</h3>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/2fba7af3-0616-49cc-a6f9-efe0826012a1"><img width="2000" height="254" alt="Image" src="https://github.com/user-attachments/assets/2fba7af3-0616-49cc-a6f9-efe0826012a1" style="max-width: 100%; height: auto; max-height: 254px;; aspect-ratio: 2000 / 254; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>单个float32的元素占4字节（8位一字节）</p>
+<h3>float16</h3>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/0fb8484d-256a-457b-a0b5-65ea5a8f2f28"><img width="1081" height="281" alt="Image" src="https://github.com/user-attachments/assets/0fb8484d-256a-457b-a0b5-65ea5a8f2f28" style="max-width: 100%; height: auto; max-height: 281px;; aspect-ratio: 1081 / 281; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>The fp16 data type (also known as float16 or half precision) cuts down the memory.<br>
+However, the dynamic range (especially for small numbers) isn't great.</p>
+<h3>bf16</h3>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/001c767e-5109-45e6-a2de-e9f1e402e86e"><img width="1096" height="277" alt="Image" src="https://github.com/user-attachments/assets/001c767e-5109-45e6-a2de-e9f1e402e86e" style="max-width: 100%; height: auto; max-height: 277px;; aspect-ratio: 1096 / 277; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>Google Brain developed brain floating point (bf16) in 2018 to address this issue.<br>
+bf16 uses the same memory as fp16 but has the same dynamic range as fp32!<br>
+The only catch is that the resolution is worse, but this matters less for deep learning.</p>
+<h3>Mixed precision</h3>
+<p>Implications on training:<br>
+Training with fp32 works, but requires lots of memory.<br>
+Training with fp16 and even bf16 is risky, and you can get instability.</p>
+<h4>Solution:</h4>
+<p>mixed precision training  <a href="https://arxiv.org/pdf/1710.03740.pdf" rel="nofollow">[Micikevicius+ 2017]</a><br>
+Use bf16 for parameters, activations, and gradients<br>
+Use fp32 for optimizer states</p>
+<p>Pytorch has an automatic mixed precision (AMP) library.  <a href="https://pytorch.org/docs/stable/amp.html" rel="nofollow">[docs]</a><br>
+Tries to cast things into bf16 when safe (matmuls, not exp).</p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/c9a74d2f-5803-4f07-a157-530cab495fdb"><img width="850" height="273" alt="Image" src="https://github.com/user-attachments/assets/c9a74d2f-5803-4f07-a157-530cab495fdb" style="max-width: 100%; height: auto; max-height: 273px;; aspect-ratio: 850 / 273; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<h3>einops</h3>
+<h3>（1）einsum</h3>
+<p>z = einsum(x, y, "batch seq1 hidden, batch seq2 hidden -&gt; batch seq1 seq2")<br>
+Dimensions that are not named in the output are summed over.</p>
+<h4>Or can use <code class="notranslate">...</code> to represent broadcasting over any number of dimensions</h4>
+<p>z = einsum(x, y, "... seq1 hidden, ... seq2 hidden -&gt; ... seq1 seq2")</p>
+<h3>（2）reduce</h3>
+<p>You can reduce a single tensor via some operation (e.g., sum, mean, max, min).<br>
+x = torch.ones(2, 3, 4)  # batch seq hidden</p>
+<h4>Old way</h4>
+<p>y = x.sum(dim=-1)</p>
+<h4>New (einops) way</h4>
+<p>y = reduce(x, "... hidden -&gt; ...", "sum")</p>
+<h3>（3）rearrange</h3>
+<p>Sometimes, a dimension represents two dimensions and you want to operate on one of them.<br>
+下面是一个先拆分再合并的例子：<br>
+x = torch.ones(3, 8)  # seq total_hidden<br>
+...where total_hidden is a flattened representation of heads * hidden1<br>
+w = torch.ones(4, 4)  # hidden1 hidden2</p>
+<h3>Break up <code class="notranslate">total_hidden</code> into two dimensions (<code class="notranslate">heads</code> and <code class="notranslate">hidden1</code></h3>
+<p>x = rearrange(x, "... (heads hidden1) -&gt; ... heads hidden1", heads=2)</p>
+<h3>Perform the transformation by <code class="notranslate">w</code></h3>
+<p>x = einsum(x, w, "... hidden1, hidden1 hidden2 -&gt; ... hidden2")</p>
+<h3>Combine <code class="notranslate">heads</code> and <code class="notranslate">hidden2</code> back together</h3>
+<p>x = rearrange(x, "... heads hidden2 -&gt; ... (heads hidden2)")</p>
+<h1>tensor_operations_flops</h1>
+<p>A floating-point operation (FLOP) is a basic operation like addition (x + y) or multiplication (x y).</p>
+<p>Two terribly confusing acronyms (pronounced the same!):<br>
+FLOPs: floating-point operations (measure of computation done)<br>
+FLOP/s: floating-point operations per second (also written as FLOPS), which is used to measure the speed of hardware.</p>
+<p>30</p></div>
 <div style="font-size:small;margin-top:8px;float:right;"></div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>

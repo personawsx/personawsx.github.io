@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>wsx的博客</title><link>https://personawsx.github.io</link><description>我是wsx，北邮研究生</description><copyright>wsx的博客</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://avatars.githubusercontent.com/u/171470826?v=4&amp;size=64</url><title>avatar</title><link>https://personawsx.github.io</link></image><lastBuildDate>Wed, 22 Jul 2026 12:18:50 +0000</lastBuildDate><managingEditor>wsx的博客</managingEditor><ttl>60</ttl><webMaster>wsx的博客</webMaster><item><title>cs336 lecture 2 Pytorch</title><link>https://personawsx.github.io/post/cs336%20lecture%202%20Pytorch.html</link><description>Recall: what's the best model one can train given fixed resources (compute, memory)?
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>wsx的博客</title><link>https://personawsx.github.io</link><description>我是wsx，北邮研究生</description><copyright>wsx的博客</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://avatars.githubusercontent.com/u/171470826?v=4&amp;size=64</url><title>avatar</title><link>https://personawsx.github.io</link></image><lastBuildDate>Thu, 23 Jul 2026 14:52:07 +0000</lastBuildDate><managingEditor>wsx的博客</managingEditor><ttl>60</ttl><webMaster>wsx的博客</webMaster><item><title>cs336 lecture 2 Pytorch</title><link>https://personawsx.github.io/post/cs336%20lecture%202%20Pytorch.html</link><description>Recall: what's the best model one can train given fixed resources (compute, memory)?
 In other words: maximize (computational) efficiency.
 Prerequisite: understand the resources (compute, memory) for a given computation.
 
@@ -8,7 +8,7 @@ What knowledge to take away from this lecture:
 Mechanics: straightforward (PyTorch semantics) 
 Mindset: resource accounting (remember to do it)   
 Intuitions: get a sense of how resources are spent, no ML magic today
-
+ 
 ### 1、def tensors_basics():（张量的定义）
     Tensors are the basic building block for storing everything:
 data    
