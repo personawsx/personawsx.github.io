@@ -90,4 +90,28 @@ Two terribly confusing acronyms (pronounced the same!):
 FLOPs: floating-point operations (measure of computation done) 
 FLOP/s: floating-point operations per second (also written as FLOPS), which is used to measure the speed of hardware.
 
-30
+# Linear model
+B：Number of points
+D：Dimension of each point
+K：Number of outputs
+
+x = torch.ones(B, D, device=cuda_if_available())
+w = torch.randn(D, K, device=cuda_if_available())
+y = x @ w
+
+How many FLOPs is this matmul?
+We have one multiplication (x[i][j] * w[j][k]) and one addition per (i, j, k) triple.
+actual_num_flops = 2 * B * D * K  
+
+注：矩阵计算每一次乘法和加法算一次flop，加法原本应该是D-1，但是为了计算，统一记作D，故结果为2D。
+
+We can also time this operation to see how long it takes.
+actual_time = benchmark(lambda: x @ w)  
+
+# Model FLOPs utilization (MFU)
+表示实际FLOPS与纸面FLOPS之间的差异
+Definition: MFU = (actual FLOP/s) / (promised FLOP/s) [ignore communication/overhead]
+mfu = actual_flop_per_sec / promised_flop_per_sec if promised_flop_per_sec else None  
+Usually, MFU of ≥ 0.5 is quite good!
+But why is MFU not closer to 1?
+To answer this question, we need to look more closely at how computations are done on GPUs...
