@@ -170,6 +170,84 @@ N=样本数量，
 P=网络总参数量。
 原理：前向只做一次线性计算；反向传播必须同时求解权重梯度和输入梯度两组梯度，开销是前向的 2 倍。
 
+# 显存占用近似 
+
+以DeepNetwork 多层全连接网络为例
+
+```
+输入 x ∈ ℝᴰ
+↓
+Block 1（全连接层 W₁ ∈ ℝᴰ×ᴰ + 激活）
+↓
+Block 2（全连接层 W₂ ∈ ℝᴰ×ᴰ + 激活）
+……
+↓
+Block L（全连接层 W_L ∈ ℝᴰ×ᴰ + 激活）
+↓
+输出
+```
+
+1. 一共 **L 层全连接Block**；
+2. 每层权重矩阵形状固定： $\boldsymbol{W\in \mathbb{R}^{D\times D}}$；
+3. **课件简化：忽略偏置bias，只统计权重矩阵参数**；
+4. 输入批次：一次送入 $B$ 个样本；单个样本维度 = $D$；
+5. 每层输出激活张量： $\boldsymbol{activation\in\mathbb{R}^{B\times D}}$
+
+|符号|全称|含义|
+|----|----|----|
+|$D$|Hidden dimension|隐藏层特征维度；权重矩阵边长；单个样本向量长度|
+|$L$|Number of layers|网络层数（全连接Block数量）|
+|$B$|Batch size|批次大小；单次前向送入GPU的样本数量|
+|$N_p$|$num\_parameters$|网络全部可训练权重参数**总元素个数**<br>$\boldsymbol{N_p = D \times D \times L = D^2L}$|
+
+4类显存表达式推导与含义（单位：字节 Bytes）
+
+- bf16（bfloat16）：**每个数值占 2 Byte**
+- fp32（float32）：**每个数值占 4 Byte**
+
+## 1. parameter_memory 权重显存
+
+$$parameter\\_memory = 2 \times N_p$$
+- 用途：存储模型所有权重矩阵 $W_1,W_2...W_L$
+- 精度：权重以 bf16 保存
+- 特性：**与 $B$ 无关，固定开销**
+
+## 2. gradient_memory 梯度显存
+$$gradient\\_memory = 2 \times N_p$$
+- 用途：反向传播，保存每个参数对应的梯度 $\frac{\partial\mathcal{L}}{\partial W}$
+- 精度：梯度 bf16
+- 特性：参数有多少个，梯度就有多少个；**与 $B$ 无关**
+
+## 3. optimizer_state_memory 优化器状态显存
+$$
+\begin{cases}
+\text{AdaGrad：} \quad optimizer\\_state\\_memory = 4 \times N_p \\
+\text{Adam：} \quad optimizer\\_state\\_memory = 8 \times N_p
+\end{cases}
+$$
+- AdaGrad：保存1组统计量（梯度平方），fp32（4字节/参数）
+- Adam：保存2组统计量（一阶动量m、二阶动量v），fp32
+- 特性：**与 $B$ 无关**
+
+## 4. activation_memory 中间激活显存
+$$activation\\_memory = 2 \times B \times D \times L$$
+- 来源： $L$ 层，每层输出激活张量形状 $\mathbb{R}^{B\times D}$；全部激活同时保存在显存供反向传播使用
+- 精度：激活值 bf16
+- 特性：**正比于批次B，B越大显存占用越高**
+
+### 总显存公式
+
+$$
+total\\_memory = parameter\\_memory + gradient\\_memory + optimizer\\_state\\_memory + activation\\_memory
+$$
+
+# 优化显存占用方法：
+Gradient accumulation, activation checkpointing：二者都是降低activation_memory=2BDL
+### （1）Gradient accumulation
+缩小单次迭代输入样本数B，但需要多次前向反向，训练变慢
+### （2）Activation checkpointing
+减少显存中长期保存的激活张量数量，但会重复前向运算，增加 FLOPs
+
 # Summary:
 • Everything is operations on tensors (parameters, gradients, activations, optimizer states, data)
 • einops: better way to think about tensor operations

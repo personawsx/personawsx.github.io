@@ -250,6 +250,114 @@ Compute-bound: arithmetic intensity &gt; accelerator intensity</p>
 N=样本数量，<br>
 P=网络总参数量。<br>
 原理：前向只做一次线性计算；反向传播必须同时求解权重梯度和输入梯度两组梯度，开销是前向的 2 倍。</p>
+<h1>显存占用近似</h1>
+<p>以DeepNetwork 多层全连接网络为例</p>
+<pre class="notranslate"><code class="notranslate">输入 x ∈ ℝᴰ
+↓
+Block 1（全连接层 W₁ ∈ ℝᴰ×ᴰ + 激活）
+↓
+Block 2（全连接层 W₂ ∈ ℝᴰ×ᴰ + 激活）
+……
+↓
+Block L（全连接层 W_L ∈ ℝᴰ×ᴰ + 激活）
+↓
+输出
+</code></pre>
+<ol>
+<li>一共 <strong>L 层全连接Block</strong>；</li>
+<li>每层权重矩阵形状固定： $\boldsymbol{W\in \mathbb{R}^{D\times D}}$；</li>
+<li>
+<strong>课件简化：忽略偏置bias，只统计权重矩阵参数</strong>；</li>
+<li>输入批次：一次送入 $B$ 个样本；单个样本维度 = $D$；</li>
+<li>每层输出激活张量： $\boldsymbol{activation\in\mathbb{R}^{B\times D}}$
+</li>
+</ol>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>符号</th>
+<th>全称</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$D$</td>
+<td>Hidden dimension</td>
+<td>隐藏层特征维度；权重矩阵边长；单个样本向量长度</td>
+</tr>
+<tr>
+<td>$L$</td>
+<td>Number of layers</td>
+<td>网络层数（全连接Block数量）</td>
+</tr>
+<tr>
+<td>$B$</td>
+<td>Batch size</td>
+<td>批次大小；单次前向送入GPU的样本数量</td>
+</tr>
+<tr>
+<td>$N_p$</td>
+<td>$num_parameters$</td>
+<td>网络全部可训练权重参数<strong>总元素个数</strong><br>$\boldsymbol{N_p = D \times D \times L = D^2L}$
+</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>4类显存表达式推导与含义（单位：字节 Bytes）</p>
+<ul>
+<li>bf16（bfloat16）：<strong>每个数值占 2 Byte</strong></li>
+<li>fp32（float32）：<strong>每个数值占 4 Byte</strong></li>
+</ul>
+<h2>1. parameter_memory 权重显存</h2>
+<p>$$parameter\_memory = 2 \times N_p$$</p>
+<ul>
+<li>用途：存储模型所有权重矩阵 $W_1,W_2...W_L$
+</li>
+<li>精度：权重以 bf16 保存</li>
+<li>特性：<strong>与 $B$ 无关，固定开销</strong>
+</li>
+</ul>
+<h2>2. gradient_memory 梯度显存</h2>
+<p>$$gradient\_memory = 2 \times N_p$$</p>
+<ul>
+<li>用途：反向传播，保存每个参数对应的梯度 $\frac{\partial\mathcal{L}}{\partial W}$
+</li>
+<li>精度：梯度 bf16</li>
+<li>特性：参数有多少个，梯度就有多少个；<strong>与 $B$ 无关</strong>
+</li>
+</ul>
+<h2>3. optimizer_state_memory 优化器状态显存</h2>
+<p>$$
+\begin{cases}
+\text{AdaGrad：} \quad optimizer\_state\_memory = 4 \times N_p \\
+\text{Adam：} \quad optimizer\_state\_memory = 8 \times N_p
+\end{cases}
+$$</p>
+<ul>
+<li>AdaGrad：保存1组统计量（梯度平方），fp32（4字节/参数）</li>
+<li>Adam：保存2组统计量（一阶动量m、二阶动量v），fp32</li>
+<li>特性：<strong>与 $B$ 无关</strong>
+</li>
+</ul>
+<h2>4. activation_memory 中间激活显存</h2>
+<p>$$activation\_memory = 2 \times B \times D \times L$$</p>
+<ul>
+<li>来源： $L$ 层，每层输出激活张量形状 $\mathbb{R}^{B\times D}$；全部激活同时保存在显存供反向传播使用</li>
+<li>精度：激活值 bf16</li>
+<li>特性：<strong>正比于批次B，B越大显存占用越高</strong>
+</li>
+</ul>
+<h3>总显存公式</h3>
+<p>$$
+total\_memory = parameter\_memory + gradient\_memory + optimizer\_state\_memory + activation\_memory
+$$</p>
+<h1>优化显存占用方法：</h1>
+<p>Gradient accumulation, activation checkpointing：二者都是降低activation_memory=2BDL</p>
+<h3>（1）Gradient accumulation</h3>
+<p>缩小单次迭代输入样本数B，但需要多次前向反向，训练变慢</p>
+<h3>（2）Activation checkpointing</h3>
+<p>减少显存中长期保存的激活张量数量，但会重复前向运算，增加 FLOPs</p>
 <h1>Summary:</h1>
 <p>• Everything is operations on tensors (parameters, gradients, activations, optimizer states, data)<br>
 • einops: better way to think about tensor operations<br>
@@ -421,6 +529,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 </script>
-
+<script>MathJax = {tex: {inlineMath: [["$", "$"]]}};</script><script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
 </html>
