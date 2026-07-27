@@ -1,5 +1,68 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>wsx的博客</title><link>https://personawsx.github.io</link><description>我是wsx，北邮研究生</description><copyright>wsx的博客</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://avatars.githubusercontent.com/u/171470826?v=4&amp;size=64</url><title>avatar</title><link>https://personawsx.github.io</link></image><lastBuildDate>Sun, 26 Jul 2026 16:51:52 +0000</lastBuildDate><managingEditor>wsx的博客</managingEditor><ttl>60</ttl><webMaster>wsx的博客</webMaster><item><title>cs336 lecture 6</title><link>https://personawsx.github.io/post/cs336%20lecture%206.html</link><guid isPermaLink="true">https://personawsx.github.io/post/cs336%20lecture%206.html</guid><pubDate>Sat, 25 Jul 2026 12:17:02 +0000</pubDate></item><item><title>cs336 lecture 5</title><link>https://personawsx.github.io/post/cs336%20lecture%205.html</link><guid isPermaLink="true">https://personawsx.github.io/post/cs336%20lecture%205.html</guid><pubDate>Sat, 25 Jul 2026 12:16:40 +0000</pubDate></item><item><title>cs336 lecture 2 Pytorch</title><link>https://personawsx.github.io/post/cs336%20lecture%202%20Pytorch.html</link><description>Recall: what's the best model one can train given fixed resources (compute, memory)?
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>wsx的博客</title><link>https://personawsx.github.io</link><description>我是wsx，北邮研究生</description><copyright>wsx的博客</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://avatars.githubusercontent.com/u/171470826?v=4&amp;size=64</url><title>avatar</title><link>https://personawsx.github.io</link></image><lastBuildDate>Mon, 27 Jul 2026 13:14:50 +0000</lastBuildDate><managingEditor>wsx的博客</managingEditor><ttl>60</ttl><webMaster>wsx的博客</webMaster><item><title>cs336 lecture 6</title><link>https://personawsx.github.io/post/cs336%20lecture%206.html</link><guid isPermaLink="true">https://personawsx.github.io/post/cs336%20lecture%206.html</guid><pubDate>Sat, 25 Jul 2026 12:17:02 +0000</pubDate></item><item><title>cs336 lecture 5</title><link>https://personawsx.github.io/post/cs336%20lecture%205.html</link><guid isPermaLink="true">https://personawsx.github.io/post/cs336%20lecture%205.html</guid><pubDate>Sat, 25 Jul 2026 12:16:40 +0000</pubDate></item><item><title>cs336 lecture 3 Architectures</title><link>https://personawsx.github.io/post/cs336%20lecture%203%20Architectures.html</link><description># 1 Common architecture variations
+## 1.1 Pre-vs-post norm
+
+&lt;img width='1196' height='621' alt='Image' src='https://github.com/user-attachments/assets/21f3c497-2dd7-4c2b-a6bc-cb33da7492a9' /&gt;
+
+残差主干道保持原始数据，不受归一化干扰，这一点至关重要
+若遇到稳定性问题，可以在模型的各个地方适当加上LayerNorm
+
+## 1.2 LayerNorm vs RMSNorm
+
+Original transformer: LayerNorm – normalizes the mean and variance across
+ $d_{model}$
+
+$$
+y = \frac{x - \mathbb{E}[x]}{\sqrt{\text{Var}[x] + \epsilon}} * \gamma + \beta
+$$
+
+**Notable models:**
+GPT3/2/1, OPT, GPT-J, BLOOM
+
+Many modern LMs: RMSNorm – does not subtract mean or add a bias term
+
+$$
+y = \frac{x}{\sqrt{||x||_2^2 + \epsilon}} * \gamma
+$$
+
+$$\|x\|_2 = \sqrt{x_1^2 + x_2^2 + ... + x_d^2}$$
+
+**Notable models:**
+LLaMA-family, PaLM, Chinchilla, T5
+
+### Why RMSNorm?
+Modern explanation – it’s faster (and just as good).
+- Fewer operations (no mean calculation)
+- Fewer parameters (no bias term to store)
+
+$$
+y = \frac{x - \mathbb{E}[x]}{\sqrt{\text{Var}[x] + \epsilon}} * \gamma + \beta
+$$
+
+Does this explanation make sense?
+
+| Operator class | % flop |
+| ---- | ---- |
+| $\triangle$ Tensor contraction | 99.80 |
+| $\square$ Stat. normalization | 0.17 |
+| $\bigcirc$ Element-wise | 0.03 |
+
+Matrix multiplies are the vast majority of FLOPs (and memory)
+
+Important lesson: FLOPS are not runtime（真实运行耗时）! 
+
+| Operator class | % flop | % Runtime |
+| ---- | ---- | ---- |
+| $\triangle$ Tensor contraction | 99.80 | 61.0 |
+| $\square$ Stat. normalization | 0.17 | 25.5 |
+| $\bigcirc$ Element-wise | 0.03 | 13.5 |
+
+RMSNorm can still matter due to the importance of **data movement**
+
+&lt;img width='436' height='488' alt='Image' src='https://github.com/user-attachments/assets/d2a988bb-06d4-45d1-a406-fb2e26245104' /&gt;
+
+MHA 拥有 99% 以上的总 FLOPs，但它计算访存比很高，计算效率高；
+Dropout、残差相加、LayerNorm 的 FLOPs 加起来很少，但计算访存比很低，全是访存受限，其大量时间消耗在读写显存上。</description><guid isPermaLink="true">https://personawsx.github.io/post/cs336%20lecture%203%20Architectures.html</guid><pubDate>Thu, 23 Jul 2026 14:55:21 +0000</pubDate></item><item><title>cs336 lecture 2 Pytorch</title><link>https://personawsx.github.io/post/cs336%20lecture%202%20Pytorch.html</link><description>Recall: what's the best model one can train given fixed resources (compute, memory)?
 In other words: maximize (computational) efficiency.
 Prerequisite: understand the resources (compute, memory) for a given computation.
 
