@@ -211,7 +211,52 @@ Definition: MFU = (actual FLOP/s) / (promised FLOP/s) [ignore communication/over
 mfu = actual_flop_per_sec / promised_flop_per_sec if promised_flop_per_sec else None<br>
 Usually, MFU of ≥ 0.5 is quite good!<br>
 But why is MFU not closer to 1?<br>
-To answer this question, we need to look more closely at how computations are done on GPUs...</p></div>
+To answer this question, we need to look more closely at how computations are done on GPUs...</p>
+<h1>Summary</h1>
+<p>Matrix multiplications dominate: (2 m n p) FLOPs<br>
+FLOP/s depends on hardware (B200 &gt;&gt; H100) and data type (bfloat16 &gt;&gt; float32)<br>
+Model FLOPs utilization (MFU): (actual FLOP/s) / (promised FLOP/s)</p>
+<h1>arithmetic_intensity：</h1>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/5c70b085-dbdf-49d2-b332-e0b3fdd6de3b"><img width="709" height="621" alt="Image" src="https://github.com/user-attachments/assets/5c70b085-dbdf-49d2-b332-e0b3fdd6de3b" style="max-width: 100%; height: auto; max-height: 621px;; aspect-ratio: 709 / 621; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>注：图片中的compute就是指一般意义上的加速器，如GPU等</p>
+<p>How to compute a thing:</p>
+<p>Send inputs from memory to accelerator<br>
+Perform computation<br>
+Send outputs from accelerator to memory</p>
+<p>How long does this take?<br>
+Depends on two things:<br>
+Accelerator speed (FLOP/s)<br>
+Memory bandwidth (bytes/s)</p>
+<p>communication_time = bytes / bytes_per_sec<br>
+computation_time = flops / flop_per_sec</p>
+<p>一般假设计算和通信能够同时进行，此时total_time=max(communication_time, computation_time)</p>
+<p>What is the bottleneck?<br>
+Memory-bound: communication time &gt; computation time<br>
+Compute-bound: computation time &gt; communication time</p>
+<p>Alternative way to see this:</p>
+<p>Accelerator intensity: how much work can the accelerator do per byte transferred?（由硬件决定）<br>
+example：h100_accelerator_intensity = h100_flop_per_sec / h100_bytes_per_sec</p>
+<p>Arithmetic intensity: how much actual work per byte for this workload?（由算法决定）<br>
+arithmetic_intensity = flops / bytes</p>
+<p>What is the bottleneck?<br>
+Memory-bound: arithmetic intensity &lt; accelerator intensity<br>
+Compute-bound: arithmetic intensity &gt; accelerator intensity</p>
+<p>一般的算法大多是memory-bound，as long as we have large matrices, we're compute-bound (saturating the accelerator).</p>
+<h1>计算量近似：</h1>
+<p>对于 MLP 以及短上下文 Transformer的训练（前向 + 反向传播），可以近似：<br>
+前向传播：2NP FLOPs<br>
+反向传播：4NP FLOPs<br>
+合计一轮训练：6NP FLOPs<br>
+N=样本数量，<br>
+P=网络总参数量。<br>
+原理：前向只做一次线性计算；反向传播必须同时求解权重梯度和输入梯度两组梯度，开销是前向的 2 倍。</p>
+<h1>Summary:</h1>
+<p>• Everything is operations on tensors (parameters, gradients, activations, optimizer states, data)<br>
+• einops: better way to think about tensor operations<br>
+• 6 (# data points) (# parameters) FLOPs per training step<br>
+• Arithmetic intensity / roofline analysis: compute-bound or memory-bound?<br>
+• Matrix multiplications are compute-bound, elementwise operations are memory-bound<br>
+• Gradient accumulation, activation checkpointing: reduce memory to use bigger batch sizes</p></div>
 <div style="font-size:small;margin-top:8px;float:right;"></div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>

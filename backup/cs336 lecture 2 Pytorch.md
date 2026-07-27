@@ -115,3 +115,65 @@ mfu = actual_flop_per_sec / promised_flop_per_sec if promised_flop_per_sec else 
 Usually, MFU of ≥ 0.5 is quite good!
 But why is MFU not closer to 1?
 To answer this question, we need to look more closely at how computations are done on GPUs...
+
+# Summary
+Matrix multiplications dominate: (2 m n p) FLOPs
+FLOP/s depends on hardware (B200 >> H100) and data type (bfloat16 >> float32)
+Model FLOPs utilization (MFU): (actual FLOP/s) / (promised FLOP/s)
+
+# arithmetic_intensity：
+
+<img width="709" height="621" alt="Image" src="https://github.com/user-attachments/assets/5c70b085-dbdf-49d2-b332-e0b3fdd6de3b" />
+
+注：图片中的compute就是指一般意义上的加速器，如GPU等
+
+How to compute a thing:
+    
+Send inputs from memory to accelerator    
+Perform computation   
+Send outputs from accelerator to memory
+    
+How long does this take?    
+Depends on two things:   
+Accelerator speed (FLOP/s)  
+Memory bandwidth (bytes/s)
+
+communication_time = bytes / bytes_per_sec  
+computation_time = flops / flop_per_sec
+
+一般假设计算和通信能够同时进行，此时total_time=max(communication_time, computation_time) 
+
+What is the bottleneck?  
+Memory-bound: communication time > computation time
+Compute-bound: computation time > communication time
+
+Alternative way to see this:
+
+Accelerator intensity: how much work can the accelerator do per byte transferred?（由硬件决定）
+example：h100_accelerator_intensity = h100_flop_per_sec / h100_bytes_per_sec  
+    
+Arithmetic intensity: how much actual work per byte for this workload?（由算法决定）
+arithmetic_intensity = flops / bytes 
+     
+What is the bottleneck?   
+Memory-bound: arithmetic intensity < accelerator intensity    
+Compute-bound: arithmetic intensity > accelerator intensity
+
+一般的算法大多是memory-bound，as long as we have large matrices, we're compute-bound (saturating the accelerator).
+
+# 计算量近似：
+对于 MLP 以及短上下文 Transformer的训练（前向 + 反向传播），可以近似：
+前向传播：2NP FLOPs
+反向传播：4NP FLOPs
+合计一轮训练：6NP FLOPs
+N=样本数量，
+P=网络总参数量。
+原理：前向只做一次线性计算；反向传播必须同时求解权重梯度和输入梯度两组梯度，开销是前向的 2 倍。
+
+# Summary:
+• Everything is operations on tensors (parameters, gradients, activations, optimizer states, data)
+• einops: better way to think about tensor operations
+• 6 (# data points) (# parameters) FLOPs per training step
+• Arithmetic intensity / roofline analysis: compute-bound or memory-bound?
+• Matrix multiplications are compute-bound, elementwise operations are memory-bound
+• Gradient accumulation, activation checkpointing: reduce memory to use bigger batch sizes
