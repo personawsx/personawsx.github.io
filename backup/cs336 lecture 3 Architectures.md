@@ -150,7 +150,7 @@ $$\text{FFN}_\text{GEGLU}(x, W, V, W_2) = \big(\text{GELU}(xW) \otimes xV\big)W_
 *Notable models:*
 T5 v1.1, mT5, LaMDA, Phi3, Gemma 2, Gemma 3, Gemma 4
 
-**SwiGLU (swish is $x * \text{sigmoid}(x)$)**
+**SwiGLU (swish is $x * \text{sigmoid}(x)$ )**
 
 $$\text{FFN}_\text{SwiGLU}(x, W, V, W_2) = \big(\text{Swish}_1(xW) \otimes xV\big)W_2$$
 
@@ -234,6 +234,7 @@ $$
 $$
 e_{ij} = \frac{x_iW^Q(x_jW^K + a_{ij}^K)^T}{\sqrt{d_z}}
 $$
+
 is not an inner product
 
 ### RoPE: rotary position embeddings
@@ -267,13 +268,7 @@ $$
 
 写成矩阵形式：
 
-$$
-\begin{pmatrix}x_1'\\x_2'\end{pmatrix}=\begin{pmatrix}
-\cos m\theta & -\sin m\theta \\
-\sin m\theta & \cos m\theta
-\end{pmatrix}
-\begin{pmatrix}x_1\\x_2\end{pmatrix}
-$$
+<img width="385" height="67" alt="Image" src="https://github.com/user-attachments/assets/e3bb7e99-0a95-4555-ac22-b60b0b7e49c8" />
 
 数学性质：
 如果 $z_m$ 在位置 $m$旋转角度 $m\theta$， $z_n$ 在位置 $n$旋转角度 $n\theta$
@@ -306,11 +301,14 @@ $\boldsymbol{v}_m$：位置 $m$的Value向量
 
 ### 步骤2：执行RoPE旋转变换
 1. 对 $\boldsymbol{q}_m$：**向量内部维度两两分组，独立二维旋转**，得到旋转后的 $\tilde{\boldsymbol{q}}_m$
+
 $$\tilde{\boldsymbol{q}}_m = R_{\Theta,m}\cdot \boldsymbol{q}_m$$
+
 2. 对 $\boldsymbol{k}_m$：**向量内部维度两两分组，独立二维旋转**，得到旋转后的 $\tilde{\boldsymbol{k}}_m$
+
 $$\tilde{\boldsymbol{k}}_m = R_{\Theta,m}\cdot \boldsymbol{k}_m$$
-3. $\boldsymbol{\boldsymbol{v}_m}$：**不做任何变换，直接保留原值**
-$$\tilde{\boldsymbol{v}}_m = \boldsymbol{v}_m$$
+ 
+3. $\boldsymbol{\boldsymbol{v}_m}$：**不做任何变换，直接保留原值**$$\tilde{\boldsymbol{v}}_m = \boldsymbol{v}_m$$
 
 ## 步骤3：计算自注意力
 
@@ -344,3 +342,121 @@ cos, sin = self.rotary_emb(value_states, position_ids)
 query_states, key_states = apply_rotary_pos_emb(query_states, key_states, cos, sin)
 
 # Same stuff as the usual multi-head self attention below
+```
+
+# 2 Hyperparameters
+Transformer hyperparameter questions you might have had in 224n..
+- How much bigger should the feedforward size be compared to hidden size?
+- How many heads, and should num_heads always divide hidden size?
+- What should my vocab size be?
+
+And other model setting questions
+- Do people even regularize these huge LMs?
+- How do people scale these models - very deep or very wide?
+
+## 2.1 Feedforward – model dimension ratio.
+
+$$
+\text{FFN}(x) = \max(0, xW_1 + b_1)W_2 + b_2
+$$
+
+There are two dimensions that are relevant – the feedforward dim ( $d_{ff}$) and model dim ( $d_{model}$). What should their relationship be?
+
+$$
+d_{ff} = 4\,d_{model}
+$$
+
+| 符号 | 张量维度 | 含义 |
+| ---- | ---- | ---- |
+| $\boldsymbol{x}$ | $[d_{model}]$ | FFN 输入隐状态 |
+| $W_1$ | $[d_{model},\ d_{ff}]$ | 第一条上升投影 |
+| $W_3$ | $[d_{model},\ d_{ff}]$ | 门控分支上升投影 |
+| $\boldsymbol{h}$ | $[d_{ff}]$ | 门控融合后的中间特征 |
+| $W_2$ | $[d_{ff},\ d_{model}]$ | 投影回主干维度 |
+| $\boldsymbol{x}'$ | $[d_{model}]$ | FFN 最终输出 |
+
+This is almost always true. There’s just a few exceptions.
+
+<img width="795" height="460" alt="Image" src="https://github.com/user-attachments/assets/ba601630-24f2-40e8-a847-ac4b3b42daea" />
+
+<img width="761" height="447" alt="Image" src="https://github.com/user-attachments/assets/fcd42b7b-d6f0-4f31-95c8-0100d0965500" />
+
+## What can we learn from the model-dim hyperparam?
+- The 'default' choices of $d_{ff} = 4d_{model}$ and $d_{ff} = 2.66d_{model}$ have worked well for nearly all modern LLMs.
+
+- But T5 does show that even radical choices of $d_{ff} = 64d_{model}$ can work. This hyperparameter choice isn’t written in stone.
+
+- That said, T5 has a follow-up model (T5 v1.1) that is 'improved' and uses a much more standard 2.5 multiplier on GeGLU, so the 64-times multiplier is likely suboptimal.
+
+## Head-dim * num-heads to model-dim ratio. 
+
+### Multi-head self-attention is computationally efficient
+- Even though we compute $h$ many attention heads, it’s not really more costly.
+- We compute $XQ \in \mathbb{R}^{n\times d}$, and then reshape to $\mathbb{R}^{n\times h\times d/h}$. (Likewise for $XK$, $XV$.)
+- Then we transpose to $\mathbb{R}^{h\times n\times d/h}$; now the head axis is like a batch axis.
+- Almost everything else is identical, and the matrices are the same sizes.
+
+即：
+$h$ = num_heads 注意力头数量
+$d_k$ = head_dim 单头维度
+$d=d_{model}$ 模型隐层维度
+
+绝大多数模型满足： $\boldsymbol{d_{model} = h \times d_k}$
+也就是：
+$$\boldsymbol{d_k = \frac{d_{model}}{h}}$$
+把整个模型维度均匀切分给每一个注意力头。
+
+This doesn’t have to be true: we can have head-dimensions > model-dim / num-heads.
+
+But most models do follow this guideline
+
+## 2.2 aspect ratio
+**模型应该做更深（更多层 $n_{layer}$），还是更宽（更大 $d_{model}$）？**
+$$\boldsymbol{\frac{d_{model}}{n_{layer}}}$$
+- $d_{model}$：模型宽度（隐状态维度）
+- $n_{layer}$：Transformer层数（模型深度）
+
+主流大模型 $\boldsymbol{d_{model}/n_{layer}}$ 高度集中在一个区间：
+| Model | $d_{model}/n_{layer}$ |
+| ---- | ---- |
+| BLOOM | 205 |
+| T5 v1.1 | 171 |
+| PaLM(540B) | 156 |
+| GPT3/OPT/Mistral/Qwen/OLMo3 | **128（非常集中的热门区间）** |
+| LLaMA / LLaMA2 | 102 |
+| Gemma3 | 87 |
+| Gemma4 | 61 |
+| T5(11B) | 33 |
+
+### 深度 vs 宽度的工程权衡
+Extremely deep models are harder to parallelize and have higher latency
+层数极深的模型：难以并行、推理延迟更高
+
+<img width="702" height="292" alt="Image" src="https://github.com/user-attachments/assets/243c6bd3-74dd-4636-bcf1-e665cb50ad9e" />
+
+<img width="1447" height="752" alt="Image" src="https://github.com/user-attachments/assets/464cfb13-b552-42ce-b30b-3b8f5cfcbd1d" />
+
+一般来说，超参数的范围选择容忍度较高，真正重要的是资源利用率
+
+## 2.3 vocabulary sizes
+
+<img width="1056" height="533" alt="Image" src="https://github.com/user-attachments/assets/1254ad3a-e786-45fd-aa68-144ce5b53236" />
+
+## 2.4 Dropout and other regularization
+Do we need regularization during pretraining?
+Arguments against:
+There is a lot of data (trillions of tokens), more than parameters.
+SGD only does a single pass on a corpus (hard to memorize)
+This is all quite reasonable.. but what do people do in practice?
+
+<img width="1070" height="537" alt="Image" src="https://github.com/user-attachments/assets/aa292313-da39-4e8e-ad81-d80b69fd78cc" />
+
+趋势总结：现代开源大模型普遍抛弃 Dropout，只依靠Weight Decay。且使用Weight Decay的目的不是防止过拟合，而是影响训练动态、收敛过程，优化最终收敛效果。
+
+<img width="527" height="555" alt="Image" src="https://github.com/user-attachments/assets/2405de03-cd57-43fb-b76d-2fbee7a153ab" />
+
+# 3 Stability tricks
+## 3.1 Softmax
+
+<img width="852" height="565" alt="Image" src="https://github.com/user-attachments/assets/19cf3742-4ed3-45ea-8c4a-a1f6524a751d" />
+

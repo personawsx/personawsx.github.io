@@ -365,7 +365,7 @@ Llama, PaLM, T5 v1.1, most models post 2023</p>
 <p>$$\text{FFN}_\text{GEGLU}(x, W, V, W_2) = \big(\text{GELU}(xW) \otimes xV\big)W_2$$</p>
 <p><em>Notable models:</em><br>
 T5 v1.1, mT5, LaMDA, Phi3, Gemma 2, Gemma 3, Gemma 4</p>
-<p><strong>SwiGLU (swish is $x * \text{sigmoid}(x)$)</strong></p>
+<p><strong>SwiGLU (swish is $x * \text{sigmoid}(x)$ )</strong></p>
 <p>$$\text{FFN}_\text{SwiGLU}(x, W, V, W_2) = \big(\text{Swish}_1(xW) \otimes xV\big)W_2$$</p>
 <p><em>Notable models:</em><br>
 LLaMa 1/2/3, PaLM, Mistral, OlMo, most models post 2023</p>
@@ -434,10 +434,10 @@ $$</p>
 <p><strong>Relative embeddings</strong>:</p>
 </li>
 </ul>
-<p>$$<br>
-e_{ij} = \frac{x_iW^Q(x_jW^K + a_{ij}^K)^T}{\sqrt{d_z}}<br>
-$$<br>
-is not an inner product</p>
+<p>$$
+e_{ij} = \frac{x_iW^Q(x_jW^K + a_{ij}^K)^T}{\sqrt{d_z}}
+$$</p>
+<p>is not an inner product</p>
 <h3>RoPE: rotary position embeddings</h3>
 <p>How can we solve this problem?</p>
 <ul>
@@ -462,13 +462,7 @@ x_2' &amp;= x_1 \sin(m\theta) + x_2 \cos(m\theta)
 \end{align*}
 $$</p>
 <p>写成矩阵形式：</p>
-<p>$$
-\begin{pmatrix}x_1'\x_2'\end{pmatrix}=\begin{pmatrix}
-\cos m\theta &amp; -\sin m\theta \\
-\sin m\theta &amp; \cos m\theta
-\end{pmatrix}
-\begin{pmatrix}x_1\x_2\end{pmatrix}
-$$</p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/e3bb7e99-0a95-4555-ac22-b60b0b7e49c8"><img width="385" height="67" alt="Image" src="https://github.com/user-attachments/assets/e3bb7e99-0a95-4555-ac22-b60b0b7e49c8" style="max-width: 100%; height: auto; max-height: 67px;; aspect-ratio: 385 / 67; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
 <p>数学性质：<br>
 如果 $z_m$ 在位置 $m$旋转角度 $m\theta$， $z_n$ 在位置 $n$旋转角度 $n\theta$<br>
 二者内积等价于：原始向量旋转差值角度 $(m-n)\theta$。<br>
@@ -492,13 +486,18 @@ $\boldsymbol{k}_m$：位置 $m$的Key向量<br>
 $\boldsymbol{v}_m$：位置 $m$的Value向量</p>
 <h3>步骤2：执行RoPE旋转变换</h3>
 <ol>
-<li>对 $\boldsymbol{q}_m$：<strong>向量内部维度两两分组，独立二维旋转</strong>，得到旋转后的 $\tilde{\boldsymbol{q}}_m$<br>
-$$\tilde{\boldsymbol{q}}<em>m = R</em>{\Theta,m}\cdot \boldsymbol{q}_m$$</li>
-<li>对 $\boldsymbol{k}_m$：<strong>向量内部维度两两分组，独立二维旋转</strong>，得到旋转后的 $\tilde{\boldsymbol{k}}_m$<br>
-$$\tilde{\boldsymbol{k}}<em>m = R</em>{\Theta,m}\cdot \boldsymbol{k}_m$$</li>
+<li>对 $\boldsymbol{q}_m$：<strong>向量内部维度两两分组，独立二维旋转</strong>，得到旋转后的 $\tilde{\boldsymbol{q}}_m$
+</li>
+</ol>
+<p>$$\tilde{\boldsymbol{q}}_m = R_{\Theta,m}\cdot \boldsymbol{q}_m$$</p>
+<ol start="2">
+<li>对 $\boldsymbol{k}_m$：<strong>向量内部维度两两分组，独立二维旋转</strong>，得到旋转后的 $\tilde{\boldsymbol{k}}_m$
+</li>
+</ol>
+<p>$$\tilde{\boldsymbol{k}}_m = R_{\Theta,m}\cdot \boldsymbol{k}_m$$</p>
+<ol start="3">
 <li>
-$\boldsymbol{\boldsymbol{v}_m}$：<strong>不做任何变换，直接保留原值</strong><br>
-$$\tilde{\boldsymbol{v}}_m = \boldsymbol{v}_m$$
+$\boldsymbol{\boldsymbol{v}_m}$：<strong>不做任何变换，直接保留原值</strong>$$\tilde{\boldsymbol{v}}_m = \boldsymbol{v}_m$$
 </li>
 </ol>
 <h2>步骤3：计算自注意力</h2>
@@ -529,7 +528,173 @@ $$</p>
 <span class="pl-c"># Multiply query/key inputs</span>
 <span class="pl-s1">query_states</span>, <span class="pl-s1">key_states</span> <span class="pl-c1">=</span> <span class="pl-en">apply_rotary_pos_emb</span>(<span class="pl-s1">query_states</span>, <span class="pl-s1">key_states</span>, <span class="pl-s1">cos</span>, <span class="pl-s1">sin</span>)
 
-<span class="pl-c"># Same stuff as the usual multi-head self attention below</span></pre></div></div>
+<span class="pl-c"># Same stuff as the usual multi-head self attention below</span></pre></div>
+<h1>2 Hyperparameters</h1>
+<p>Transformer hyperparameter questions you might have had in 224n..</p>
+<ul>
+<li>How much bigger should the feedforward size be compared to hidden size?</li>
+<li>How many heads, and should num_heads always divide hidden size?</li>
+<li>What should my vocab size be?</li>
+</ul>
+<p>And other model setting questions</p>
+<ul>
+<li>Do people even regularize these huge LMs?</li>
+<li>How do people scale these models - very deep or very wide?</li>
+</ul>
+<h2>2.1 Feedforward – model dimension ratio.</h2>
+<p>$$
+\text{FFN}(x) = \max(0, xW_1 + b_1)W_2 + b_2
+$$</p>
+<p>There are two dimensions that are relevant – the feedforward dim ( $d_{ff}$) and model dim ( $d_{model}$). What should their relationship be?</p>
+<p>$$
+d_{ff} = 4,d_{model}
+$$</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>符号</th>
+<th>张量维度</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$\boldsymbol{x}$</td>
+<td>$[d_{model}]$</td>
+<td>FFN 输入隐状态</td>
+</tr>
+<tr>
+<td>$W_1$</td>
+<td>$[d_{model},\ d_{ff}]$</td>
+<td>第一条上升投影</td>
+</tr>
+<tr>
+<td>$W_3$</td>
+<td>$[d_{model},\ d_{ff}]$</td>
+<td>门控分支上升投影</td>
+</tr>
+<tr>
+<td>$\boldsymbol{h}$</td>
+<td>$[d_{ff}]$</td>
+<td>门控融合后的中间特征</td>
+</tr>
+<tr>
+<td>$W_2$</td>
+<td>$[d_{ff},\ d_{model}]$</td>
+<td>投影回主干维度</td>
+</tr>
+<tr>
+<td>$\boldsymbol{x}'$</td>
+<td>$[d_{model}]$</td>
+<td>FFN 最终输出</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p>This is almost always true. There’s just a few exceptions.</p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/ba601630-24f2-40e8-a847-ac4b3b42daea"><img width="795" height="460" alt="Image" src="https://github.com/user-attachments/assets/ba601630-24f2-40e8-a847-ac4b3b42daea" style="max-width: 100%; height: auto; max-height: 460px;; aspect-ratio: 795 / 460; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/fcd42b7b-d6f0-4f31-95c8-0100d0965500"><img width="761" height="447" alt="Image" src="https://github.com/user-attachments/assets/fcd42b7b-d6f0-4f31-95c8-0100d0965500" style="max-width: 100%; height: auto; max-height: 447px;; aspect-ratio: 761 / 447; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<h2>What can we learn from the model-dim hyperparam?</h2>
+<ul>
+<li>
+<p>The 'default' choices of $d_{ff} = 4d_{model}$ and $d_{ff} = 2.66d_{model}$ have worked well for nearly all modern LLMs.</p>
+</li>
+<li>
+<p>But T5 does show that even radical choices of $d_{ff} = 64d_{model}$ can work. This hyperparameter choice isn’t written in stone.</p>
+</li>
+<li>
+<p>That said, T5 has a follow-up model (T5 v1.1) that is 'improved' and uses a much more standard 2.5 multiplier on GeGLU, so the 64-times multiplier is likely suboptimal.</p>
+</li>
+</ul>
+<h2>Head-dim * num-heads to model-dim ratio.</h2>
+<h3>Multi-head self-attention is computationally efficient</h3>
+<ul>
+<li>Even though we compute $h$ many attention heads, it’s not really more costly.</li>
+<li>We compute $XQ \in \mathbb{R}^{n\times d}$, and then reshape to $\mathbb{R}^{n\times h\times d/h}$. (Likewise for $XK$, $XV$.)</li>
+<li>Then we transpose to $\mathbb{R}^{h\times n\times d/h}$; now the head axis is like a batch axis.</li>
+<li>Almost everything else is identical, and the matrices are the same sizes.</li>
+</ul>
+<p>即：<br>
+$h$ = num_heads 注意力头数量<br>
+$d_k$ = head_dim 单头维度<br>
+$d=d_{model}$ 模型隐层维度</p>
+<p>绝大多数模型满足： $\boldsymbol{d_{model} = h \times d_k}$<br>
+也就是：<br>
+$$\boldsymbol{d_k = \frac{d_{model}}{h}}$$<br>
+把整个模型维度均匀切分给每一个注意力头。</p>
+<p>This doesn’t have to be true: we can have head-dimensions &gt; model-dim / num-heads.</p>
+<p>But most models do follow this guideline</p>
+<h2>2.2 aspect ratio</h2>
+<p><strong>模型应该做更深（更多层 $n_{layer}$），还是更宽（更大 $d_{model}$）？</strong><br>
+$$\boldsymbol{\frac{d_{model}}{n_{layer}}}$$</p>
+<ul>
+<li>
+$d_{model}$：模型宽度（隐状态维度）</li>
+<li>
+$n_{layer}$：Transformer层数（模型深度）</li>
+</ul>
+<p>主流大模型 $\boldsymbol{d_{model}/n_{layer}}$ 高度集中在一个区间：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>Model</th>
+<th>$d_{model}/n_{layer}$</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BLOOM</td>
+<td>205</td>
+</tr>
+<tr>
+<td>T5 v1.1</td>
+<td>171</td>
+</tr>
+<tr>
+<td>PaLM(540B)</td>
+<td>156</td>
+</tr>
+<tr>
+<td>GPT3/OPT/Mistral/Qwen/OLMo3</td>
+<td><strong>128（非常集中的热门区间）</strong></td>
+</tr>
+<tr>
+<td>LLaMA / LLaMA2</td>
+<td>102</td>
+</tr>
+<tr>
+<td>Gemma3</td>
+<td>87</td>
+</tr>
+<tr>
+<td>Gemma4</td>
+<td>61</td>
+</tr>
+<tr>
+<td>T5(11B)</td>
+<td>33</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<h3>深度 vs 宽度的工程权衡</h3>
+<p>Extremely deep models are harder to parallelize and have higher latency<br>
+层数极深的模型：难以并行、推理延迟更高</p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/243c6bd3-74dd-4636-bcf1-e665cb50ad9e"><img width="702" height="292" alt="Image" src="https://github.com/user-attachments/assets/243c6bd3-74dd-4636-bcf1-e665cb50ad9e" style="max-width: 100%; height: auto; max-height: 292px;; aspect-ratio: 702 / 292; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/464cfb13-b552-42ce-b30b-3b8f5cfcbd1d"><img width="1447" height="752" alt="Image" src="https://github.com/user-attachments/assets/464cfb13-b552-42ce-b30b-3b8f5cfcbd1d" style="max-width: 100%; height: auto; max-height: 752px;; aspect-ratio: 1447 / 752; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>一般来说，超参数的范围选择容忍度较高，真正重要的是资源利用率</p>
+<h2>2.3 vocabulary sizes</h2>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/1254ad3a-e786-45fd-aa68-144ce5b53236"><img width="1056" height="533" alt="Image" src="https://github.com/user-attachments/assets/1254ad3a-e786-45fd-aa68-144ce5b53236" style="max-width: 100%; height: auto; max-height: 533px;; aspect-ratio: 1056 / 533; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<h2>2.4 Dropout and other regularization</h2>
+<p>Do we need regularization during pretraining?<br>
+Arguments against:<br>
+There is a lot of data (trillions of tokens), more than parameters.<br>
+SGD only does a single pass on a corpus (hard to memorize)<br>
+This is all quite reasonable.. but what do people do in practice?</p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/aa292313-da39-4e8e-ad81-d80b69fd78cc"><img width="1070" height="537" alt="Image" src="https://github.com/user-attachments/assets/aa292313-da39-4e8e-ad81-d80b69fd78cc" style="max-width: 100%; height: auto; max-height: 537px;; aspect-ratio: 1070 / 537; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>趋势总结：现代开源大模型普遍抛弃 Dropout，只依靠Weight Decay。且使用Weight Decay的目的不是防止过拟合，而是影响训练动态、收敛过程，优化最终收敛效果。</p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/2405de03-cd57-43fb-b76d-2fbee7a153ab"><img width="527" height="555" alt="Image" src="https://github.com/user-attachments/assets/2405de03-cd57-43fb-b76d-2fbee7a153ab" style="max-width: 100%; height: auto; max-height: 555px;; aspect-ratio: 527 / 555; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<h1>3 Stability tricks</h1>
+<h2>3.1 Softmax</h2>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/19cf3742-4ed3-45ea-8c4a-a1f6524a751d"><img width="852" height="565" alt="Image" src="https://github.com/user-attachments/assets/19cf3742-4ed3-45ea-8c4a-a1f6524a751d" style="max-width: 100%; height: auto; max-height: 565px;; aspect-ratio: 852 / 565; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p></div>
 <div style="font-size:small;margin-top:8px;float:right;"></div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
