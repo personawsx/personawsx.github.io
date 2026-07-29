@@ -460,3 +460,42 @@ This is all quite reasonable.. but what do people do in practice?
 
 <img width="852" height="565" alt="Image" src="https://github.com/user-attachments/assets/19cf3742-4ed3-45ea-8c4a-a1f6524a751d" />
 
+### Output softmax stability – the ‘z-loss’
+### Recall the softmax calculation
+给定上下文序列 $\boldsymbol{x}$，模型输出词汇表每个token对应的logits $U_{r'}(\boldsymbol{x})$。
+
+$$
+\begin{align*}
+\log P(y \mid \boldsymbol{x}) &= \log\left( \frac{e^{U_r(\boldsymbol{x})}}{Z(\boldsymbol{x})} \right) \\
+&= U_r(\boldsymbol{x}) - \log Z(\boldsymbol{x})
+\\[4pt]
+Z(\boldsymbol{x}) &= \sum_{r'=1}^{|V|} e^{U_{r'}(\boldsymbol{x})}
+\end{align*}
+$$
+
+$\boldsymbol{x}$：输入上下文（上文文本）
+$y$：待预测的下一个真实目标token
+$U_r(\boldsymbol{x})$：目标token $y$ 对应的logit
+$U_{r'}(\boldsymbol{x})$：词汇表中第 $r'$ 个token的logit
+$Z(\boldsymbol{x})$：softmax配分函数
+$P(y \mid \boldsymbol{x})$：给定上文 $\boldsymbol{x}$，预测出真实token $y$ 的条件概率
+
+### Total training loss（主损失 + Z-loss辅助正则）
+对batch内所有样本求和：
+
+$$
+\begin{align*}
+\mathcal{L}_{\text{total}} &= \sum_i \Big[ -\log P(y_i \mid \boldsymbol{x}_i) + \alpha \cdot \big(\log Z(\boldsymbol{x}_i)\big)^2 \Big] \\
+&= \sum_i \underbrace{-\log P(y_i \mid \boldsymbol{x}_i)}_{\text{标准交叉熵损失}} \;+\; \underbrace{\alpha \cdot \log^2\big(Z(\boldsymbol{x}_i)\big)}_{\text{Z-loss 辅助惩罚项}}
+\end{align*}
+$$
+
+1. $\boldsymbol{x}_i$：batch中第 $i$ 条样本的**上文上下文序列**（比如 `I like to`）
+2. $y_i$：第 $i$ 条样本需要预测的**下一个真实token**（比如 `run`）
+3. $Z(\boldsymbol{x}_i)$：针对上文 $\boldsymbol{x}_i$，所有词表token $e^{\text{logit}}$ 的求和（配分函数）
+4. $P(y_i \mid \boldsymbol{x}_i)$：在上文 $\boldsymbol{x}_i$ 条件下，模型输出真实token $y_i$ 的概率
+
+<img width="1031" height="565" alt="Image" src="https://github.com/user-attachments/assets/5e49daed-ae0b-4194-a00d-ea8ea1e97512" />
+
+## 3.2 Attention Heads
+
