@@ -498,4 +498,6 @@ $$
 <img width="1031" height="565" alt="Image" src="https://github.com/user-attachments/assets/5e49daed-ae0b-4194-a00d-ea8ea1e97512" />
 
 ## 3.2 Attention Heads
+### 3.2.1 GQA/MQA
+### 3.2.2 滑动窗口 SWA + 混合层交替注意力
 
