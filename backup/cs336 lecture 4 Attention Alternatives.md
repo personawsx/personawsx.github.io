@@ -44,3 +44,25 @@ $$S_t = S_{t-1}+k_tv_t^\top,\quad y_t=q_t^\top S_t$$
 <img width="1047" height="632" alt="Image" src="https://github.com/user-attachments/assets/bbeb656d-65ed-4a5c-b0a8-9741b0f17d78" />
 
 先用一个超轻快的小网络快速粗筛出最相关的token，只对筛选后的少量token执行正式注意力计算，抛弃无关token，以此来降低复杂度。
+
+# 6、MoE
+
+<img width="1306" height="586" alt="Image" src="https://github.com/user-attachments/assets/c5b7d2fa-ebef-4fe0-8586-c227bc894287" />
+
+有多个不同的FNN来处理不同的语义
+为什么说MoE是稀疏的？
+答：稀疏 = 执行一次前向传播时，只用到模型全部参数里的一小部分，剩下大部分参数不参与计算。MoE有多个FFN，处理某一token时只会调用其中的一个，所以说MoE是稀疏的。
+
+<img width="932" height="732" alt="Image" src="https://github.com/user-attachments/assets/d9f909eb-bf30-4c91-aba2-dfeb8f4a334b" />
+
+# 7、MoE-What Varies？
+## 7.1Routing function 
+
+<img width="1065" height="627" alt="Image" src="https://github.com/user-attachments/assets/ffdd52f1-f737-4e6a-a982-869e3e76ce01" />
+
+Almost all the MoEs do a standard ‘token choice topk’ routing.
+
+## 7.2 Experrt sizes
+
+
+## 7.3Training objectives

@@ -135,7 +135,19 @@ $$(QK^\top)V = Q(K^\top V)$$</p>
 <p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/038e83d8-6792-43fe-bb1f-2232bdcd6f73"><img width="850" height="327" alt="Image" src="https://github.com/user-attachments/assets/038e83d8-6792-43fe-bb1f-2232bdcd6f73" style="max-width: 100%; height: auto; max-height: 327px;; aspect-ratio: 850 / 327; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
 <h1>5、Alternative to hybrids: sparse adaptation</h1>
 <p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/bbeb656d-65ed-4a5c-b0a8-9741b0f17d78"><img width="1047" height="632" alt="Image" src="https://github.com/user-attachments/assets/bbeb656d-65ed-4a5c-b0a8-9741b0f17d78" style="max-width: 100%; height: auto; max-height: 632px;; aspect-ratio: 1047 / 632; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
-<p>先用一个超轻快的小网络快速粗筛出最相关的token，只对筛选后的少量token执行正式注意力计算，抛弃无关token，以此来降低复杂度。</p></div>
+<p>先用一个超轻快的小网络快速粗筛出最相关的token，只对筛选后的少量token执行正式注意力计算，抛弃无关token，以此来降低复杂度。</p>
+<h1>6、MoE</h1>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/c5b7d2fa-ebef-4fe0-8586-c227bc894287"><img width="1306" height="586" alt="Image" src="https://github.com/user-attachments/assets/c5b7d2fa-ebef-4fe0-8586-c227bc894287" style="max-width: 100%; height: auto; max-height: 586px;; aspect-ratio: 1306 / 586; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>有多个不同的FNN来处理不同的语义<br>
+为什么说MoE是稀疏的？<br>
+答：稀疏 = 执行一次前向传播时，只用到模型全部参数里的一小部分，剩下大部分参数不参与计算。MoE有多个FFN，处理某一token时只会调用其中的一个，所以说MoE是稀疏的。</p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/d9f909eb-bf30-4c91-aba2-dfeb8f4a334b"><img width="932" height="732" alt="Image" src="https://github.com/user-attachments/assets/d9f909eb-bf30-4c91-aba2-dfeb8f4a334b" style="max-width: 100%; height: auto; max-height: 732px;; aspect-ratio: 932 / 732; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<h1>7、MoE-What Varies？</h1>
+<h2>7.1Routing function</h2>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/ffdd52f1-f737-4e6a-a982-869e3e76ce01"><img width="1065" height="627" alt="Image" src="https://github.com/user-attachments/assets/ffdd52f1-f737-4e6a-a982-869e3e76ce01" style="max-width: 100%; height: auto; max-height: 627px;; aspect-ratio: 1065 / 627; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>Almost all the MoEs do a standard ‘token choice topk’ routing.</p>
+<h2>7.2 Experrt sizes</h2>
+<h2>7.3Training objectives</h2></div>
 <div style="font-size:small;margin-top:8px;float:right;"></div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
