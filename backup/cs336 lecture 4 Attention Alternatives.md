@@ -4,6 +4,7 @@
 - $K\in\mathbb{R}^{n\times d_k}$：Key，键矩阵，每行代表单个token的检索特征
 - $V\in\mathbb{R}^{n\times d_v}$：Value，值矩阵，每行代表单个token携带的内容信息
 - $n$：序列token长度； $d_k$：Q/K维度； $d_v$：V维度 
+这里的QKV是利用输入向量乘以不同的矩阵得到的。
 
 ## 2. 标准注意力基础形式
 $$Attn(Q,K,V) = \rho(QK^\top)V$$
@@ -13,7 +14,7 @@ $\rho$ 一般代表 Softmax。
 2. 算力复杂度 $\boldsymbol{O(n^2 d_k + n^2 d_v)}$，**与序列长度n呈平方关系**，长文本开销极高。
 
 ## 3. 核心数学思想：矩阵乘法结合律
-在**暂时移除Softmax（ $\rho$为恒等映射）**前提下：
+在 **暂时移除Softmax（ $\rho$为恒等映射）** 前提下：
 $$(QK^\top)V = Q(K^\top V)$$
 - 原版顺序：先两两匹配所有Token，产生平方复杂度
 - 调换运算顺序：优先计算 $K^\top V$
@@ -28,6 +29,7 @@ $$(QK^\top)V = Q(K^\top V)$$
 $$S_t = S_{t-1}+k_tv_t^\top,\quad y_t=q_t^\top S_t$$
 维护固定大小的状态矩阵 $S_t$，不断累积历史token的 $k_tv_t^\top$
 无需缓存全部历史K/V，内存不随序列长度持续膨胀；线性复杂度低，长文本生成更高效
+这里的t对应的是第t个token。
 
 # 3、From linear attention to Mamba-2
 
