@@ -183,9 +183,9 @@ $$</p>
 <li>如果专家 $i$ 属于top‑k集合， $g_{i,t}=s_{i,t}$ ；其余专家直接置0，不参与计算。</li>
 </ul>
 <h3>3）专家分数 $s_{i,t}$（DeepSeek v1‑2 / Qwen / Grok 版本）</h3>
-<h2>$$<br>
-s_{i,t}= \text{Softmax}_i\Big({\mathbf u_t^l}^\mathrm{T}\mathbf e_i^l\Big)<br>
-$$</h2>
+<p>$$
+s_{i,t}= \text{Softmax}_i\Big({\mathbf u_t^l}^\mathrm{T}\mathbf e_i^l\Big)
+$$</p>
 <ul>
 <li>
 $\mathbf e_i^l$：门控网络的可学习参数向量（每个专家对应一个向量）。</li>

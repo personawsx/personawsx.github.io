@@ -109,7 +109,7 @@ $$
 $$
 s_{i,t}= \text{Softmax}_i\Big({\mathbf u_t^l}^\mathrm{T}\mathbf e_i^l\Big)
 $$
-- 
+
 - $\mathbf e_i^l$：门控网络的可学习参数向量（每个专家对应一个向量）。
 - $\mathbf u_t^l{}^\mathrm{T}\mathbf e_i^l$：输入token向量和专家向量做点积，得到原始打分。
 - $\boldsymbol{\text{Softmax}_i}$： **先对全部N个专家做Softmax归一化，再取Top‑K** 。
