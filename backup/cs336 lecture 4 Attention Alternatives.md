@@ -58,11 +58,82 @@ $$S_t = S_{t-1}+k_tv_t^\top,\quad y_t=q_t^\top S_t$$
 <img width="932" height="732" alt="Image" src="https://github.com/user-attachments/assets/d9f909eb-bf30-4c91-aba2-dfeb8f4a334b" />
 
 # 7、MoE-What Varies？
-## 7.1Routing function 
+## 7.1 Routing function 
 
 <img width="1065" height="627" alt="Image" src="https://github.com/user-attachments/assets/ffdd52f1-f737-4e6a-a982-869e3e76ce01" />
 
+行：token
+列：expert
+格子：分数
+
+Token chooses expert：可能有多个expert被复用，会导致一些expert闲置
+Expert chooses token：一个token可能被多个expert选中
+
 Almost all the MoEs do a standard ‘token choice topk’ routing.
+
+<img width="1407" height="766" alt="Image" src="https://github.com/user-attachments/assets/650dab86-3596-4e32-abb2-d0477664c9a6" />
+
+<img width="1485" height="754" alt="Image" src="https://github.com/user-attachments/assets/bb3a84a5-05fd-4a21-be0c-42715c7a7fc7" />
+
+# Top‑K routing in detail
+
+### 1）输出计算公式
+
+$$
+\mathbf{h}_t^l = \sum_{i=1}^N \Big(g_{i,t}\, \text{FFN}_i\big(\mathbf{u}_t^l\big)\Big) + \mathbf{u}_t^l
+$$
+
+- $t$：代表第 $t$ 个token；$l$：第 $l$ 层MoE层
+- $\mathbf u_t^l$：该层输入token特征向量
+- $N$：专家总数量；$\text{FFN}_i$：第 $i$ 个专家（前馈网络）
+- $g_{i,t}$：**gate门控权重**，0代表不选择该专家；非0代表选中，权重参与加权求和
+- 最后$+\mathbf u_t^l$：残差连接，和Transformer标准残差完全一致。
+
+> 含义：把token送给选中的专家FFN计算，结果用门控权重加权求和，再加上原始输入残差，得到层输出。
+
+### 2）门控权重 $g_{i,t}$ 定义
+
+$$
+g_{i,t}=
+\begin{cases}
+s_{i,t}, & s_{i,t} \in \text{Topk}(\{s_{j,t}|1\le j \le N\},K) \\
+0, & \text{otherwise}
+\end{cases}
+$$
+
+- 对token $t$，取出所有专家分数 $s_{*,t}$ ，选出分数最高的 $K$ 个专家。
+- 如果专家 $i$ 属于top‑k集合， $g_{i,t}=s_{i,t}$ ；其余专家直接置0，不参与计算。
+
+### 3）专家分数 $s_{i,t}$（DeepSeek v1‑2 / Qwen / Grok 版本）
+
+$$
+s_{i,t}= \text{Softmax}_i\Big({\mathbf u_t^l}^\mathrm{T}\mathbf e_i^l\Big)
+$$
+- 
+- $\mathbf e_i^l$：门控网络的可学习参数向量（每个专家对应一个向量）。
+- $\mathbf u_t^l{}^\mathrm{T}\mathbf e_i^l$：输入token向量和专家向量做点积，得到原始打分。
+- $\boldsymbol{\text{Softmax}_i}$： **先对全部N个专家做Softmax归一化，再取Top‑K** 。
+
+<!-- Failed to upload "image.png" -->
+
+Deepseek的创新：引入了共享专家，使token不需要经过路由也可输入，同时将输入路由的token分配到不同的专家。
+
+How do we train MoEs?
+Major challenge: we need sparsity for training‑time efficiency…
+But sparse gating decisions are not differentiable!
+Solutions?
+Reinforcement learning to optimize gating policies（强化学习）
+Stochastic perturbations（随机扰动）
+Heuristic ‘balancing’ losses.（负载均衡，常用⭐）
+Guess which one people use in practice?
+
+## 负载均衡
+
+<img width="1276" height="697" alt="Image" src="https://github.com/user-attachments/assets/4401ddfe-7b2f-49d3-aa9a-fc192799c92d" />
+
+<img width="999" height="713" alt="Image" src="https://github.com/user-attachments/assets/ee668055-470c-4344-8605-c03bbc9298d9" />
+
+<img width="1211" height="715" alt="Image" src="https://github.com/user-attachments/assets/5dbc0ac6-d92a-4075-b0c0-a6b5f8ec3d68" />
 
 ## 7.2 Experrt sizes
 

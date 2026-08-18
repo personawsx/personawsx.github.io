@@ -139,9 +139,75 @@ $$(QK^\top)V = Q(K^\top V)$$</p>
 答：稀疏 = 执行一次前向传播时，只用到模型全部参数里的一小部分，剩下大部分参数不参与计算。MoE有多个FFN，处理某一token时只会调用其中的一个，所以说MoE是稀疏的。</p>
 <p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/d9f909eb-bf30-4c91-aba2-dfeb8f4a334b"><img width="932" height="732" alt="Image" src="https://github.com/user-attachments/assets/d9f909eb-bf30-4c91-aba2-dfeb8f4a334b" style="max-width: 100%; height: auto; max-height: 732px;; aspect-ratio: 932 / 732; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
 <h1>7、MoE-What Varies？</h1>
-<h2>7.1Routing function</h2>
+<h2>7.1 Routing function</h2>
 <p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/ffdd52f1-f737-4e6a-a982-869e3e76ce01"><img width="1065" height="627" alt="Image" src="https://github.com/user-attachments/assets/ffdd52f1-f737-4e6a-a982-869e3e76ce01" style="max-width: 100%; height: auto; max-height: 627px;; aspect-ratio: 1065 / 627; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>行：token<br>
+列：expert<br>
+格子：分数</p>
+<p>Token chooses expert：可能有多个expert被复用，会导致一些expert闲置<br>
+Expert chooses token：一个token可能被多个expert选中</p>
 <p>Almost all the MoEs do a standard ‘token choice topk’ routing.</p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/650dab86-3596-4e32-abb2-d0477664c9a6"><img width="1407" height="766" alt="Image" src="https://github.com/user-attachments/assets/650dab86-3596-4e32-abb2-d0477664c9a6" style="max-width: 100%; height: auto; max-height: 766px;; aspect-ratio: 1407 / 766; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/bb3a84a5-05fd-4a21-be0c-42715c7a7fc7"><img width="1485" height="754" alt="Image" src="https://github.com/user-attachments/assets/bb3a84a5-05fd-4a21-be0c-42715c7a7fc7" style="max-width: 100%; height: auto; max-height: 754px;; aspect-ratio: 1485 / 754; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<h1>Top‑K routing in detail</h1>
+<h3>1）输出计算公式</h3>
+<p>$$
+
+\mathbf{h}_t^l = \sum_{i=1}^N \Big(g_{i,t}, \text{FFN}_i\big(\mathbf{u}_t^l\big)\Big) + \mathbf{u}_t^l
+
+$$</p>
+<ul>
+<li>
+$t$：代表第 $t$ 个token；$l$：第 $l$ 层MoE层</li>
+<li>
+$\mathbf u_t^l$：该层输入token特征向量</li>
+<li>
+$N$：专家总数量；$\text{FFN}_i$：第 $i$ 个专家（前馈网络）</li>
+<li>
+$g_{i,t}$：<strong>gate门控权重</strong>，0代表不选择该专家；非0代表选中，权重参与加权求和</li>
+<li>最后$+\mathbf u_t^l$：残差连接，和Transformer标准残差完全一致。</li>
+</ul>
+<blockquote>
+<p>含义：把token送给选中的专家FFN计算，结果用门控权重加权求和，再加上原始输入残差，得到层输出。</p>
+</blockquote>
+<h3>2）门控权重 $g_{i,t}$ 定义</h3>
+<p>$$
+g_{i,t}=
+\begin{cases}
+s_{i,t}, &amp; s_{i,t} \in \text{Topk}({s_{j,t}|1\le j \le N},K) \\
+0, &amp; \text{otherwise}
+\end{cases}
+$$</p>
+<ul>
+<li>对token $t$，取出所有专家分数 $s_{*,t}$ ，选出分数最高的 $K$ 个专家。</li>
+<li>如果专家 $i$ 属于top‑k集合， $g_{i,t}=s_{i,t}$ ；其余专家直接置0，不参与计算。</li>
+</ul>
+<h3>3）专家分数 $s_{i,t}$（DeepSeek v1‑2 / Qwen / Grok 版本）</h3>
+<h2>$$<br>
+s_{i,t}= \text{Softmax}_i\Big({\mathbf u_t^l}^\mathrm{T}\mathbf e_i^l\Big)<br>
+$$</h2>
+<ul>
+<li>
+$\mathbf e_i^l$：门控网络的可学习参数向量（每个专家对应一个向量）。</li>
+<li>
+$\mathbf u_t^l{}^\mathrm{T}\mathbf e_i^l$：输入token向量和专家向量做点积，得到原始打分。</li>
+<li>
+$\boldsymbol{\text{Softmax}_i}$： <strong>先对全部N个专家做Softmax归一化，再取Top‑K</strong> 。</li>
+</ul>
+
+<p>Deepseek的创新：引入了共享专家，使token不需要经过路由也可输入，同时将输入路由的token分配到不同的专家。</p>
+<p>How do we train MoEs?<br>
+Major challenge: we need sparsity for training‑time efficiency…<br>
+But sparse gating decisions are not differentiable!<br>
+Solutions?<br>
+Reinforcement learning to optimize gating policies（强化学习）<br>
+Stochastic perturbations（随机扰动）<br>
+Heuristic ‘balancing’ losses.（负载均衡，常用⭐）<br>
+Guess which one people use in practice?</p>
+<h2>负载均衡</h2>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/4401ddfe-7b2f-49d3-aa9a-fc192799c92d"><img width="1276" height="697" alt="Image" src="https://github.com/user-attachments/assets/4401ddfe-7b2f-49d3-aa9a-fc192799c92d" style="max-width: 100%; height: auto; max-height: 697px;; aspect-ratio: 1276 / 697; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/ee668055-470c-4344-8605-c03bbc9298d9"><img width="999" height="713" alt="Image" src="https://github.com/user-attachments/assets/ee668055-470c-4344-8605-c03bbc9298d9" style="max-width: 100%; height: auto; max-height: 713px;; aspect-ratio: 999 / 713; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/5dbc0ac6-d92a-4075-b0c0-a6b5f8ec3d68"><img width="1211" height="715" alt="Image" src="https://github.com/user-attachments/assets/5dbc0ac6-d92a-4075-b0c0-a6b5f8ec3d68" style="max-width: 100%; height: auto; max-height: 715px;; aspect-ratio: 1211 / 715; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
 <h2>7.2 Experrt sizes</h2>
 <h2>7.3Training objectives</h2></div>
 <div style="font-size:small;margin-top:8px;float:right;"></div>
