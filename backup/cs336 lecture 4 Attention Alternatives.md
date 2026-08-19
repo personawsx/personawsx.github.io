@@ -135,7 +135,117 @@ Guess which one people use in practice?
 
 <img width="1211" height="715" alt="Image" src="https://github.com/user-attachments/assets/5dbc0ac6-d92a-4075-b0c0-a6b5f8ec3d68" />
 
-## 7.2 Experrt sizes
+由于Top-K MoE中的专家负载不均衡（有的专家被多个token选中，有的专家不会被token选中，会造成浪费），因此采用负载均衡。
+#### （1）Switch Transformer 原始均衡损失（Fedus 2022，K=1，每个 token 只选 1 个专家）
 
+$$
+\text{loss} = \alpha \cdot N \cdot \sum_{i=1}^N f_i \cdot P_i \tag{4}
+$$
 
-## 7.3Training objectives
+$$
+f_i = \frac{1}{T}\sum_{x\in \mathcal{B}} \mathbb{1}\{\text{argmax }p(x)=i\} \tag{5}
+$$
+
+$$
+P_i = \frac{1}{T}\sum_{x\in \mathcal{B}} p_i(x) \tag{6}
+$$
+
+变量解析：
+1. $N$：专家总数量
+2. $\alpha$：超参数，控制这个辅助loss有多强（不能太大，否则会破坏主任务学习）
+3. $\mathcal{B}$：一个训练批次 batch； $T$：这个batch里全部token总数
+4. $\mathbb{1}\{\dots\}$：**指示函数**，括号内条件成立=1，不成立=0
+5. $f_i$：**真实负载（统计值，不可导）**
+    遍历batch所有token，统计：最终真正分配给专家 $i$的token占全部token的比例。
+6. $p_i(x)$：Gate网络对token $x$，分配给专家$i$的路由概率（Softmax输出，**可导！Gate的参数在这里**）
+7. $P_i$：**Gate预测平均概率（可导）**
+    整个batch内，Gate分给专家 $i$的路由概率平均值
+即：
+$f$ 向量 = 每个专家**实际分到多少token**
+$P$ 向量 = Gate网络**预测每个专家应该分到多少token概率**
+$\sum f_i P_i$ 是两个向量做点积。
+优化目标是想最小化这个点积
+
+Switch的局限
+只支持 **K=1（每个token仅选1个专家）**，不能直接用于 Mixtral / DeepSeek 这类 K>2 的模型。
+
+#### （2）DeepSeek V1 / V2 改进（支持K>1）
+
+两套独立辅助损失一起加到总loss：
+### ① $\mathcal L_{\text{ExpBal}}$ 专家粒度均衡（适配Top-K，K>1，和Switch思想同源）
+
+$$
+\mathcal L_{\text{ExpBal}} = \alpha_1 \sum_{i=1}^{N'} f_i P_i \tag{12}
+$$
+
+$$
+f_i = \frac{N'}{K'T}\sum_{t=1}^T \mathbb{1}(\text{Token }t \text{ selects Expert }i) \tag{13}
+$$
+
+$$
+P_i = \frac{1}{T}\sum_{t=1}^T s_{i,t} \tag{14}
+$$
+
+- $N'$：当前层专家总数； $K'$：每个token激活K个专家
+- $s_{i,t}$：Gate输出的专家匹配得分（Softmax前/后得分）
+- 改动：增加 $\frac{N'}{K'T}$ 归一化系数，适配**一个token同时选K个专家**的场景
+
+### ② $\mathcal L_{\text{DevBal}}$ 设备粒度均衡（DeepSeek新增，均衡不同设备的负载）
+
+$$
+\mathcal L_{\text{DevBal}} = \alpha_2 \sum_{i=1}^D f_i' P_i' \tag{15}
+$$
+
+现代大模型：专家分散部署在多张GPU上，一张GPU托管多个专家，就算每个专家负载均衡，如果高负载专家全都放在同一张GPU，这张卡就会成为整个训练的速度瓶颈。
+
+- $D$：GPU设备数量
+- $\mathcal E_i$：部署在第 $i$ 张卡上的所有专家集合
+- $f_i'$：第 $i$ 张GPU上，所有专家的平均真实负载
+- $P_i'$：第 $i$ 张GPU上，所有专家Gate路由概率总和
+
+同样做向量点积，最小化loss，约束每张GPU整体负载均衡。
+
+#### （3）DeepSeek V3：Per-expert bias
+不再依赖辅助loss去惩罚不均衡，直接修改Gate路由打分，在线动态调节每个专家被选中的概率
+
+#### 路由公式改动
+
+$$
+g_{i,t}'=
+\begin{cases}
+s_{i,t}, & s_{i,t}+b_i \in \text{Topk}(\{s_{j,t}+b_j|1 \le j \le N_r\},K_r),\\
+0, & \text{otherwise}.
+\end{cases}
+$$
+
+$b_i$ = **每个专家独立的可在线更新偏置 bias**
+路由流程变成：
+1. Gate 算出基础得分 $s_{i,t}$
+2. 每个专家加上自己专属偏置： $s_{i,t}+b_i$
+3. 基于加偏置后的分数，再执行 Top-K 选择
+
+#### $b_i$ 怎么动态调整？
+在线学习规则（逻辑）：
+- 如果专家 $i$ 最近被大量Token选中（过载）：降低 $b_i$
+  → $s_{i,t}+b_i$ 整体变小，后续更难被选入Top-K
+- 如果专家 $i$ 长期闲置：提高 $b_i$
+  → $s_{i,t}+b_i$ 整体变大，更容易被Token选中
+
+<img width="1137" height="588" alt="Image" src="https://github.com/user-attachments/assets/a4bea683-29d9-4f25-8cab-f905c3530759" />
+
+相较于普通的transformer模型，MoE多了专家并行。
+
+<img width="1117" height="539" alt="Image" src="https://github.com/user-attachments/assets/c7839c1f-e367-40ec-9516-27007a20af7a" />
+
+专家计算在底层矩阵运算上的三种实现方式：
+(A) Batched Matrix Multiplication 批量矩阵乘
+每个专家独立做矩阵乘法，输入、专家权重尺寸完全一致，并行计算。
+缺点：必须提前固定每个专家最多能处理多少 token，不支持负载不均衡。
+(B) Block Diagonal Matrix Multiplication 分块对角矩阵乘
+把所有专家权重纵向拼接成一个大矩阵，等价为分块对角矩阵乘法，对角块对应各个专家，其余位置为 0。
+优点：可以用标准 GEMM；缺点：仍然强制每个专家输入尺寸相同，不支持 token 数量不一样。
+(C) Block Sparse Matrix Multiplication 分块稀疏矩阵乘
+支持负载不均衡路由、每个专家处理 token 数量不一样、专家尺寸可变。矩阵大量区域是空白 0，只计算有效非零块。
+
+<img width="1089" height="568" alt="Image" src="https://github.com/user-attachments/assets/8fb2be1d-bcc0-4701-b855-a80ae4944750" />
+
