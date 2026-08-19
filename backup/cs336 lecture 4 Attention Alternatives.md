@@ -249,3 +249,4 @@ $b_i$ = **每个专家独立的可在线更新偏置 bias**
 
 <img width="1089" height="568" alt="Image" src="https://github.com/user-attachments/assets/8fb2be1d-bcc0-4701-b855-a80ae4944750" />
 
+为了降低专家并行导致的通信延时，一般可以将激活信号（token转化而成）进行降维。

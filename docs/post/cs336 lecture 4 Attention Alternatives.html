@@ -320,7 +320,8 @@ $b_i$ 怎么动态调整？</h4>
 优点：可以用标准 GEMM；缺点：仍然强制每个专家输入尺寸相同，不支持 token 数量不一样。<br>
 (C) Block Sparse Matrix Multiplication 分块稀疏矩阵乘<br>
 支持负载不均衡路由、每个专家处理 token 数量不一样、专家尺寸可变。矩阵大量区域是空白 0，只计算有效非零块。</p>
-<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/8fb2be1d-bcc0-4701-b855-a80ae4944750"><img width="1089" height="568" alt="Image" src="https://github.com/user-attachments/assets/8fb2be1d-bcc0-4701-b855-a80ae4944750" style="max-width: 100%; height: auto; max-height: 568px;; aspect-ratio: 1089 / 568; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p></div>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/8fb2be1d-bcc0-4701-b855-a80ae4944750"><img width="1089" height="568" alt="Image" src="https://github.com/user-attachments/assets/8fb2be1d-bcc0-4701-b855-a80ae4944750" style="max-width: 100%; height: auto; max-height: 568px;; aspect-ratio: 1089 / 568; background-color: var(--bgColor-muted); border-radius: 6px" class="js-gh-image-fallback"></a></p>
+<p>为了降低专家并行导致的通信延时，一般可以将激活信号（token转化而成）进行降维。</p></div>
 <div style="font-size:small;margin-top:8px;float:right;"></div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
