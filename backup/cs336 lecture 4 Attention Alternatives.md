@@ -139,15 +139,15 @@ Guess which one people use in practice?
 #### （1）Switch Transformer 原始均衡损失（Fedus 2022，K=1，每个 token 只选 1 个专家）
 
 $$
-\text{loss} = \alpha \cdot N \cdot \sum_{i=1}^N f_i \cdot P_i \tag{4}
+\text{loss} = \alpha \cdot N \cdot \sum_{i=1}^N f_i \cdot P_i
 $$
 
 $$
-f_i = \frac{1}{T}\sum_{x\in \mathcal{B}} \mathbb{1}\{\text{argmax }p(x)=i\} \tag{5}
+f_i = \frac{1}{T}\sum_{x\in \mathcal{B}} \mathbb{1}\{\text{argmax }p(x)=i\}
 $$
 
 $$
-P_i = \frac{1}{T}\sum_{x\in \mathcal{B}} p_i(x) \tag{6}
+P_i = \frac{1}{T}\sum_{x\in \mathcal{B}} p_i(x)
 $$
 
 变量解析：
@@ -175,15 +175,15 @@ Switch的局限
 ### ① $\mathcal L_{\text{ExpBal}}$ 专家粒度均衡（适配Top-K，K>1，和Switch思想同源）
 
 $$
-\mathcal L_{\text{ExpBal}} = \alpha_1 \sum_{i=1}^{N'} f_i P_i \tag{12}
+\mathcal L_{\text{ExpBal}} = \alpha_1 \sum_{i=1}^{N'} f_i P_i
 $$
 
 $$
-f_i = \frac{N'}{K'T}\sum_{t=1}^T \mathbb{1}(\text{Token }t \text{ selects Expert }i) \tag{13}
+f_i = \frac{N'}{K'T}\sum_{t=1}^T \mathbb{1}(\text{Token }t \text{ selects Expert }i)
 $$
 
 $$
-P_i = \frac{1}{T}\sum_{t=1}^T s_{i,t} \tag{14}
+P_i = \frac{1}{T}\sum_{t=1}^T s_{i,t}
 $$
 
 - $N'$：当前层专家总数； $K'$：每个token激活K个专家
@@ -193,7 +193,7 @@ $$
 ### ② $\mathcal L_{\text{DevBal}}$ 设备粒度均衡（DeepSeek新增，均衡不同设备的负载）
 
 $$
-\mathcal L_{\text{DevBal}} = \alpha_2 \sum_{i=1}^D f_i' P_i' \tag{15}
+\mathcal L_{\text{DevBal}} = \alpha_2 \sum_{i=1}^D f_i' P_i'
 $$
 
 现代大模型：专家分散部署在多张GPU上，一张GPU托管多个专家，就算每个专家负载均衡，如果高负载专家全都放在同一张GPU，这张卡就会成为整个训练的速度瓶颈。

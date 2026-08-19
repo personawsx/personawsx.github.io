@@ -211,13 +211,13 @@ Guess which one people use in practice?</p>
 <p>由于Top-K MoE中的专家负载不均衡（有的专家被多个token选中，有的专家不会被token选中，会造成浪费），因此采用负载均衡。</p>
 <h4>（1）Switch Transformer 原始均衡损失（Fedus 2022，K=1，每个 token 只选 1 个专家）</h4>
 <p>$$
-\text{loss} = \alpha \cdot N \cdot \sum_{i=1}^N f_i \cdot P_i \tag{4}
+\text{loss} = \alpha \cdot N \cdot \sum_{i=1}^N f_i \cdot P_i
 $$</p>
 <p>$$
-f_i = \frac{1}{T}\sum_{x\in \mathcal{B}} \mathbb{1}{\text{argmax }p(x)=i} \tag{5}
+f_i = \frac{1}{T}\sum_{x\in \mathcal{B}} \mathbb{1}{\text{argmax }p(x)=i}
 $$</p>
 <p>$$
-P_i = \frac{1}{T}\sum_{x\in \mathcal{B}} p_i(x) \tag{6}
+P_i = \frac{1}{T}\sum_{x\in \mathcal{B}} p_i(x)
 $$</p>
 <p>变量解析：</p>
 <ol>
@@ -249,13 +249,13 @@ $\sum f_i P_i$ 是两个向量做点积。<br>
 <p>两套独立辅助损失一起加到总loss：</p>
 <h3>① $\mathcal L_{\text{ExpBal}}$ 专家粒度均衡（适配Top-K，K&gt;1，和Switch思想同源）</h3>
 <p>$$
-\mathcal L_{\text{ExpBal}} = \alpha_1 \sum_{i=1}^{N'} f_i P_i \tag{12}
+\mathcal L_{\text{ExpBal}} = \alpha_1 \sum_{i=1}^{N'} f_i P_i
 $$</p>
 <p>$$
-f_i = \frac{N'}{K'T}\sum_{t=1}^T \mathbb{1}(\text{Token }t \text{ selects Expert }i) \tag{13}
+f_i = \frac{N'}{K'T}\sum_{t=1}^T \mathbb{1}(\text{Token }t \text{ selects Expert }i)
 $$</p>
 <p>$$
-P_i = \frac{1}{T}\sum_{t=1}^T s_{i,t} \tag{14}
+P_i = \frac{1}{T}\sum_{t=1}^T s_{i,t}
 $$</p>
 <ul>
 <li>
@@ -266,7 +266,7 @@ $s_{i,t}$：Gate输出的专家匹配得分（Softmax前/后得分）</li>
 </ul>
 <h3>② $\mathcal L_{\text{DevBal}}$ 设备粒度均衡（DeepSeek新增，均衡不同设备的负载）</h3>
 <p>$$
-\mathcal L_{\text{DevBal}} = \alpha_2 \sum_{i=1}^D f_i' P_i' \tag{15}
+\mathcal L_{\text{DevBal}} = \alpha_2 \sum_{i=1}^D f_i' P_i'
 $$</p>
 <p>现代大模型：专家分散部署在多张GPU上，一张GPU托管多个专家，就算每个专家负载均衡，如果高负载专家全都放在同一张GPU，这张卡就会成为整个训练的速度瓶颈。</p>
 <ul>
